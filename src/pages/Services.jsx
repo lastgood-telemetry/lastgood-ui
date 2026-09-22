@@ -383,13 +383,22 @@ const Services = () => {
                                                                     {service.name}
                                                                 </span>
                                                             </div>
-                                                            <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${
-                                                                service.status === 'active' 
-                                                                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
-                                                                    : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                                                            }`}>
-                                                                {service.eventCount || 0} ev
-                                                            </span>
+                                                            <div className="flex items-center gap-1.5">
+                                                                <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${
+                                                                    service.status === 'active' 
+                                                                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                                                                        : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                                                                }`}>
+                                                                    {service.eventCount || 0} ev
+                                                                </span>
+                                                                <button
+                                                                    onClick={() => setServiceToDelete(service)}
+                                                                    className="text-slate-400 hover:text-rose-400 transition-colors p-1 cursor-pointer"
+                                                                    title="Delete Service"
+                                                                >
+                                                                    <Trash2 size={13} />
+                                                                </button>
+                                                            </div>
                                                         </div>
 
                                                         {/* Inline Tier Selector */}
@@ -657,6 +666,58 @@ const Services = () => {
                                 </div>
                             </form>
                         )}
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Service Confirmation Modal */}
+            {serviceToDelete && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-150">
+                    <div className="bg-[#0e121b] border border-rose-500/30 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl relative animate-in zoom-in-95 duration-150">
+                        <button
+                            onClick={() => setServiceToDelete(null)}
+                            className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors p-1 cursor-pointer"
+                        >
+                            <X size={16} />
+                        </button>
+
+                        <div className="flex items-center gap-3">
+                            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 shrink-0">
+                                <ShieldAlert size={20} />
+                            </div>
+                            <div>
+                                <h3 className="text-base font-bold text-white">
+                                    Delete Service "{serviceToDelete.name}"?
+                                </h3>
+                                <p className="text-xs text-slate-400 mt-0.5">
+                                    This action is permanent and cannot be undone.
+                                </p>
+                            </div>
+                        </div>
+
+                        <p className="text-xs text-slate-300 leading-relaxed bg-black/40 border border-slate-800 p-3.5 rounded-xl font-sans">
+                            Deleting this service will permanently remove all associated change event streams, ingestion credentials, and incident risk scoring history for <strong className="text-white font-mono">{serviceToDelete.name}</strong>.
+                        </p>
+
+                        <div className="flex items-center justify-end gap-3 pt-2">
+                            <button
+                                type="button"
+                                onClick={() => setServiceToDelete(null)}
+                                disabled={deletingService}
+                                className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors cursor-pointer"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleDeleteService(serviceToDelete.service_id || serviceToDelete.id || serviceToDelete.name)}
+                                disabled={deletingService}
+                                className="flex items-center gap-2 bg-rose-600 hover:bg-rose-500 text-white px-4 py-2.5 rounded-xl text-xs font-semibold transition-all shadow-md shadow-rose-600/20 disabled:opacity-50 cursor-pointer"
+                            >
+                                {deletingService ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
+                                <span>{deletingService ? 'Deleting...' : 'Delete Service'}</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

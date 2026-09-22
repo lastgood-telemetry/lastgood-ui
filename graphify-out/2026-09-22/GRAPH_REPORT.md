@@ -1,7 +1,7 @@
 # Graph Report - lastgood-ui  (2026-09-22)
 
 ## Corpus Check
-- 88 files · ~64,640 words
+- 88 files · ~65,063 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary

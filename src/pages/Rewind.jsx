@@ -163,7 +163,7 @@ const Rewind = () => {
 
           <button
             type="submit"
-            className="bg-zinc-800 hover:bg-zinc-700 text-white font-bold px-5 py-2 rounded-lg flex items-center gap-2 transition-all h-[36px] text-xs shadow-sm cursor-pointer"
+            className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition-all h-[36px] text-xs shadow-sm shadow-indigo-600/20 cursor-pointer"
           >
             <Search size={14} />
             Run Rewind Diagnostic
