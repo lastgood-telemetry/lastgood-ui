@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Loader2, Activity } from 'lucide-react';
+import Logo from '../components/Logo';
 import { googleOAuthCallback, githubOAuthCallback } from '../service/auth';
 import { toast } from '../components/ui/Toast';
 
@@ -66,8 +67,8 @@ const OAuthCallback = () => {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-accent/10 rounded-full blur-[100px] pointer-events-none" />
 
             <div className="relative z-10 flex flex-col items-center gap-6 max-w-sm text-center px-6">
-                <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 animate-pulse">
-                    <Activity className="text-accent" size={24} />
+                <div className="flex items-center justify-center p-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 animate-pulse">
+                    <Logo size="lg" />
                 </div>
                 
                 <div className="space-y-2">

@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { Loader2, CheckCircle2, XCircle, Activity, ArrowRight } from 'lucide-react';
 import { verifyEmail } from '../service/auth';
 import { toast } from '../components/ui/Toast';
+import Logo from '../components/Logo';
 
 const VerifyEmail = () => {
     const [searchParams] = useSearchParams();
@@ -49,9 +50,8 @@ const VerifyEmail = () => {
             <div className="w-full max-w-[400px] bg-black/40 border border-white/10 rounded-xl p-8 backdrop-blur-xl relative z-10 shadow-2xl text-center space-y-6">
                 
                 {/* Logo */}
-                <div className="flex items-center justify-center gap-2 mb-2">
-                    <Activity className="text-accent" size={20} />
-                    <span className="text-lg font-bold tracking-tight text-white">LastGood</span>
+                <div className="flex items-center justify-center mb-2">
+                    <Logo size="lg" showText={true} textClassName="text-lg" />
                 </div>
 
                 {/* VERIFYING STATE */}

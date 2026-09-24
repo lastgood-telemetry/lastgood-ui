@@ -19,6 +19,7 @@ import { useMutation } from '@tanstack/react-query';
 import { loginUser, resetPassword, signupUser } from '../service/auth';
 import { useOrganizationCount } from '../hooks/useOrganizationCount';
 import { trackEvent } from '../util/analytics';
+import Logo from '../components/Logo';
 
 const timelineSteps = [
     {
@@ -288,8 +289,7 @@ const Login = () => {
 
                 {/* Left Panel Logo */}
                 <div className="relative z-10 flex items-center gap-2.5">
-                    <Activity className="text-accent" size={18} />
-                    <span className="text-base font-bold tracking-tight text-white">LastGood</span>
+                    <Logo size="md" showText={true} />
                 </div>
 
                 {/* Vertical Timeline */}
@@ -362,8 +362,7 @@ const Login = () => {
                     <div className="text-center lg:text-left space-y-2">
                         {/* Logo visible only on mobile */}
                         <div className="flex lg:hidden items-center justify-center gap-2 mb-6">
-                            <Activity className="text-accent" size={18} />
-                            <span className="text-base font-bold tracking-tight text-white">LastGood</span>
+                            <Logo size="md" showText={true} />
                         </div>
 
                         <h1 className="text-xl font-semibold tracking-tight text-white">

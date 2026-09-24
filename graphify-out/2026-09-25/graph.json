@@ -329,8 +329,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "package_dependencies_react",
-      "community": 3,
-      "community_name": "App.jsx",
+      "community": 2,
+      "community_name": "dependencies",
       "norm_label": "react"
     },
     {
@@ -340,8 +340,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "react",
-      "community": 3,
-      "community_name": "App.jsx",
+      "community": 2,
+      "community_name": "dependencies",
       "norm_label": "react"
     },
     {
@@ -824,8 +824,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_api_index",
-      "community": 39,
-      "community_name": "Settings.jsx",
+      "community": 3,
+      "community_name": "App.jsx",
       "norm_label": "api/index.js"
     },
     {
@@ -835,8 +835,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_api_index_api",
-      "community": 39,
-      "community_name": "Settings.jsx",
+      "community": 3,
+      "community_name": "App.jsx",
       "norm_label": "api"
     },
     {
@@ -846,19 +846,19 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_commandpalettemodal",
-      "community": 8,
-      "community_name": "MainLayout.jsx",
+      "community": 4,
+      "community_name": "Settings.jsx",
       "norm_label": "commandpalettemodal.jsx"
     },
     {
       "label": "CommandPaletteModal()",
       "file_type": "code",
       "source_file": "src/components/CommandPaletteModal.jsx",
-      "source_location": "L22",
+      "source_location": "L21",
       "_origin": "ast",
       "id": "src_components_commandpalettemodal_commandpalettemodal",
-      "community": 8,
-      "community_name": "MainLayout.jsx",
+      "community": 4,
+      "community_name": "Settings.jsx",
       "norm_label": "commandpalettemodal()"
     },
     {
@@ -923,7 +923,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_createapikey_createapikey",
-      "community": 39,
+      "community": 4,
       "community_name": "Settings.jsx",
       "norm_label": "createapikey.jsx"
     },
@@ -934,7 +934,7 @@
       "source_location": "L5",
       "_origin": "ast",
       "id": "src_components_createapikey_createapikey_createapikey",
-      "community": 39,
+      "community": 4,
       "community_name": "Settings.jsx",
       "norm_label": "createapikey()"
     },
@@ -945,8 +945,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_eventcard_eventcard",
-      "community": 10,
-      "community_name": "Events.jsx",
+      "community": 39,
+      "community_name": "Rewind.jsx",
       "norm_label": "eventcard.jsx"
     },
     {
@@ -956,8 +956,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_components_eventcard_eventcard_getriskcolor",
-      "community": 10,
-      "community_name": "Events.jsx",
+      "community": 39,
+      "community_name": "Rewind.jsx",
       "norm_label": "getriskcolor()"
     },
     {
@@ -967,8 +967,8 @@
       "source_location": "L24",
       "_origin": "ast",
       "id": "src_components_eventcard_eventcard_role_badge_styles",
-      "community": 10,
-      "community_name": "Events.jsx",
+      "community": 39,
+      "community_name": "Rewind.jsx",
       "norm_label": "role_badge_styles"
     },
     {
@@ -978,8 +978,8 @@
       "source_location": "L29",
       "_origin": "ast",
       "id": "src_components_eventcard_eventcard_role_badge_labels",
-      "community": 10,
-      "community_name": "Events.jsx",
+      "community": 39,
+      "community_name": "Rewind.jsx",
       "norm_label": "role_badge_labels"
     },
     {
@@ -989,8 +989,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "src_components_eventcard_eventcard_rolebadge",
-      "community": 10,
-      "community_name": "Events.jsx",
+      "community": 39,
+      "community_name": "Rewind.jsx",
       "norm_label": "rolebadge()"
     },
     {
@@ -1000,8 +1000,8 @@
       "source_location": "L40",
       "_origin": "ast",
       "id": "src_components_eventcard_eventcard_eventcard",
-      "community": 10,
-      "community_name": "Events.jsx",
+      "community": 39,
+      "community_name": "Rewind.jsx",
       "norm_label": "eventcard()"
     },
     {
@@ -1122,7 +1122,7 @@
       "_origin": "ast",
       "id": "src_components_githubwebhookmodal_githubwebhookmodal",
       "community": 4,
-      "community_name": "Integrations.jsx",
+      "community_name": "Settings.jsx",
       "norm_label": "githubwebhookmodal.jsx"
     },
     {
@@ -1133,7 +1133,7 @@
       "_origin": "ast",
       "id": "src_components_githubwebhookmodal_githubwebhookmodal_githubwebhookmodal",
       "community": 4,
-      "community_name": "Integrations.jsx",
+      "community_name": "Settings.jsx",
       "norm_label": "githubwebhookmodal()"
     },
     {
@@ -1144,7 +1144,7 @@
       "_origin": "ast",
       "id": "src_components_loadingstate_loadingstate",
       "community": 39,
-      "community_name": "Settings.jsx",
+      "community_name": "Rewind.jsx",
       "norm_label": "loadingstate.jsx"
     },
     {
@@ -1155,30 +1155,8 @@
       "_origin": "ast",
       "id": "src_components_loadingstate_loadingstate_loadingstate",
       "community": 39,
-      "community_name": "Settings.jsx",
+      "community_name": "Rewind.jsx",
       "norm_label": "loadingstate()"
-    },
-    {
-      "label": "Logo.jsx",
-      "file_type": "code",
-      "source_file": "src/components/Logo.jsx",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "src_components_logo",
-      "community": 8,
-      "community_name": "MainLayout.jsx",
-      "norm_label": "logo.jsx"
-    },
-    {
-      "label": "Logo()",
-      "file_type": "code",
-      "source_file": "src/components/Logo.jsx",
-      "source_location": "L3",
-      "_origin": "ast",
-      "id": "src_components_logo_logo",
-      "community": 8,
-      "community_name": "MainLayout.jsx",
-      "norm_label": "logo()"
     },
     {
       "label": "LogoutConfirmationModal.jsx",
@@ -1187,8 +1165,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_logoutconfirmationmodal_logoutconfirmationmodal",
-      "community": 8,
-      "community_name": "MainLayout.jsx",
+      "community": 4,
+      "community_name": "Settings.jsx",
       "norm_label": "logoutconfirmationmodal.jsx"
     },
     {
@@ -1198,8 +1176,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_components_logoutconfirmationmodal_logoutconfirmationmodal_logoutconfirmationmodal",
-      "community": 8,
-      "community_name": "MainLayout.jsx",
+      "community": 4,
+      "community_name": "Settings.jsx",
       "norm_label": "logoutconfirmationmodal()"
     },
     {
@@ -1209,19 +1187,19 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_onboardingmodal_onboardingmodal",
-      "community": 8,
-      "community_name": "MainLayout.jsx",
+      "community": 4,
+      "community_name": "Settings.jsx",
       "norm_label": "onboardingmodal.jsx"
     },
     {
       "label": "OnboardingModal()",
       "file_type": "code",
       "source_file": "src/components/OnboardingModal/OnboardingModal.jsx",
-      "source_location": "L6",
+      "source_location": "L5",
       "_origin": "ast",
       "id": "src_components_onboardingmodal_onboardingmodal_onboardingmodal",
-      "community": 8,
-      "community_name": "MainLayout.jsx",
+      "community": 4,
+      "community_name": "Settings.jsx",
       "norm_label": "onboardingmodal()"
     },
     {
@@ -1287,7 +1265,7 @@
       "_origin": "ast",
       "id": "src_components_rewind_rewindaidiagnosispanel",
       "community": 39,
-      "community_name": "Settings.jsx",
+      "community_name": "Rewind.jsx",
       "norm_label": "rewindaidiagnosispanel.jsx"
     },
     {
@@ -1298,7 +1276,7 @@
       "_origin": "ast",
       "id": "src_components_rewind_rewindaidiagnosispanel_rewindaidiagnosispanel",
       "community": 39,
-      "community_name": "Settings.jsx",
+      "community_name": "Rewind.jsx",
       "norm_label": "rewindaidiagnosispanel()"
     },
     {
@@ -1309,7 +1287,7 @@
       "_origin": "ast",
       "id": "src_components_rewind_rewindincidentbrief",
       "community": 39,
-      "community_name": "Settings.jsx",
+      "community_name": "Rewind.jsx",
       "norm_label": "rewindincidentbrief.jsx"
     },
     {
@@ -1320,7 +1298,7 @@
       "_origin": "ast",
       "id": "src_components_rewind_rewindincidentbrief_rewindincidentbrief",
       "community": 39,
-      "community_name": "Settings.jsx",
+      "community_name": "Rewind.jsx",
       "norm_label": "rewindincidentbrief()"
     },
     {
@@ -1331,7 +1309,7 @@
       "_origin": "ast",
       "id": "src_components_rewind_rewindtimeline",
       "community": 39,
-      "community_name": "Settings.jsx",
+      "community_name": "Rewind.jsx",
       "norm_label": "rewindtimeline.jsx"
     },
     {
@@ -1342,7 +1320,7 @@
       "_origin": "ast",
       "id": "src_components_rewind_rewindtimeline_geticonfortype",
       "community": 39,
-      "community_name": "Settings.jsx",
+      "community_name": "Rewind.jsx",
       "norm_label": "geticonfortype()"
     },
     {
@@ -1353,7 +1331,7 @@
       "_origin": "ast",
       "id": "src_components_rewind_rewindtimeline_getrolebadge",
       "community": 39,
-      "community_name": "Settings.jsx",
+      "community_name": "Rewind.jsx",
       "norm_label": "getrolebadge()"
     },
     {
@@ -1364,7 +1342,7 @@
       "_origin": "ast",
       "id": "src_components_rewind_rewindtimeline_rewindtimeline",
       "community": 39,
-      "community_name": "Settings.jsx",
+      "community_name": "Rewind.jsx",
       "norm_label": "rewindtimeline()"
     },
     {
@@ -1374,8 +1352,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_riskfactordetails_riskfactordetails",
-      "community": 10,
-      "community_name": "Events.jsx",
+      "community": 39,
+      "community_name": "Rewind.jsx",
       "norm_label": "riskfactordetails.jsx"
     },
     {
@@ -1385,8 +1363,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_components_riskfactordetails_riskfactordetails_riskfactordetails",
-      "community": 10,
-      "community_name": "Events.jsx",
+      "community": 39,
+      "community_name": "Rewind.jsx",
       "norm_label": "riskfactordetails()"
     },
     {
@@ -1397,7 +1375,7 @@
       "_origin": "ast",
       "id": "src_components_riskscorering_riskscorering",
       "community": 39,
-      "community_name": "Settings.jsx",
+      "community_name": "Rewind.jsx",
       "norm_label": "riskscorering.jsx"
     },
     {
@@ -1408,7 +1386,7 @@
       "_origin": "ast",
       "id": "src_components_riskscorering_riskscorering_riskscorering",
       "community": 39,
-      "community_name": "Settings.jsx",
+      "community_name": "Rewind.jsx",
       "norm_label": "riskscorering()"
     },
     {
@@ -1440,8 +1418,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_timeline_timeline",
-      "community": 10,
-      "community_name": "Events.jsx",
+      "community": 39,
+      "community_name": "Rewind.jsx",
       "norm_label": "timeline.jsx"
     },
     {
@@ -1451,8 +1429,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_components_timeline_timeline_normaliseitem",
-      "community": 10,
-      "community_name": "Events.jsx",
+      "community": 39,
+      "community_name": "Rewind.jsx",
       "norm_label": "normaliseitem()"
     },
     {
@@ -1462,8 +1440,8 @@
       "source_location": "L31",
       "_origin": "ast",
       "id": "src_components_timeline_timeline_timeline",
-      "community": 10,
-      "community_name": "Events.jsx",
+      "community": 39,
+      "community_name": "Rewind.jsx",
       "norm_label": "timeline()"
     },
     {
@@ -1506,8 +1484,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_sandbox_aidiagnosispanel",
-      "community": 10,
-      "community_name": "Events.jsx",
+      "community": 39,
+      "community_name": "Rewind.jsx",
       "norm_label": "aidiagnosispanel.jsx"
     },
     {
@@ -1517,8 +1495,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_components_sandbox_aidiagnosispanel_aidiagnosispanel",
-      "community": 10,
-      "community_name": "Events.jsx",
+      "community": 39,
+      "community_name": "Rewind.jsx",
       "norm_label": "aidiagnosispanel()"
     },
     {
@@ -1715,8 +1693,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_ui_pagecontainer",
-      "community": 39,
-      "community_name": "Settings.jsx",
+      "community": 3,
+      "community_name": "App.jsx",
       "norm_label": "pagecontainer.jsx"
     },
     {
@@ -1726,8 +1704,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_components_ui_pagecontainer_pagecontainer",
-      "community": 39,
-      "community_name": "Settings.jsx",
+      "community": 3,
+      "community_name": "App.jsx",
       "norm_label": "pagecontainer()"
     },
     {
@@ -1737,8 +1715,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_components_ui_pageheader",
-      "community": 39,
-      "community_name": "Settings.jsx",
+      "community": 3,
+      "community_name": "App.jsx",
       "norm_label": "pageheader.jsx"
     },
     {
@@ -1748,8 +1726,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_components_ui_pageheader_pageheader",
-      "community": 39,
-      "community_name": "Settings.jsx",
+      "community": 3,
+      "community_name": "App.jsx",
       "norm_label": "pageheader()"
     },
     {
@@ -1760,7 +1738,7 @@
       "_origin": "ast",
       "id": "src_components_ui_toast",
       "community": 39,
-      "community_name": "Settings.jsx",
+      "community_name": "Rewind.jsx",
       "norm_label": "toast.jsx"
     },
     {
@@ -1771,7 +1749,7 @@
       "_origin": "ast",
       "id": "src_components_ui_toast_toast",
       "community": 39,
-      "community_name": "Settings.jsx",
+      "community_name": "Rewind.jsx",
       "norm_label": "toast"
     },
     {
@@ -1781,8 +1759,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_components_ui_toast_toastcontainer",
-      "community": 3,
-      "community_name": "App.jsx",
+      "community": 39,
+      "community_name": "Rewind.jsx",
       "norm_label": "toastcontainer()"
     },
     {
@@ -1804,7 +1782,7 @@
       "_origin": "ast",
       "id": "src_hooks_useapikeys",
       "community": 4,
-      "community_name": "Integrations.jsx",
+      "community_name": "Settings.jsx",
       "norm_label": "useapikeys.js"
     },
     {
@@ -1815,7 +1793,7 @@
       "_origin": "ast",
       "id": "src_hooks_useapikeys_useapikeys",
       "community": 4,
-      "community_name": "Integrations.jsx",
+      "community_name": "Settings.jsx",
       "norm_label": "useapikeys()"
     },
     {
@@ -1881,7 +1859,7 @@
       "_origin": "ast",
       "id": "src_hooks_useorganization",
       "community": 4,
-      "community_name": "Integrations.jsx",
+      "community_name": "Settings.jsx",
       "norm_label": "useorganization.js"
     },
     {
@@ -1892,7 +1870,7 @@
       "_origin": "ast",
       "id": "src_hooks_useorganization_useorganization",
       "community": 4,
-      "community_name": "Integrations.jsx",
+      "community_name": "Settings.jsx",
       "norm_label": "useorganization()"
     },
     {
@@ -1902,8 +1880,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_hooks_useorganizationcount",
-      "community": 4,
-      "community_name": "Integrations.jsx",
+      "community": 8,
+      "community_name": "Login.jsx",
       "norm_label": "useorganizationcount.js"
     },
     {
@@ -1913,8 +1891,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "src_hooks_useorganizationcount_useorganizationcount",
-      "community": 3,
-      "community_name": "App.jsx",
+      "community": 8,
+      "community_name": "Login.jsx",
       "norm_label": "useorganizationcount()"
     },
     {
@@ -1924,19 +1902,19 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_layouts_mainlayout",
-      "community": 8,
-      "community_name": "MainLayout.jsx",
+      "community": 4,
+      "community_name": "Settings.jsx",
       "norm_label": "mainlayout.jsx"
     },
     {
       "label": "MainLayout()",
       "file_type": "code",
       "source_file": "src/layouts/MainLayout.jsx",
-      "source_location": "L23",
+      "source_location": "L22",
       "_origin": "ast",
       "id": "src_layouts_mainlayout_mainlayout",
-      "community": 8,
-      "community_name": "MainLayout.jsx",
+      "community": 4,
+      "community_name": "Settings.jsx",
       "norm_label": "mainlayout()"
     },
     {
@@ -1968,19 +1946,19 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_pages_completeprofile",
-      "community": 3,
-      "community_name": "App.jsx",
+      "community": 8,
+      "community_name": "Login.jsx",
       "norm_label": "completeprofile.jsx"
     },
     {
       "label": "CompleteProfile()",
       "file_type": "code",
       "source_file": "src/pages/CompleteProfile.jsx",
-      "source_location": "L21",
+      "source_location": "L20",
       "_origin": "ast",
       "id": "src_pages_completeprofile_completeprofile",
-      "community": 3,
-      "community_name": "App.jsx",
+      "community": 8,
+      "community_name": "Login.jsx",
       "norm_label": "completeprofile()"
     },
     {
@@ -1990,8 +1968,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_pages_eventdetail",
-      "community": 39,
-      "community_name": "Settings.jsx",
+      "community": 3,
+      "community_name": "App.jsx",
       "norm_label": "eventdetail.jsx"
     },
     {
@@ -2001,8 +1979,8 @@
       "source_location": "L12",
       "_origin": "ast",
       "id": "src_pages_eventdetail_fetchevent",
-      "community": 39,
-      "community_name": "Settings.jsx",
+      "community": 3,
+      "community_name": "App.jsx",
       "norm_label": "fetchevent()"
     },
     {
@@ -2012,8 +1990,8 @@
       "source_location": "L21",
       "_origin": "ast",
       "id": "src_pages_eventdetail_eventdetail",
-      "community": 39,
-      "community_name": "Settings.jsx",
+      "community": 3,
+      "community_name": "App.jsx",
       "norm_label": "eventdetail()"
     },
     {
@@ -2045,8 +2023,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_pages_integrations",
-      "community": 4,
-      "community_name": "Integrations.jsx",
+      "community": 3,
+      "community_name": "App.jsx",
       "norm_label": "integrations.jsx"
     },
     {
@@ -2056,8 +2034,8 @@
       "source_location": "L26",
       "_origin": "ast",
       "id": "src_pages_integrations_integrations",
-      "community": 4,
-      "community_name": "Integrations.jsx",
+      "community": 3,
+      "community_name": "App.jsx",
       "norm_label": "integrations()"
     },
     {
@@ -2067,30 +2045,30 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_pages_login",
-      "community": 3,
-      "community_name": "App.jsx",
+      "community": 8,
+      "community_name": "Login.jsx",
       "norm_label": "login.jsx"
     },
     {
       "label": "timelineSteps",
       "file_type": "code",
       "source_file": "src/pages/Login.jsx",
-      "source_location": "L24",
+      "source_location": "L23",
       "_origin": "ast",
       "id": "src_pages_login_timelinesteps",
-      "community": 3,
-      "community_name": "App.jsx",
+      "community": 8,
+      "community_name": "Login.jsx",
       "norm_label": "timelinesteps"
     },
     {
       "label": "Login()",
       "file_type": "code",
       "source_file": "src/pages/Login.jsx",
-      "source_location": "L51",
+      "source_location": "L50",
       "_origin": "ast",
       "id": "src_pages_login_login",
-      "community": 3,
-      "community_name": "App.jsx",
+      "community": 8,
+      "community_name": "Login.jsx",
       "norm_label": "login()"
     },
     {
@@ -2108,7 +2086,7 @@
       "label": "OAuthCallback()",
       "file_type": "code",
       "source_file": "src/pages/OAuthCallback.jsx",
-      "source_location": "L8",
+      "source_location": "L7",
       "_origin": "ast",
       "id": "src_pages_oauthcallback_oauthcallback",
       "community": 3,
@@ -2122,8 +2100,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_pages_postmortems",
-      "community": 39,
-      "community_name": "Settings.jsx",
+      "community": 3,
+      "community_name": "App.jsx",
       "norm_label": "postmortems.jsx"
     },
     {
@@ -2145,7 +2123,7 @@
       "_origin": "ast",
       "id": "src_pages_rewind",
       "community": 39,
-      "community_name": "Settings.jsx",
+      "community_name": "Rewind.jsx",
       "norm_label": "rewind.jsx"
     },
     {
@@ -2155,8 +2133,8 @@
       "source_location": "L17",
       "_origin": "ast",
       "id": "src_pages_rewind_rewind",
-      "community": 3,
-      "community_name": "App.jsx",
+      "community": 39,
+      "community_name": "Rewind.jsx",
       "norm_label": "rewind()"
     },
     {
@@ -2221,7 +2199,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_pages_settings",
-      "community": 39,
+      "community": 4,
       "community_name": "Settings.jsx",
       "norm_label": "settings.jsx"
     },
@@ -2233,7 +2211,7 @@
       "_origin": "ast",
       "id": "src_pages_settings_settings",
       "community": 4,
-      "community_name": "Integrations.jsx",
+      "community_name": "Settings.jsx",
       "norm_label": "settings()"
     },
     {
@@ -2243,8 +2221,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_pages_topology",
-      "community": 39,
-      "community_name": "Settings.jsx",
+      "community": 3,
+      "community_name": "App.jsx",
       "norm_label": "topology.jsx"
     },
     {
@@ -2265,19 +2243,19 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_pages_verifyemail",
-      "community": 8,
-      "community_name": "MainLayout.jsx",
+      "community": 3,
+      "community_name": "App.jsx",
       "norm_label": "verifyemail.jsx"
     },
     {
       "label": "VerifyEmail()",
       "file_type": "code",
       "source_file": "src/pages/VerifyEmail.jsx",
-      "source_location": "L9",
+      "source_location": "L8",
       "_origin": "ast",
       "id": "src_pages_verifyemail_verifyemail",
-      "community": 8,
-      "community_name": "MainLayout.jsx",
+      "community": 3,
+      "community_name": "App.jsx",
       "norm_label": "verifyemail()"
     },
     {
@@ -2364,7 +2342,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_service_api_key",
-      "community": 39,
+      "community": 4,
       "community_name": "Settings.jsx",
       "norm_label": "api-key.js"
     },
@@ -2376,7 +2354,7 @@
       "_origin": "ast",
       "id": "src_service_api_key_getapikeybyorg",
       "community": 4,
-      "community_name": "Integrations.jsx",
+      "community_name": "Settings.jsx",
       "norm_label": "getapikeybyorg()"
     },
     {
@@ -2386,7 +2364,7 @@
       "source_location": "L15",
       "_origin": "ast",
       "id": "src_service_api_key_createapikey",
-      "community": 39,
+      "community": 4,
       "community_name": "Settings.jsx",
       "norm_label": "createapikey()"
     },
@@ -2408,8 +2386,8 @@
       "source_location": "L4",
       "_origin": "ast",
       "id": "src_service_auth_loginuser",
-      "community": 3,
-      "community_name": "App.jsx",
+      "community": 8,
+      "community_name": "Login.jsx",
       "norm_label": "loginuser()"
     },
     {
@@ -2419,8 +2397,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "src_service_auth_resetpassword",
-      "community": 3,
-      "community_name": "App.jsx",
+      "community": 8,
+      "community_name": "Login.jsx",
       "norm_label": "resetpassword()"
     },
     {
@@ -2430,8 +2408,8 @@
       "source_location": "L14",
       "_origin": "ast",
       "id": "src_service_auth_signupuser",
-      "community": 3,
-      "community_name": "App.jsx",
+      "community": 8,
+      "community_name": "Login.jsx",
       "norm_label": "signupuser()"
     },
     {
@@ -2441,8 +2419,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "src_service_auth_verifyemail",
-      "community": 8,
-      "community_name": "MainLayout.jsx",
+      "community": 3,
+      "community_name": "App.jsx",
       "norm_label": "verifyemail()"
     },
     {
@@ -2474,8 +2452,8 @@
       "source_location": "L34",
       "_origin": "ast",
       "id": "src_service_auth_oauthsignup",
-      "community": 3,
-      "community_name": "App.jsx",
+      "community": 8,
+      "community_name": "Login.jsx",
       "norm_label": "oauthsignup()"
     },
     {
@@ -2551,8 +2529,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_service_organization",
-      "community": 4,
-      "community_name": "Integrations.jsx",
+      "community": 8,
+      "community_name": "Login.jsx",
       "norm_label": "organization.js"
     },
     {
@@ -2563,7 +2541,7 @@
       "_origin": "ast",
       "id": "src_service_organization_getorganization",
       "community": 4,
-      "community_name": "Integrations.jsx",
+      "community_name": "Settings.jsx",
       "norm_label": "getorganization()"
     },
     {
@@ -2573,8 +2551,8 @@
       "source_location": "L8",
       "_origin": "ast",
       "id": "src_service_organization_getorganizationcount",
-      "community": 4,
-      "community_name": "Integrations.jsx",
+      "community": 8,
+      "community_name": "Login.jsx",
       "norm_label": "getorganizationcount()"
     },
     {
@@ -2584,8 +2562,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "src_stores_useoncallstore",
-      "community": 8,
-      "community_name": "MainLayout.jsx",
+      "community": 4,
+      "community_name": "Settings.jsx",
       "norm_label": "useoncallstore.js"
     },
     {
@@ -2595,8 +2573,8 @@
       "source_location": "L3",
       "_origin": "ast",
       "id": "src_stores_useoncallstore_useoncallstore",
-      "community": 8,
-      "community_name": "MainLayout.jsx",
+      "community": 4,
+      "community_name": "Settings.jsx",
       "norm_label": "useoncallstore"
     },
     {
@@ -2607,7 +2585,7 @@
       "_origin": "ast",
       "id": "src_stores_useorgstore",
       "community": 4,
-      "community_name": "Integrations.jsx",
+      "community_name": "Settings.jsx",
       "norm_label": "useorgstore.js"
     },
     {
@@ -2618,7 +2596,7 @@
       "_origin": "ast",
       "id": "src_stores_useorgstore_useorgstore",
       "community": 4,
-      "community_name": "Integrations.jsx",
+      "community_name": "Settings.jsx",
       "norm_label": "useorgstore"
     },
     {
@@ -2661,8 +2639,8 @@
       "source_location": "L47",
       "_origin": "ast",
       "id": "src_util_analytics_trackevent",
-      "community": 3,
-      "community_name": "App.jsx",
+      "community": 8,
+      "community_name": "Login.jsx",
       "norm_label": "trackevent()"
     },
     {
@@ -6368,35 +6346,11 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/CommandPaletteModal.jsx",
-      "source_location": "L22",
+      "source_location": "L21",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_commandpalettemodal",
       "target": "src_components_commandpalettemodal_commandpalettemodal",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/CommandPaletteModal.jsx",
-      "source_location": "L20",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_components_commandpalettemodal",
-      "target": "src_components_logo",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/CommandPaletteModal.jsx",
-      "source_location": "L20",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_components_commandpalettemodal",
-      "target": "src_components_logo_logo",
       "confidence_score": 1.0
     },
     {
@@ -6440,7 +6394,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/components/CommandPaletteModal.jsx",
-      "source_location": "L31",
+      "source_location": "L30",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_commandpalettemodal_commandpalettemodal",
@@ -7056,161 +7010,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "src/components/Logo.jsx",
-      "source_location": "L3",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_components_logo",
-      "target": "src_components_logo_logo",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/OnboardingModal/OnboardingModal.jsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_components_onboardingmodal_onboardingmodal",
-      "target": "src_components_logo",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/layouts/MainLayout.jsx",
-      "source_location": "L21",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_layouts_mainlayout",
-      "target": "src_components_logo",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/CompleteProfile.jsx",
-      "source_location": "L18",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_pages_completeprofile",
-      "target": "src_components_logo",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/Login.jsx",
-      "source_location": "L22",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_pages_login",
-      "target": "src_components_logo",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/OAuthCallback.jsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_pages_oauthcallback",
-      "target": "src_components_logo",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/VerifyEmail.jsx",
-      "source_location": "L7",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_pages_verifyemail",
-      "target": "src_components_logo",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/OnboardingModal/OnboardingModal.jsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_components_onboardingmodal_onboardingmodal",
-      "target": "src_components_logo_logo",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/layouts/MainLayout.jsx",
-      "source_location": "L21",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_layouts_mainlayout",
-      "target": "src_components_logo_logo",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/CompleteProfile.jsx",
-      "source_location": "L18",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_pages_completeprofile",
-      "target": "src_components_logo_logo",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/Login.jsx",
-      "source_location": "L22",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_pages_login",
-      "target": "src_components_logo_logo",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/OAuthCallback.jsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_pages_oauthcallback",
-      "target": "src_components_logo_logo",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/pages/VerifyEmail.jsx",
-      "source_location": "L7",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "src_pages_verifyemail",
-      "target": "src_components_logo_logo",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "src/components/LogoutConfirmationModal/LogoutConfirmationModal.jsx",
       "source_location": "L4",
       "weight": 1.0,
@@ -7247,7 +7046,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/OnboardingModal/OnboardingModal.jsx",
-      "source_location": "L6",
+      "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_components_onboardingmodal_onboardingmodal",
@@ -8523,7 +8322,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/OAuthCallback.jsx",
-      "source_location": "L6",
+      "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_oauthcallback",
@@ -8607,7 +8406,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/OAuthCallback.jsx",
-      "source_location": "L6",
+      "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_oauthcallback",
@@ -8986,7 +8785,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/layouts/MainLayout.jsx",
-      "source_location": "L26",
+      "source_location": "L25",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_layouts_mainlayout_mainlayout",
@@ -9129,7 +8928,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/CompleteProfile.jsx",
-      "source_location": "L24",
+      "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_completeprofile_completeprofile",
@@ -9153,7 +8952,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/Login.jsx",
-      "source_location": "L55",
+      "source_location": "L54",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_login_login",
@@ -9164,7 +8963,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/layouts/MainLayout.jsx",
-      "source_location": "L23",
+      "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_layouts_mainlayout",
@@ -9200,7 +8999,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/layouts/MainLayout.jsx",
-      "source_location": "L34",
+      "source_location": "L33",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_layouts_mainlayout_mainlayout",
@@ -9222,7 +9021,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/CompleteProfile.jsx",
-      "source_location": "L21",
+      "source_location": "L20",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_completeprofile",
@@ -9282,7 +9081,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/CompleteProfile.jsx",
-      "source_location": "L79",
+      "source_location": "L78",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_completeprofile_completeprofile",
@@ -9294,7 +9093,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/CompleteProfile.jsx",
-      "source_location": "L97",
+      "source_location": "L96",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_completeprofile_completeprofile",
@@ -9493,7 +9292,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/Login.jsx",
-      "source_location": "L51",
+      "source_location": "L50",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_login",
@@ -9504,7 +9303,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/Login.jsx",
-      "source_location": "L24",
+      "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_login",
@@ -9588,7 +9387,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/Login.jsx",
-      "source_location": "L165",
+      "source_location": "L164",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_login_login",
@@ -9600,7 +9399,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/Login.jsx",
-      "source_location": "L188",
+      "source_location": "L187",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_login_login",
@@ -9612,7 +9411,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/Login.jsx",
-      "source_location": "L154",
+      "source_location": "L153",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_login_login",
@@ -9624,7 +9423,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/Login.jsx",
-      "source_location": "L225",
+      "source_location": "L224",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_login_login",
@@ -9635,7 +9434,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/OAuthCallback.jsx",
-      "source_location": "L8",
+      "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_oauthcallback",
@@ -9647,7 +9446,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/OAuthCallback.jsx",
-      "source_location": "L5",
+      "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_oauthcallback",
@@ -9659,7 +9458,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/OAuthCallback.jsx",
-      "source_location": "L5",
+      "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_oauthcallback",
@@ -9671,7 +9470,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/OAuthCallback.jsx",
-      "source_location": "L5",
+      "source_location": "L4",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_oauthcallback",
@@ -9683,7 +9482,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/OAuthCallback.jsx",
-      "source_location": "L32",
+      "source_location": "L31",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_oauthcallback_oauthcallback",
@@ -9695,7 +9494,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/OAuthCallback.jsx",
-      "source_location": "L30",
+      "source_location": "L29",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_oauthcallback_oauthcallback",
@@ -10083,7 +9882,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/VerifyEmail.jsx",
-      "source_location": "L9",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_verifyemail",
@@ -10119,7 +9918,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/pages/VerifyEmail.jsx",
-      "source_location": "L17",
+      "source_location": "L16",
       "weight": 1.0,
       "_origin": "ast",
       "source": "src_pages_verifyemail_verifyemail",
@@ -12339,5 +12138,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "83047c7138e188ea5613ab81af9be208c872dc40"
+  "built_at_commit": "ac6f77a7faffb40ce0bf7784a78d0d3baa9bcaa8"
 }

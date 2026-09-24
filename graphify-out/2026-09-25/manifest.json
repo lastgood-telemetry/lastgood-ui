@@ -80,8 +80,8 @@
     "semantic_hash": ""
   },
   "src/components/OnboardingModal/OnboardingModal.jsx": {
-    "mtime": 1790275152.1878731,
-    "ast_hash": "bdd2a4804cb74aa978ae6e95c4ea3b56",
+    "mtime": 1785561302.9755106,
+    "ast_hash": "6307dd5d8a2d598e7250e1041a48f853",
     "semantic_hash": ""
   },
   "src/components/OverallRiskSummary/OverallRiskSummary.jsx": {
@@ -150,8 +150,8 @@
     "semantic_hash": ""
   },
   "src/layouts/MainLayout.jsx": {
-    "mtime": 1790274885.8505137,
-    "ast_hash": "3f91e5cd501175380e635b7d1ac22a1c",
+    "mtime": 1790100919.7843351,
+    "ast_hash": "0e841e7e8d72f2185453b246265dcbf1",
     "semantic_hash": ""
   },
   "src/main.jsx": {
@@ -175,8 +175,8 @@
     "semantic_hash": ""
   },
   "src/pages/Login.jsx": {
-    "mtime": 1790274947.953801,
-    "ast_hash": "1b424b8acdb0363ae5afdfa743ec2a02",
+    "mtime": 1786990739.4358063,
+    "ast_hash": "10eca493fb0bd88109a79411cc1467e3",
     "semantic_hash": ""
   },
   "src/pages/Rewind.jsx": {
@@ -190,8 +190,8 @@
     "semantic_hash": ""
   },
   "src/pages/VerifyEmail.jsx": {
-    "mtime": 1790275031.8593736,
-    "ast_hash": "e0b9825c51b628db62ca0a23afe1ef75",
+    "mtime": 1785561302.9811788,
+    "ast_hash": "3857175ae1a8a5db05e8543bc09facae",
     "semantic_hash": ""
   },
   "src/pages/placeholders.jsx": {
@@ -330,8 +330,8 @@
     "semantic_hash": ""
   },
   "index.html": {
-    "mtime": 1790274801.3513265,
-    "ast_hash": "e8961a43d4dff35a1d4ebefd384149a6",
+    "mtime": 1786989662.949225,
+    "ast_hash": "56a834ad480d7c1fda6c8c89338b483c",
     "semantic_hash": ""
   },
   "public/vite.svg": {
@@ -345,13 +345,13 @@
     "semantic_hash": ""
   },
   "src/pages/CompleteProfile.jsx": {
-    "mtime": 1790274993.532684,
-    "ast_hash": "f045f66d5c8833819d961aee2cb17bda",
+    "mtime": 1786471739.1935575,
+    "ast_hash": "94549cf8b99945667ef28070898e946a",
     "semantic_hash": ""
   },
   "src/pages/OAuthCallback.jsx": {
-    "mtime": 1790275061.766512,
-    "ast_hash": "af109f52f49fa7b266975a2041bda33f",
+    "mtime": 1785561302.9802403,
+    "ast_hash": "70f16be6f49aa47e96cfc95b4ccae0bc",
     "semantic_hash": ""
   },
   "src/components/Rewind/RewindAiDiagnosisPanel.jsx": {
@@ -449,24 +449,19 @@
     "ast_hash": "8af6c5e4863cf9ea8bc4310b9548e7f0",
     "semantic_hash": ""
   },
+  "public/logo.jpg": {
+    "mtime": 1786991341.5508835,
+    "ast_hash": "cc17b3bd9cbf42158e18f2e3d5fa3d0f",
+    "semantic_hash": ""
+  },
   "src/components/CommandPaletteModal.jsx": {
-    "mtime": 1790275115.6539288,
-    "ast_hash": "f4cb9435ee5524596b33c934b12a524a",
+    "mtime": 1790100564.5961614,
+    "ast_hash": "5e368cd3e12ef29f4d4233c4ed422ad3",
     "semantic_hash": ""
   },
   "src/stores/useOnCallStore.js": {
     "mtime": 1790100526.5911448,
     "ast_hash": "7757059fd0211317b35fee6d7391fd2f",
-    "semantic_hash": ""
-  },
-  "src/components/Logo.jsx": {
-    "mtime": 1790274790.5861287,
-    "ast_hash": "381b3a58c47dd45ae372c101010754d5",
-    "semantic_hash": ""
-  },
-  "public/logo.png": {
-    "mtime": 1790274620.3806736,
-    "ast_hash": "cfef5b59556c9c2614f7d641e885d992",
     "semantic_hash": ""
   }
 }

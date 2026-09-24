@@ -17,6 +17,7 @@ import {
   Command
 } from 'lucide-react';
 import { useOnCallStore } from '../stores/useOnCallStore';
+import Logo from './Logo';
 
 const CommandPaletteModal = () => {
   const navigate = useNavigate();
@@ -195,7 +196,7 @@ const CommandPaletteModal = () => {
         {/* Footer info */}
         <div className="px-4 py-2 bg-[#07090e] border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
           <div className="flex items-center gap-2">
-            <Command size={12} className="text-indigo-400" />
+            <Logo size="xs" />
             <span>LastGood SRE Navigation Engine</span>
           </div>
           <div className="flex items-center gap-3">

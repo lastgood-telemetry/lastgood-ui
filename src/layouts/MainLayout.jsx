@@ -18,6 +18,7 @@ import { useOrganization } from "../hooks/useOrganization";
 import LogoutConfirmationModal from "../components/LogoutConfirmationModal/LogoutConfirmationModal";
 import CommandPaletteModal from "../components/CommandPaletteModal";
 import { useOnCallStore } from "../stores/useOnCallStore";
+import Logo from "../components/Logo";
 
 const MainLayout = () => {
   const navigate = useNavigate();
@@ -59,14 +60,7 @@ const MainLayout = () => {
             onClick={() => navigate("/rewind")}
             className="flex items-center gap-2.5 cursor-pointer group"
           >
-            <div className="h-7 w-7 rounded-lg bg-indigo-600/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 group-hover:scale-105 transition-transform">
-              <Sparkles size={15} />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-bold text-white tracking-tight flex items-center gap-1">
-                Last<span className="text-indigo-400">Good</span>
-              </span>
-            </div>
+            <Logo size="md" showText={true} textClassName="text-sm" />
           </div>
           <span className="text-[10px] font-mono text-slate-500 bg-slate-900 border border-slate-800 px-1.5 py-0.5 rounded">
             v2.4
@@ -143,6 +137,7 @@ const MainLayout = () => {
         <header className="h-14 sticky top-0 z-40 bg-[#090c12]/80 backdrop-blur-md border-b border-slate-800/60 px-6 flex items-center justify-between gap-4">
           {/* Breadcrumb / Page Title */}
           <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
+            <Logo size="xs" />
             <span>LastGood</span>
             <span className="text-slate-600">/</span>
             <span className="text-slate-200 font-semibold">{currentNav.label}</span>

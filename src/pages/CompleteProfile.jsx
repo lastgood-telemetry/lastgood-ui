@@ -15,6 +15,7 @@ import { oauthSignup } from '../service/auth';
 import { toast } from '../components/ui/Toast';
 import { useOrganizationCount } from '../hooks/useOrganizationCount';
 import { trackEvent } from '../util/analytics';
+import Logo from '../components/Logo';
 
 
 const CompleteProfile = () => {
@@ -128,9 +129,8 @@ const CompleteProfile = () => {
 
             <div className="w-full max-w-[400px] space-y-8 relative z-10 bg-black/30 border border-white/5 p-8 rounded-2xl backdrop-blur-xl">
                 {/* Logo */}
-                <div className="flex items-center gap-2 justify-center">
-                    <Activity className="text-accent" size={18} />
-                    <span className="text-base font-bold tracking-tight text-white">LastGood</span>
+                <div className="flex items-center justify-center">
+                    <Logo size="md" showText={true} />
                 </div>
 
                 <div className="text-center space-y-2">

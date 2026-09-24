@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Rocket, KeyRound, X } from 'lucide-react';
 import CreateAPIKey from '../CreateAPIKey/CreateAPIKey';
+import Logo from '../Logo';
 
 export const OnboardingModal = ({ onFinished }) => {
     const [isCreatingKey, setIsCreatingKey] = useState(false);
@@ -15,12 +16,18 @@ export const OnboardingModal = ({ onFinished }) => {
                 <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-accent via-blue-500 to-purple-500"></div>
                 {isCreatingKey ? (
                     <div className="p-8">
+                        <div className="flex justify-center mb-4">
+                            <Logo size="md" showText={true} />
+                        </div>
                         <h2 className="text-2xl font-bold text-center mb-2 text-white">Create your first API Key</h2>
                         <p className="text-text-secondary text-center mb-6 text-sm">This key will be used to report events to LastGood.</p>
                         <CreateAPIKey onKeyCreated={handleKeyCreated} />
                     </div>
                 ) : (
                     <div className="p-8 text-center">
+                        <div className="flex justify-center mb-4">
+                            <Logo size="md" showText={true} />
+                        </div>
                         <div className="mx-auto bg-accent/10 w-16 h-16 rounded-full flex items-center justify-center border-2 border-accent/20 mb-6 shadow-[0_0_20px_rgba(45,212,191,0.2)]">
                             <Rocket size={32} className="text-accent animate-bounce" />
                         </div>
