@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../api";
 import { getServices } from "../service/auth";
 import { FileText, Plus, Sparkles, Copy, Check, Trash2, ShieldAlert, Server, ArrowRight, Layers } from "lucide-react";
-import { toast } from "../components/ui/Toast";
+import { DateTimePicker } from "../components/EventFilters/DateTimePicker";
 import { PageHeader } from "../components/ui/PageHeader";
 import { PageContainer } from "../components/ui/PageContainer";
 
@@ -216,12 +216,10 @@ export default function Postmortems() {
 
                   <div>
                     <label className="text-xs font-medium text-text-secondary block mb-1.5">Incident Time</label>
-                    <input
-                      type="datetime-local"
+                    <DateTimePicker
                       value={incidentTimestamp}
-                      onChange={(e) => setIncidentTimestamp(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-2 py-2 text-[11px] text-white focus:outline-none focus:border-accent"
-                      required
+                      onChange={setIncidentTimestamp}
+                      label="Select Incident Time"
                     />
                   </div>
                 </div>

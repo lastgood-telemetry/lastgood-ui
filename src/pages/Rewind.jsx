@@ -11,6 +11,8 @@ import utc from "dayjs/plugin/utc";
 
 dayjs.extend(utc);
 
+import { DateTimePicker } from "../components/EventFilters/DateTimePicker";
+
 import { PageHeader } from "../components/ui/PageHeader";
 import { PageContainer } from "../components/ui/PageContainer";
 
@@ -94,26 +96,14 @@ const Rewind = () => {
           onSubmit={handleSearch}
           className="flex flex-wrap items-end gap-4"
         >
-          <div className="min-w-[200px] flex-1">
-            <div className="flex justify-between items-center mb-1.5">
-              <label className="text-[11px] font-mono font-semibold text-zinc-400 flex items-center gap-1.5 uppercase">
-                <Calendar size={12} className="text-zinc-300" /> Incident Time (UTC)
-              </label>
-              <button
-                type="button"
-                onClick={() => setIncidentTime(dayjs().utc().format("YYYY-MM-DDTHH:mm"))}
-                className="text-[10px] font-mono text-sky-400 hover:text-sky-300 font-semibold uppercase"
-              >
-                Set to Now
-              </button>
-            </div>
-            <input
-              type="datetime-local"
+          <div className="min-w-[240px] flex-1">
+            <label className="text-[11px] font-mono font-semibold text-zinc-400 mb-1.5 flex items-center gap-1.5 uppercase">
+              <Calendar size={12} className="text-zinc-300" /> Incident Time (UTC)
+            </label>
+            <DateTimePicker
               value={incidentTime}
-              onChange={(e) => setIncidentTime(e.target.value)}
-              onClick={(e) => e.target.showPicker && e.target.showPicker()}
-              className="w-full bg-[#070709] border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-500 transition-all cursor-pointer"
-              required
+              onChange={setIncidentTime}
+              label="Select Incident Time"
             />
           </div>
 

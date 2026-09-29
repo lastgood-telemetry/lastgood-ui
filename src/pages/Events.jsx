@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useEvents } from '../hooks/useEvents';
 import { Timeline } from '../components/Timeline/Timeline';
 import { List, Loader2, Info, Activity, Database, ShieldAlert, Sparkles, Filter, Server } from 'lucide-react';
@@ -12,6 +12,42 @@ import { PageContainer } from '../components/ui/PageContainer';
 
 const Events = () => {
     const navigate = useNavigate();
+    // Filter state
+    const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+    const [fromDate, setFromDate] = useState('');
+    const [toDate, setToDate] = useState('');
+    const [selectedServices, setSelectedServices] = useState([]);
+    const [selectedEnvironments, setSelectedEnvironments] = useState([]);
+    const [presetFilter, setPresetFilter] = useState('all'); // 'all' | 'prod' | 'migrations' | 'deployments'
+
+    // Debounce search query by 300ms to avoid firing requests on every keystroke
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearch(searchQuery);
+        }, 300);
+        return () => clearTimeout(handler);
+    }, [searchQuery]);
+
+    // Server-side filter params for query
+    const queryFilters = useMemo(() => {
+        const filters = {};
+        if (debouncedSearch.trim()) filters.search = debouncedSearch.trim();
+        if (fromDate) filters.from_date = fromDate;
+        if (toDate) filters.to_date = toDate;
+        if (selectedServices.length > 0) filters.services = selectedServices;
+        if (selectedEnvironments.length > 0) filters.environments = selectedEnvironments;
+
+        if (presetFilter === 'prod') {
+            filters.environments = Array.from(new Set([...(filters.environments || []), 'prod', 'production']));
+        } else if (presetFilter === 'migrations') {
+            filters.type = 'migration';
+        } else if (presetFilter === 'deployments') {
+            filters.type = 'deployment';
+        }
+        return filters;
+    }, [debouncedSearch, fromDate, toDate, selectedServices, selectedEnvironments, presetFilter]);
+
     const {
         data,
         isLoading,
@@ -19,81 +55,37 @@ const Events = () => {
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage
-    } = useEvents();
+    } = useEvents(queryFilters);
 
-    // Filter state
-    const [searchQuery, setSearchQuery] = useState('');
-    const [fromDate, setFromDate] = useState('');
-    const [toDate, setToDate] = useState('');
-    const [selectedServices, setSelectedServices] = useState([]);
-    const [selectedEnvironments, setSelectedEnvironments] = useState([]);
-    const [presetFilter, setPresetFilter] = useState('all'); // 'all' | 'prod' | 'migrations' | 'deployments'
+    // Fetch baseline events without filter for populating filter dropdown options
+    const { data: allEventsData } = useEvents({});
+    const allEvents = allEventsData ? allEventsData.pages.flatMap(page => page.data) : [];
 
     const events = data ? data.pages.flatMap(page => page.data) : null;
     const totalEventsCount = data?.pages[0]?.pagination?.total || (events ? events.length : 0);
 
-    // Extract unique services and environments
+    // Extract unique services and environments from overall events
     const uniqueServices = useMemo(() => {
-        if (!events) return [];
-        return [...new Set(events.map(e => e.service))].sort();
-    }, [events]);
+        const sourceList = allEvents.length > 0 ? allEvents : (events || []);
+        return [...new Set(sourceList.map(e => e.service).filter(Boolean))].sort();
+    }, [allEvents, events]);
 
     const uniqueEnvironments = useMemo(() => {
-        if (!events) return [];
-        return [...new Set(events.map(e => e.environment))].sort();
-    }, [events]);
+        const sourceList = allEvents.length > 0 ? allEvents : (events || []);
+        return [...new Set(sourceList.map(e => e.environment).filter(Boolean))].sort();
+    }, [allEvents, events]);
 
     // Calculate SRE Quick Metrics
     const metrics = useMemo(() => {
-        if (!events) return { prodCount: 0, migrationCount: 0, deployCount: 0, serviceCount: 0 };
-        const prodCount = events.filter(e => e.environment?.toLowerCase() === 'prod').length;
-        const migrationCount = events.filter(e => (e.type || '').toLowerCase().includes('migration')).length;
-        const deployCount = events.filter(e => (e.type || '').toLowerCase().includes('deploy') || (e.type || '').toLowerCase().includes('commit')).length;
-        const serviceCount = new Set(events.map(e => e.service)).size;
+        const sourceList = events || [];
+        const prodCount = sourceList.filter(e => e.environment?.toLowerCase() === 'prod' || e.environment?.toLowerCase() === 'production').length;
+        const migrationCount = sourceList.filter(e => (e.type || '').toLowerCase().includes('migration')).length;
+        const deployCount = sourceList.filter(e => (e.type || '').toLowerCase().includes('deploy') || (e.type || '').toLowerCase().includes('commit')).length;
+        const serviceCount = new Set(sourceList.map(e => e.service)).size;
         return { prodCount, migrationCount, deployCount, serviceCount };
     }, [events]);
 
-    // Filter events based on criteria + preset chips
-    const filteredEvents = useMemo(() => {
-        if (!events) return [];
-
-        return events.filter(event => {
-            // Preset chip filters
-            if (presetFilter === 'prod' && event.environment?.toLowerCase() !== 'prod') return false;
-            if (presetFilter === 'migrations' && !(event.type || '').toLowerCase().includes('migration')) return false;
-            if (presetFilter === 'deployments' && !(event.type || '').toLowerCase().includes('deploy') && !(event.type || '').toLowerCase().includes('commit')) return false;
-
-            // Date range filter
-            if (fromDate || toDate) {
-                const eventDate = dayjs(event.occurred_at).format('YYYY-MM-DD');
-                if (fromDate && eventDate < fromDate) return false;
-                if (toDate && eventDate > toDate) return false;
-            }
-
-            // Service filter
-            if (selectedServices.length > 0 && !selectedServices.includes(event.service)) {
-                return false;
-            }
-
-            // Environment filter
-            if (selectedEnvironments.length > 0 && !selectedEnvironments.includes(event.environment)) {
-                return false;
-            }
-
-            // Search filter
-            if (searchQuery) {
-                const query = searchQuery.toLowerCase();
-                return (
-                    event.summary?.toLowerCase().includes(query) ||
-                    event.service?.toLowerCase().includes(query) ||
-                    event.meta?.author?.toLowerCase().includes(query) ||
-                    event.meta?.commit?.toLowerCase().includes(query)
-                );
-            }
-
-            return true;
-        });
-    }, [events, searchQuery, fromDate, toDate, selectedServices, selectedEnvironments, presetFilter]);
+    const filteredEvents = events || [];
 
     return (
         <PageContainer>
@@ -156,8 +148,8 @@ const Events = () => {
                 </div>
             </div>
 
-            {/* Filter Bar */}
-            <div className="flex flex-col md:flex-row gap-3 mb-6">
+            {/* Filter & Search Bar */}
+            <div className="flex flex-col md:flex-row gap-3 mb-6 items-stretch md:items-center">
                 <div className="flex-1">
                     <SearchBar
                         value={searchQuery}
@@ -165,18 +157,22 @@ const Events = () => {
                         placeholder="Search audit trail by commit SHA, service, author..."
                     />
                 </div>
-                <div className="flex items-center gap-2 flex-wrap">
+                <div className="flex items-center gap-2 flex-wrap shrink-0">
                     <DateRangeFilter
                         fromDate={fromDate}
                         toDate={toDate}
                         onFromDateChange={setFromDate}
                         onToDateChange={setToDate}
+                        onClear={() => {
+                            setFromDate('');
+                            setToDate('');
+                        }}
                     />
                 </div>
             </div>
 
-            {/* Scrollable Timeline Section */}
-            <div className="bg-[#111827] border border-slate-800 rounded-xl p-6 relative shadow-sm">
+            {/* Scrollable Timeline Section (Only Events Stream Scrolls) */}
+            <div className="bg-[#111827] border border-slate-800 rounded-xl p-6 relative shadow-sm max-h-[calc(100vh-310px)] overflow-y-auto custom-scrollbar">
                 <Timeline events={filteredEvents} isLoading={isLoading || !data} error={error} />
 
                 {hasNextPage && (
