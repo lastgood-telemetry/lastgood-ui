@@ -116,7 +116,7 @@ export const CalendarPicker = ({
                     className={`px-3 py-1.5 text-xs font-mono font-medium rounded-lg border transition-all flex items-center gap-2 cursor-pointer shadow-sm ${
                         hasFilter
                             ? 'bg-indigo-950/60 text-indigo-300 border-indigo-500/40 hover:bg-indigo-900/60'
-                            : 'bg-[#111827] text-slate-300 border-slate-800 hover:border-slate-700 hover:bg-slate-800/80'
+                            : 'bg-[#151b18] text-slate-300 border-slate-800 hover:border-slate-700 hover:bg-slate-800/80'
                     }`}
                 >
                     <CalendarIcon size={14} className={hasFilter ? 'text-indigo-400' : 'text-slate-400'} />
@@ -137,7 +137,7 @@ export const CalendarPicker = ({
 
             {isOpen && (
                 <div
-                    className={`absolute mt-2 z-50 p-4 bg-[#111827] border border-slate-800 rounded-xl shadow-2xl backdrop-blur-xl text-slate-200 min-w-[310px] ${
+                    className={`absolute mt-2 z-50 p-4 bg-[#151b18] border border-slate-800 rounded-xl shadow-2xl backdrop-blur-xl text-slate-200 min-w-[310px] ${
                         popoverAlign === 'right' ? 'right-0 left-auto' : 'left-0 right-auto'
                     }`}
                 >
@@ -198,7 +198,7 @@ export const CalendarPicker = ({
                         <button
                             type="button"
                             onClick={() => setIsOpen(false)}
-                            className="px-3 py-1 text-xs font-mono font-medium bg-indigo-600 hover:bg-indigo-500 text-white rounded-md transition-all cursor-pointer"
+                            className="px-3 py-1 text-xs font-mono font-medium bg-[#b6edce] hover:bg-[#d5f7e4] text-[#101413] rounded-md transition-all cursor-pointer"
                         >
                             Done
                         </button>
