@@ -127,7 +127,7 @@ const CompleteProfile = () => {
             <div className="absolute top-1/4 left-1/4 w-[300px] h-[300px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
             <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
 
-            <div className="w-full max-w-[400px] space-y-8 relative z-10 bg-black/30 border border-white/5 p-8 rounded-2xl backdrop-blur-xl">
+            <div className="w-full max-w-[400px] space-y-8 relative z-10 bg-[#0b0f0d]/30 border border-white/5 p-8 rounded-2xl backdrop-blur-xl">
                 {/* Logo */}
                 <div className="flex items-center justify-center">
                     <Logo size="md" showText={true} />
@@ -186,7 +186,7 @@ const CompleteProfile = () => {
                     {/* Name */}
                     <div className="space-y-1.5">
                         <label className="text-[11px] font-medium text-text-secondary">Your Name</label>
-                        <div className="flex items-center gap-3 bg-black/40 border border-white/10 rounded-lg px-3 py-2.5 focus-within:border-accent/50 focus-within:ring-1 focus-within:ring-accent/10 transition-all">
+                        <div className="flex items-center gap-3 bg-[#0b0f0d]/40 border border-white/10 rounded-lg px-3 py-2.5 focus-within:border-accent/50 focus-within:ring-1 focus-within:ring-accent/10 transition-all">
                             <User size={15} className="text-text-muted shrink-0" />
                             <input
                                 type="text"
@@ -203,7 +203,7 @@ const CompleteProfile = () => {
                     {/* Organization Name */}
                     <div className="space-y-1.5">
                         <label className="text-[11px] font-medium text-text-secondary">Organization Name</label>
-                        <div className="flex items-center gap-3 bg-black/40 border border-white/10 rounded-lg px-3 py-2.5 focus-within:border-accent/50 focus-within:ring-1 focus-within:ring-accent/10 transition-all">
+                        <div className="flex items-center gap-3 bg-[#0b0f0d]/40 border border-white/10 rounded-lg px-3 py-2.5 focus-within:border-accent/50 focus-within:ring-1 focus-within:ring-accent/10 transition-all">
                             <Building2 size={15} className="text-text-muted shrink-0" />
                             <input
                                 type="text"
@@ -220,7 +220,7 @@ const CompleteProfile = () => {
                     {/* Organization Slug */}
                     <div className="space-y-1.5">
                         <label className="text-[11px] font-medium text-text-secondary">Organization Slug</label>
-                        <div className="flex items-center gap-3 bg-black/40 border border-white/10 rounded-lg px-3 py-2.5 focus-within:border-accent/50 focus-within:ring-1 focus-within:ring-accent/10 transition-all">
+                        <div className="flex items-center gap-3 bg-[#0b0f0d]/40 border border-white/10 rounded-lg px-3 py-2.5 focus-within:border-accent/50 focus-within:ring-1 focus-within:ring-accent/10 transition-all">
                             <Building2 size={15} className="text-text-muted shrink-0" />
                             <input
                                 type="text"
@@ -237,7 +237,7 @@ const CompleteProfile = () => {
                     {/* Role */}
                     <div className="space-y-1.5">
                         <label className="text-[11px] font-medium text-text-secondary">Role</label>
-                        <div className="flex items-center gap-3 bg-black/40 border border-white/10 rounded-lg px-3 py-2.5 focus-within:border-accent/50 focus-within:ring-1 focus-within:ring-accent/10 transition-all">
+                        <div className="flex items-center gap-3 bg-[#0b0f0d]/40 border border-white/10 rounded-lg px-3 py-2.5 focus-within:border-accent/50 focus-within:ring-1 focus-within:ring-accent/10 transition-all">
                             <UserCog size={15} className="text-text-muted shrink-0" />
                             <select
                                 value={form.role}
@@ -246,9 +246,9 @@ const CompleteProfile = () => {
                                 disabled={loading}
                                 style={{ colorScheme: 'dark' }}
                             >
-                                <option value="admin" className="bg-[#030611] text-white">Admin</option>
-                                <option value="developer" className="bg-[#030611] text-white">Developer</option>
-                                <option value="viewer" className="bg-[#030611] text-white">Viewer</option>
+                                <option value="admin" className="bg-[#101413] text-white">Admin</option>
+                                <option value="developer" className="bg-[#101413] text-white">Developer</option>
+                                <option value="viewer" className="bg-[#101413] text-white">Viewer</option>
                             </select>
                         </div>
                     </div>
@@ -263,7 +263,7 @@ const CompleteProfile = () => {
                     <button
                         type="submit"
                         disabled={loading || isLimitReached}
-                        className="w-full flex items-center justify-center gap-2 bg-gradient-accent py-2.5 rounded-lg text-xs font-semibold hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.985] text-white shadow-lg shadow-accent/10 mt-2"
+                        className="w-full flex items-center justify-center gap-2 bg-gradient-accent py-2.5 rounded-lg text-xs font-semibold hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.985] text-[#101413] shadow-lg shadow-accent/10 mt-2"
                     >
                         {loading ? (
                             <>
