@@ -7,13 +7,25 @@ export default {
     theme: {
         extend: {
             colors: {
+                slate: { 50:'#f1f2ef',100:'#e5e9e6',200:'#d3d8d5',300:'#bdc4c0',400:'#a3a9a7',500:'#858c88',600:'#5d6560',700:'#3c4440',800:'#292e2c',900:'#1a201d',950:'#101413' },
+                zinc: { 50:'#f1f2ef',100:'#e5e9e6',200:'#d3d8d5',300:'#bdc4c0',400:'#a3a9a7',500:'#858c88',600:'#5d6560',700:'#3c4440',800:'#292e2c',900:'#1a201d',950:'#101413' },
+                gray: { 50:'#f1f2ef',100:'#e5e9e6',200:'#d3d8d5',300:'#bdc4c0',400:'#a3a9a7',500:'#858c88',600:'#5d6560',700:'#3c4440',800:'#292e2c',900:'#1a201d',950:'#101413' },
+                neutral: { 50:'#f1f2ef',100:'#e5e9e6',200:'#d3d8d5',300:'#bdc4c0',400:'#a3a9a7',500:'#858c88',600:'#5d6560',700:'#3c4440',800:'#292e2c',900:'#1a201d',950:'#101413' },
+                indigo: { 50:'#effaf4',100:'#d5f7e4',200:'#c9f2dc',300:'#b6edce',400:'#b6edce',500:'#8fd9ae',600:'#5fb78a',700:'#3f8a66',800:'#2f5a47',900:'#243b31',950:'#17241d' },
+                violet: { 50:'#effaf4',100:'#d5f7e4',200:'#c9f2dc',300:'#b6edce',400:'#b6edce',500:'#8fd9ae',600:'#5fb78a',700:'#3f8a66',800:'#2f5a47',900:'#243b31',950:'#17241d' },
+                purple: { 50:'#effaf4',100:'#d5f7e4',200:'#c9f2dc',300:'#b6edce',400:'#b6edce',500:'#8fd9ae',600:'#5fb78a',700:'#3f8a66',800:'#2f5a47',900:'#243b31',950:'#17241d' },
+                blue: { 50:'#effaf4',100:'#d5f7e4',200:'#c9f2dc',300:'#b6edce',400:'#b6edce',500:'#8fd9ae',600:'#5fb78a',700:'#3f8a66',800:'#2f5a47',900:'#243b31',950:'#17241d' },
+                sky: { 50:'#effaf4',100:'#d5f7e4',200:'#c9f2dc',300:'#b6edce',400:'#b6edce',500:'#8fd9ae',600:'#5fb78a',700:'#3f8a66',800:'#2f5a47',900:'#243b31',950:'#17241d' },
+                cyan: { 50:'#effaf4',100:'#d5f7e4',200:'#c9f2dc',300:'#b6edce',400:'#b6edce',500:'#8fd9ae',600:'#5fb78a',700:'#3f8a66',800:'#2f5a47',900:'#243b31',950:'#17241d' },
+                teal: { 50:'#effaf4',100:'#d5f7e4',200:'#c9f2dc',300:'#b6edce',400:'#b6edce',500:'#8fd9ae',600:'#5fb78a',700:'#3f8a66',800:'#2f5a47',900:'#243b31',950:'#17241d' },
+                fuchsia: { 50:'#effaf4',100:'#d5f7e4',200:'#c9f2dc',300:'#b6edce',400:'#b6edce',500:'#8fd9ae',600:'#5fb78a',700:'#3f8a66',800:'#2f5a47',900:'#243b31',950:'#17241d' },
                 background: "hsl(var(--background))",
                 foreground: "hsl(var(--foreground))",
                 card: "hsl(var(--card))",
                 border: "hsl(var(--border))",
                 accent: {
                     DEFAULT: "hsl(var(--accent))",
-                    hover: "hsl(212 100% 68%)",
+                    hover: "#d5f7e4",
                     dim: "hsl(var(--accent) / 0.1)",
                 },
                 muted: {
@@ -24,8 +36,8 @@ export default {
                     primary: 'hsl(var(--background))',
                     secondary: 'hsl(var(--card))',
                     tertiary: 'hsl(var(--muted))',
-                    surface: '#0f0f11',
-                    hover: '#18181b',
+                    surface: '#151b18',
+                    hover: '#1a201d',
                 },
                 text: {
                     primary: '#ffffff',
@@ -40,9 +52,12 @@ export default {
                 },
             },
             fontFamily: {
-                sans: ['Plus Jakarta Sans', 'system-ui', '-apple-system', 'sans-serif'],
-                serif: ['Inria Serif', 'Instrument Serif', 'Georgia', 'serif'],
-                mono: ['JetBrains Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+                sans: ['Arial', 'Helvetica', 'sans-serif'],
+                serif: ['Arial', 'Helvetica', 'sans-serif'],
+                mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+            },
+            borderRadius: {
+                md: '3px', lg: '4px', xl: '6px', '2xl': '6px', '3xl': '8px',
             },
             fontSize: {
                 xs: '11px',      // Minimum readable size
