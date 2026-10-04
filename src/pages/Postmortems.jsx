@@ -171,7 +171,7 @@ export default function Postmortems() {
         {/* Left Column: Generator Form & History */}
         <div className="space-y-6 lg:col-span-1">
           {/* Generator Form */}
-          <div className="bg-[#0c0c0e] border border-white/10 rounded-xl p-5 shadow-sm space-y-4">
+          <div className="bg-[#101413] border border-white/10 rounded-xl p-5 shadow-sm space-y-4">
             <div className="flex items-center gap-2 text-white font-mono font-semibold text-xs uppercase tracking-wider">
               <Sparkles size={15} className="text-zinc-300" />
               <span>Generate New SRE Postmortem</span>
@@ -278,7 +278,7 @@ export default function Postmortems() {
                 <button
                   type="submit"
                   disabled={generating}
-                  className="w-full py-2.5 px-4 rounded-xl bg-accent text-white font-semibold text-xs flex items-center justify-center gap-2 hover:brightness-110 transition-all disabled:opacity-50"
+                  className="w-full py-2.5 px-4 rounded-xl bg-accent text-[#101413] font-semibold text-xs flex items-center justify-center gap-2 hover:brightness-110 transition-all disabled:opacity-50"
                 >
                   {generating ? (
                     <>
@@ -297,7 +297,7 @@ export default function Postmortems() {
           </div>
 
           {/* History List */}
-          <div className="bg-black/40 border border-white/10 rounded-2xl p-6 backdrop-blur-xl shadow-xl space-y-4">
+          <div className="bg-[#0b0f0d]/40 border border-white/10 rounded-2xl p-6 backdrop-blur-xl shadow-xl space-y-4">
             <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider">Past Postmortems</h3>
 
             {loading ? (
@@ -345,7 +345,7 @@ export default function Postmortems() {
         {/* Right Column: Detailed Postmortem Viewer */}
         <div className="lg:col-span-2 space-y-6">
           {selectedPostmortem ? (
-            <div className="bg-black/40 border border-white/10 rounded-2xl p-6 backdrop-blur-xl shadow-xl space-y-6">
+            <div className="bg-[#0b0f0d]/40 border border-white/10 rounded-2xl p-6 backdrop-blur-xl shadow-xl space-y-6">
               {/* Report Header */}
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <div>
@@ -394,7 +394,7 @@ export default function Postmortems() {
                       </div>
                       <p className="text-xs text-white font-medium">{item.title}</p>
                       <label className="block text-[11px] text-text-muted pt-2">Action owner
-                        <input aria-label={`Action owner ${idx + 1}`} className="mt-1 w-full rounded-lg bg-black/40 border border-white/15 p-2 text-white text-xs" placeholder="Assign a real person" value={ownerDrafts[idx] ?? (isSuggestedOwner(item.owner) ? '' : item.owner)} onChange={e => { setOwnerDrafts(prev => ({ ...prev, [idx]: e.target.value })); setOwnersReviewed(false); }} />
+                        <input aria-label={`Action owner ${idx + 1}`} className="mt-1 w-full rounded-lg bg-[#0b0f0d]/40 border border-white/15 p-2 text-white text-xs" placeholder="Assign a real person" value={ownerDrafts[idx] ?? (isSuggestedOwner(item.owner) ? '' : item.owner)} onChange={e => { setOwnerDrafts(prev => ({ ...prev, [idx]: e.target.value })); setOwnersReviewed(false); }} />
                       </label>
                     </div>
                   ))}
@@ -410,7 +410,7 @@ export default function Postmortems() {
                 <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider">Chronological Incident Timeline</h3>
                 <div className="border border-white/10 rounded-xl overflow-hidden divide-y divide-white/5">
                   {resolvedTimeline.map((t, idx) => (
-                    <div key={idx} className="p-3 bg-black/20 flex items-center justify-between text-xs">
+                    <div key={idx} className="p-3 bg-[#0b0f0d]/20 flex items-center justify-between text-xs">
                       <div className="flex items-center gap-3">
                         <span className="font-mono text-[10px] text-text-muted">
                           {utcTimestamp(t.timestamp)}
@@ -434,13 +434,13 @@ export default function Postmortems() {
               {/* Markdown Raw Preview Box */}
               <div className="space-y-2">
                 <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider">Reviewed Markdown Draft</h3>
-                <pre className="p-4 rounded-xl bg-black/60 border border-white/10 text-text-secondary text-[11px] font-mono whitespace-pre-wrap max-h-64 overflow-y-auto custom-scrollbar">
+                <pre className="p-4 rounded-xl bg-[#0b0f0d]/60 border border-white/10 text-text-secondary text-[11px] font-mono whitespace-pre-wrap max-h-64 overflow-y-auto custom-scrollbar">
                   {reviewedMarkdown}
                 </pre>
               </div>
             </div>
           ) : (
-            <div className="bg-black/40 border border-white/10 rounded-2xl p-12 text-center text-text-muted space-y-3">
+            <div className="bg-[#0b0f0d]/40 border border-white/10 rounded-2xl p-12 text-center text-text-muted space-y-3">
               <FileText size={32} className="mx-auto text-text-muted" />
               <p className="text-sm">Select a postmortem from the left or generate a new report.</p>
             </div>
@@ -450,3 +450,4 @@ export default function Postmortems() {
     </PageContainer>
   );
 }
+

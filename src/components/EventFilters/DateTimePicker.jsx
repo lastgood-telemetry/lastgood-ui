@@ -62,7 +62,7 @@ export const DateTimePicker = ({
             <button
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full bg-[#070709] border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-xs font-mono text-white flex items-center justify-between transition-all cursor-pointer shadow-sm"
+                className="w-full bg-[#101413] border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-xs font-mono text-white flex items-center justify-between transition-all cursor-pointer shadow-sm"
             >
                 <div className="flex items-center gap-2">
                     <CalendarIcon size={14} className="text-sky-400" />
@@ -73,7 +73,7 @@ export const DateTimePicker = ({
 
             {isOpen && (
                 <div
-                    className={`absolute mt-2 z-50 p-4 bg-[#111827] border border-slate-800 rounded-xl shadow-2xl backdrop-blur-xl text-slate-200 min-w-[310px] ${
+                    className={`absolute mt-2 z-50 p-4 bg-[#151b18] border border-slate-800 rounded-xl shadow-2xl backdrop-blur-xl text-slate-200 min-w-[310px] ${
                         popoverAlign === 'right' ? 'right-0 left-auto' : 'left-0 right-auto'
                     }`}
                 >
@@ -109,7 +109,7 @@ export const DateTimePicker = ({
                             type="time"
                             value={timeString}
                             onChange={(e) => handleTimeChange(e.target.value)}
-                            className="bg-[#070709] border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white focus:outline-none focus:border-sky-500"
+                            className="bg-[#101413] border border-slate-700 rounded px-2 py-1 text-xs font-mono text-white focus:outline-none focus:border-sky-500"
                         />
                     </div>
 
@@ -118,7 +118,7 @@ export const DateTimePicker = ({
                         <button
                             type="button"
                             onClick={() => setIsOpen(false)}
-                            className="px-3 py-1 text-xs font-mono font-medium bg-sky-600 hover:bg-sky-500 text-white rounded-md transition-all cursor-pointer"
+                            className="px-3 py-1 text-xs font-mono font-medium bg-[#b6edce] hover:bg-[#d5f7e4] text-[#101413] rounded-md transition-all cursor-pointer"
                         >
                             Confirm
                         </button>

@@ -43,7 +43,7 @@ const SandboxTelemetry = ({ events }) => {
         </div>
       </div>
 
-      <div className="bg-black/40 border border-white/5 rounded-2xl overflow-hidden shadow-xl">
+      <div className="bg-[#0b0f0d]/40 border border-white/5 rounded-2xl overflow-hidden shadow-xl">
          {events.map((event, index) => {
            const colorClass = getColorClass(event.color);
            return (

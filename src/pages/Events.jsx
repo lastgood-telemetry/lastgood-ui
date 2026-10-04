@@ -98,7 +98,7 @@ const Events = () => {
                 actions={
                     <button
                         onClick={() => navigate('/rewind')}
-                        className="bg-indigo-600 hover:bg-indigo-500 text-white font-mono font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-all text-xs shadow-sm cursor-pointer"
+                        className="bg-[#b6edce] hover:bg-[#d5f7e4] text-[#101413] font-mono font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-all text-xs shadow-sm cursor-pointer"
                     >
                         <Sparkles size={14} />
                         <span>Run AI Rewind Diagnosis</span>
@@ -108,7 +108,7 @@ const Events = () => {
 
             {/* SRE Stat Cards Bar */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                <div className="p-3.5 bg-[#111827] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
+                <div className="p-3.5 bg-[#151b18] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
                     <div>
                         <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">Total Telemetry Events</span>
                         <span className="text-xl font-bold text-white font-mono">{totalEventsCount}</span>
@@ -118,7 +118,7 @@ const Events = () => {
                     </div>
                 </div>
 
-                <div className="p-3.5 bg-[#111827] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
+                <div className="p-3.5 bg-[#151b18] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
                     <div>
                         <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">Prod Changes</span>
                         <span className="text-xl font-bold text-rose-400 font-mono">{metrics.prodCount}</span>
@@ -128,7 +128,7 @@ const Events = () => {
                     </div>
                 </div>
 
-                <div className="p-3.5 bg-[#111827] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
+                <div className="p-3.5 bg-[#151b18] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
                     <div>
                         <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">DB Schema Migrations</span>
                         <span className="text-xl font-bold text-amber-400 font-mono">{metrics.migrationCount}</span>
@@ -138,7 +138,7 @@ const Events = () => {
                     </div>
                 </div>
 
-                <div className="p-3.5 bg-[#111827] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
+                <div className="p-3.5 bg-[#151b18] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
                     <div>
                         <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">Services Changed</span>
                         <span className="text-xl font-bold text-white font-mono">{metrics.serviceCount}</span>
@@ -174,7 +174,7 @@ const Events = () => {
             </div>
 
             {/* Scrollable Timeline Section (Only Events Stream Scrolls) */}
-            <div className="bg-[#111827] border border-slate-800 rounded-xl p-6 relative shadow-sm max-h-[calc(100vh-310px)] overflow-y-auto custom-scrollbar">
+            <div className="bg-[#151b18] border border-slate-800 rounded-xl p-6 relative shadow-sm max-h-[calc(100vh-310px)] overflow-y-auto custom-scrollbar">
                 <Timeline events={filteredEvents} isLoading={isLoading || !data} error={error} />
 
                 {hasNextPage && (
@@ -182,7 +182,7 @@ const Events = () => {
                         <button
                             onClick={() => fetchNextPage()}
                             disabled={isFetchingNextPage}
-                            className="flex items-center gap-2 px-5 py-2 bg-[#0b0e14] hover:bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-lg text-xs font-mono font-bold text-white transition-all disabled:opacity-50 uppercase tracking-wider cursor-pointer"
+                            className="flex items-center gap-2 px-5 py-2 bg-[#101413] hover:bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-lg text-xs font-mono font-bold text-white transition-all disabled:opacity-50 uppercase tracking-wider cursor-pointer"
                         >
                             {isFetchingNextPage ? (
                                 <>

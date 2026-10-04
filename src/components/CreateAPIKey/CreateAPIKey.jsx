@@ -30,7 +30,7 @@ const CreateAPIKey = ({ onKeyCreated }) => {
 
   return (
     <div className="bg-gradient-card border border-white/10 rounded-xl overflow-hidden mb-8 shadow-lg">
-      <div className="p-6 border-b border-white/10 bg-black/20">
+      <div className="p-6 border-b border-white/10 bg-[#0b0f0d]/20">
         <h2 className="font-semibold text-lg flex items-center gap-2">
           <Shield size={20} className="text-accent" />
           API Configuration
@@ -63,7 +63,7 @@ const CreateAPIKey = ({ onKeyCreated }) => {
             <button
               type="submit"
               disabled={isCreating}
-              className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover border border-transparent rounded-lg text-white text-sm font-medium transition-colors disabled:opacity-50"
+              className="flex items-center gap-2 px-4 py-2 bg-accent hover:bg-accent-hover border border-transparent rounded-lg text-[#101413] text-sm font-medium transition-colors disabled:opacity-50"
             >
               <Key size={16} />
               {isCreating ? "Creating..." : "Create API Key"}

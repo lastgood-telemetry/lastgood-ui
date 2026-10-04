@@ -12,7 +12,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
 
   if (!scoringResult) {
     return (
-      <div className="h-full border border-white/5 rounded-2xl bg-black/40 p-12 flex flex-col items-center justify-center text-center space-y-3 text-text-muted">
+      <div className="h-full border border-white/5 rounded-2xl bg-[#0b0f0d]/40 p-12 flex flex-col items-center justify-center text-center space-y-3 text-text-muted">
         <Sparkles size={28} className="text-accent/50 animate-pulse" />
         <h3 className="text-sm font-semibold text-white">AI Diagnosis Standby</h3>
         <p className="text-xs max-w-sm leading-relaxed">
@@ -26,7 +26,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
 
   if (!individualScores || individualScores.length === 0) {
     return (
-      <div className="h-full border border-white/5 rounded-2xl bg-black/40 p-12 flex flex-col items-center justify-center text-center space-y-3 text-text-muted">
+      <div className="h-full border border-white/5 rounded-2xl bg-[#0b0f0d]/40 p-12 flex flex-col items-center justify-center text-center space-y-3 text-text-muted">
         <Clock size={28} className="text-accent/60" />
         <h3 className="text-sm font-semibold text-white">No Change Events Found</h3>
         <p className="text-xs max-w-sm leading-relaxed">
@@ -76,10 +76,10 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
   };
 
   return (
-    <div className="flex flex-col max-h-[750px] bg-black/40 border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
+    <div className="flex flex-col max-h-[750px] bg-[#0b0f0d]/40 border border-white/5 rounded-2xl overflow-hidden shadow-2xl">
       
       {/* Sticky Header */}
-      <div className="p-5 border-b border-white/10 bg-black/90 backdrop-blur-xl sticky top-0 z-20 flex items-start justify-between shrink-0 shadow-lg">
+      <div className="p-5 border-b border-white/10 bg-[#0b0f0d]/90 backdrop-blur-xl sticky top-0 z-20 flex items-start justify-between shrink-0 shadow-lg">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className={`px-2 py-0.5 border rounded text-[9px] font-bold uppercase tracking-widest ${getLevelColor(overallLevel)}`}>
@@ -116,7 +116,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
         <ScoreEvidence assessment={overallAssessment} label="Overall risk score: rationale and evidence" />
         <ScoreEvidence assessment={selectedRiskAssessment} eventId={selectedEvent?.id} label="Selected change: rationale and source evidence" />
         {/* AI Summary Banner */}
-        <div className="p-4 rounded-xl border border-white/10 bg-black/60 space-y-3">
+        <div className="p-4 rounded-xl border border-white/10 bg-[#0b0f0d]/60 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-xs font-bold text-accent uppercase tracking-wider">
               <Sparkles size={14} className="animate-pulse" />
@@ -153,7 +153,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
 
         {/* Selected Event Focus Card */}
         {selectedEvent && (
-          <div className="space-y-3 bg-black/30 p-4 border border-white/5 rounded-xl">
+          <div className="space-y-3 bg-[#0b0f0d]/30 p-4 border border-white/5 rounded-xl">
             <div className="flex items-center justify-between">
               <span className="text-[10px] uppercase font-mono tracking-wider text-text-muted flex items-center gap-1">
                 <FileCode size={12} className="text-accent" /> Selected Change Event Focus
@@ -169,7 +169,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
               )}
             </div>
 
-            <div className="bg-black/60 border border-white/10 rounded-xl p-4 space-y-3">
+            <div className="bg-[#0b0f0d]/60 border border-white/10 rounded-xl p-4 space-y-3">
               <div className="flex justify-between items-start gap-2">
                 <div className="space-y-1">
                   <h4 className="text-xs font-bold text-white leading-snug">
@@ -265,7 +265,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
             </h3>
             <div className="space-y-2">
               {correlations.map((corr, idx) => (
-                <div key={idx} className="p-3 bg-black/50 border border-white/5 rounded-xl flex items-center justify-between">
+                <div key={idx} className="p-3 bg-[#0b0f0d]/50 border border-white/5 rounded-xl flex items-center justify-between">
                   <div className="space-y-0.5">
                     <div className="text-xs font-semibold text-white">{corr.description}</div>
                     <div className="text-[10px] text-text-muted">
@@ -302,7 +302,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
                     className={`p-3 rounded-xl border flex items-start gap-3 transition-all ${
                       isUrgent
                         ? 'bg-rose-500/10 border-rose-500/30 text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.1)]'
-                        : 'bg-black/50 border-white/10 hover:border-white/20 text-text-primary'
+                        : 'bg-[#0b0f0d]/50 border-white/10 hover:border-white/20 text-text-primary'
                     }`}
                   >
                     <div className={`p-1 rounded-md shrink-0 mt-0.5 ${isUrgent ? 'bg-rose-500/20 text-rose-400' : 'bg-accent/10 text-accent'}`}>

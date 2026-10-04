@@ -21,7 +21,7 @@ const GitHubWebhookModal = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-[#0b0f0d]/50 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-gradient-card border border-white/10 rounded-xl shadow-lg p-8 max-w-lg w-full relative">
         <button
           onClick={onClose}

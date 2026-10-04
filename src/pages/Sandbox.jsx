@@ -1,3 +1,4 @@
+import Logo from '../components/Logo';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SETUP_PATH, rememberSetupDestination } from '../util/console';
@@ -22,20 +23,13 @@ const Sandbox = () => {
   ];
 
   return (
-    <div className="flex min-h-screen font-sans selection:bg-white/20 selection:text-white bg-[#050507] text-white">
+    <div className="flex min-h-screen font-sans selection:bg-white/20 selection:text-white bg-[#101413] text-white">
       {/* Sidebar */}
-      <aside className="w-64 border-r border-white/[0.08] bg-[#09090b] flex flex-col fixed h-full z-50">
+      <aside className="w-64 border-r border-white/[0.08] bg-[#101413] flex flex-col fixed h-full z-50">
         <div className="p-5 pb-3">
           <div className="flex items-center gap-3 cursor-pointer group">
-            <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 border border-white/15 shadow-sm group-hover:border-white/30 transition-all duration-200">
-               <History className="h-4 w-4 text-white relative z-10 group-hover:rotate-45 transition-transform duration-300" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-base font-bold tracking-tight text-white flex items-center gap-1">
-                Last<span className="text-zinc-400 font-mono tracking-tighter">Good</span>
-              </span>
-              <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-widest leading-none">Sandbox Mode</span>
-            </div>
+            <Logo size="md" showText textClassName="text-lg" />
+            <span className="text-[9px] font-mono text-[#b6edce] border border-[#3a5546] px-1.5 py-0.5 uppercase tracking-widest leading-none">Sandbox</span>
           </div>
         </div>
 
@@ -78,7 +72,7 @@ const Sandbox = () => {
         </nav>
 
         {/* Footer Organization & Info */}
-        <div className="p-3 border-t border-white/[0.08] bg-[#070709]">
+        <div className="p-3 border-t border-white/[0.08] bg-[#101413]">
           <div className="p-2.5 rounded-lg flex items-center gap-3 border border-white/10 bg-white/[0.02]" title="Sandbox Environment">
             <div className="w-7 h-7 rounded-md bg-zinc-800 border border-white/10 flex items-center justify-center font-mono font-bold text-white text-xs">
               S

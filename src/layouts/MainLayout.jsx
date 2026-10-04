@@ -51,25 +51,25 @@ const MainLayout = () => {
   const currentNav = navItems.find((n) => location.pathname.startsWith(n.path)) || navItems[0];
 
   return (
-    <div className="flex min-h-screen font-sans bg-[#080a0f] text-slate-100">
-      {/* Sidebar - Sleek Enterprise Navigation */}
-      <aside className="w-56 border-r border-slate-800/60 bg-[#0c0f17] flex flex-col fixed h-full z-50">
+    <div className="flex min-h-screen font-sans bg-[#101413] text-slate-100">
+      {/* Sidebar - Navigation */}
+      <aside className="w-56 border-r border-slate-800/60 bg-[#101413] flex flex-col fixed h-full z-50">
         {/* Brand Logo Header */}
         <div className="h-14 px-4 border-b border-slate-800/60 flex items-center justify-between">
           <div
             onClick={() => navigate("/rewind")}
             className="flex items-center gap-2.5 cursor-pointer group"
           >
-            <Logo size="md" showText={true} textClassName="text-sm" />
+            <Logo size="md" showText={true} textClassName="text-lg" />
           </div>
-          <span className="text-[10px] font-mono text-slate-500 bg-slate-900 border border-slate-800 px-1.5 py-0.5 rounded">
-            v2.4
+          <span className="text-[9px] font-mono tracking-[0.1em] text-[#b6edce] border border-[#3a5546] px-1.5 py-0.5">
+            BETA
           </span>
         </div>
 
         {/* Clean Navigation List */}
         <div className="px-3 pt-4 pb-2">
-          <span className="text-[10px] font-mono font-semibold text-slate-500 uppercase tracking-wider px-2">
+          <span className="text-[10px] font-mono text-slate-400 uppercase tracking-[0.1em] px-2">
             Platform
           </span>
         </div>
@@ -82,9 +82,9 @@ const MainLayout = () => {
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) =>
-                  `flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-all ${
+                  `flex items-center gap-2.5 px-2.5 py-2 rounded text-xs font-medium transition-all ${
                     isActive
-                      ? "bg-indigo-600/15 text-indigo-300 font-semibold border border-indigo-500/25"
+                      ? "bg-[#b6edce]/10 text-[#b6edce] font-semibold border border-[#b6edce]/25"
                       : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/50"
                   }`
                 }
@@ -104,10 +104,10 @@ const MainLayout = () => {
         </nav>
 
         {/* User Profile & Org Footer */}
-        <div className="p-3 border-t border-slate-800/60 bg-[#080a0f]">
-          <div className="flex items-center justify-between p-2 rounded-lg bg-[#0c0f17] border border-slate-800/70">
+        <div className="p-3 border-t border-slate-800/60 bg-[#101413]">
+          <div className="flex items-center justify-between p-2 rounded-lg bg-[#101413] border border-slate-800/70">
             <div className="flex items-center gap-2.5 overflow-hidden">
-              <div className="w-6 h-6 rounded-md bg-indigo-950 border border-indigo-500/30 flex items-center justify-center font-mono font-bold text-indigo-300 text-[11px] shrink-0">
+              <div className="w-6 h-6 rounded-md bg-[#17241d] border border-[#b6edce]/30 flex items-center justify-center font-mono font-bold text-[#b6edce] text-[11px] shrink-0">
                 {org?.name?.charAt(0) || "O"}
               </div>
               <div className="flex flex-col overflow-hidden">
@@ -115,7 +115,7 @@ const MainLayout = () => {
                   {org?.name || "Organization"}
                 </span>
                 <span className="text-[10px] text-slate-500 font-mono leading-tight">
-                  Enterprise
+                  Beta
                 </span>
               </div>
             </div>
@@ -132,9 +132,9 @@ const MainLayout = () => {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 ml-56 relative min-w-0 bg-[#080a0f] min-h-screen flex flex-col">
+      <main className="flex-1 ml-56 relative min-w-0 bg-[#101413] min-h-screen flex flex-col">
         {/* Top Header Bar */}
-        <header className="h-14 sticky top-0 z-40 bg-[#090c12]/80 backdrop-blur-md border-b border-slate-800/60 px-6 flex items-center justify-between gap-4">
+        <header className="h-14 sticky top-0 z-40 bg-[#101413]/80 backdrop-blur-md border-b border-slate-800/60 px-6 flex items-center justify-between gap-4">
           {/* Breadcrumb / Page Title */}
           <div className="flex items-center gap-2 text-xs font-medium text-slate-400">
             <Logo size="xs" />
@@ -151,19 +151,19 @@ const MainLayout = () => {
               className={`flex items-center gap-2 px-2.5 py-1 rounded-full border text-[11px] font-mono transition-all cursor-pointer ${
                 isIncidentMode
                   ? "bg-rose-950/60 border-rose-500/40 text-rose-400 hover:bg-rose-900/60"
-                  : "bg-emerald-950/40 border-emerald-500/30 text-emerald-400 hover:bg-emerald-900/40"
+                  : "bg-[#17241d] border-[#b6edce]/30 text-[#b6edce] hover:bg-[#1d2e25]"
               }`}
               title="Click to toggle Incident Mode"
             >
               <span className="relative flex h-2 w-2">
                 <span
                   className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                    isIncidentMode ? "bg-rose-400" : "bg-emerald-400"
+                    isIncidentMode ? "bg-rose-400" : "bg-[#b6edce]"
                   }`}
                 ></span>
                 <span
                   className={`relative inline-flex rounded-full h-2 w-2 ${
-                    isIncidentMode ? "bg-rose-500" : "bg-emerald-500"
+                    isIncidentMode ? "bg-rose-500" : "bg-[#b6edce]"
                   }`}
                 ></span>
               </span>
@@ -173,7 +173,7 @@ const MainLayout = () => {
             {/* Quick Search Button */}
             <button
               onClick={() => setCommandPaletteOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#0e121b] border border-slate-800 hover:border-slate-700 text-xs text-slate-400 hover:text-slate-200 transition-all cursor-pointer"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#151b18] border border-slate-800 hover:border-slate-700 text-xs text-slate-400 hover:text-slate-200 transition-all cursor-pointer"
             >
               <Search size={13} className="text-slate-500" />
               <span>Search...</span>

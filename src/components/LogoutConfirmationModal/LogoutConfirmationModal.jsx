@@ -5,7 +5,7 @@ const LogoutConfirmationModal = ({ isOpen, onClose, onConfirm }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-[#0b0f0d]/50 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="bg-gradient-card border border-white/10 rounded-xl shadow-lg p-8 max-w-md w-full relative">
                 <button onClick={onClose} className="absolute top-4 right-4 text-text-muted hover:text-text-primary">
                     <X size={24} />

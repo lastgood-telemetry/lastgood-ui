@@ -10,7 +10,7 @@ export const SearchBar = ({ value, onChange, placeholder = "Search by commit, au
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder={placeholder}
-                className="w-full pl-9 pr-3 py-2 text-sm bg-black/60 border border-white/10 hover:border-accent/50 rounded-lg text-white placeholder-text-muted/50 focus:outline-none focus:ring-1 focus:ring-accent/50 transition-all"
+                className="w-full pl-9 pr-3 py-2 text-sm bg-[#0b0f0d]/60 border border-white/10 hover:border-accent/50 rounded-lg text-white placeholder-text-muted/50 focus:outline-none focus:ring-1 focus:ring-accent/50 transition-all"
             />
             {value && (
                 <button
@@ -43,7 +43,7 @@ export const MultiSelectFilter = ({ label, options, selected, onChange, placehol
         <div className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="flex items-center gap-2 px-3 py-2 bg-black/60 border border-white/10 hover:border-accent/50 rounded-lg text-sm text-text-secondary hover:text-white transition-all min-w-max"
+                className="flex items-center gap-2 px-3 py-2 bg-[#0b0f0d]/60 border border-white/10 hover:border-accent/50 rounded-lg text-sm text-text-secondary hover:text-white transition-all min-w-max"
             >
                 <span className="truncate">{label}</span>
                 {selected.length > 0 && (
@@ -54,7 +54,7 @@ export const MultiSelectFilter = ({ label, options, selected, onChange, placehol
             </button>
 
             {isOpen && (
-                <div className="absolute top-full mt-1 left-0 z-50 bg-black/90 border border-white/10 rounded-lg shadow-lg min-w-max">
+                <div className="absolute top-full mt-1 left-0 z-50 bg-[#0b0f0d]/90 border border-white/10 rounded-lg shadow-lg min-w-max">
                     <div className="max-h-64 overflow-y-auto">
                         {options.map((option) => (
                             <label
@@ -101,7 +101,7 @@ export const SimpleSelectFilter = ({ label, options, value, onChange }) => {
         <select
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="px-3 py-2 bg-black/60 border border-white/10 hover:border-accent/50 rounded-lg text-sm text-text-secondary hover:text-white focus:outline-none focus:ring-1 focus:ring-accent/50 transition-all cursor-pointer"
+            className="px-3 py-2 bg-[#0b0f0d]/60 border border-white/10 hover:border-accent/50 rounded-lg text-sm text-text-secondary hover:text-white focus:outline-none focus:ring-1 focus:ring-accent/50 transition-all cursor-pointer"
         >
             <option value="">{label}</option>
             {options.map((option) => (
