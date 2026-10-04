@@ -31,7 +31,7 @@ const SandboxTelemetry = ({ events }) => {
             Telemetry Feed
           </h1>
           <p className="text-[10px] text-text-muted mt-1">
-            Real-time stream of all ingested change events from your connected tools.
+            Simulated change events. These are not live integrations or data from your workspace.
           </p>
         </div>
         <div className="bg-accent/10 border border-accent/20 px-3 py-1.5 rounded-lg text-accent text-[10px] font-bold flex items-center gap-2">
@@ -39,7 +39,7 @@ const SandboxTelemetry = ({ events }) => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
             </span>
-           Live Sandbox Stream
+           Simulated Sandbox Stream
         </div>
       </div>
 
@@ -47,8 +47,8 @@ const SandboxTelemetry = ({ events }) => {
          {events.map((event, index) => {
            const colorClass = getColorClass(event.color);
            return (
-             <div key={event.id} className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors flex flex-col md:flex-row gap-4 items-start md:items-center group cursor-pointer">
-               <div className="flex items-center gap-4 w-full md:w-1/4 shrink-0">
+             <div key={event.id} className="p-4 border-b border-white/5 hover:bg-white/5 transition-colors flex flex-col gap-3 group">
+               <div className="flex items-center gap-4 w-full shrink-0">
                  <div className={`p-2 rounded-lg border ${colorClass}`}>
                    {getIconForType(event.type)}
                  </div>
@@ -59,8 +59,8 @@ const SandboxTelemetry = ({ events }) => {
                </div>
                
                <div className="flex-1 min-w-0">
-                 <h4 className="text-xs font-semibold text-white truncate">{event.title}</h4>
-                 <p className="text-xs text-text-muted mt-1 truncate">{event.description}</p>
+                 <h4 className="text-xs font-semibold text-white ">{event.title}</h4>
+                 <p className="text-xs text-text-muted mt-1 ">{event.description}</p>
                </div>
 
                <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end shrink-0">
@@ -68,8 +68,9 @@ const SandboxTelemetry = ({ events }) => {
                    Author: <span className="text-white font-medium">{event.author}</span>
                  </div>
                  <div className={`px-2 py-1 rounded text-xs font-bold border ${event.riskScore > 80 ? 'bg-status-error/20 border-status-error/30 text-status-error' : 'bg-white/5 border-white/10 text-white'}`}>
-                   Risk: {event.riskScore}
+                   Demo risk: {event.riskScore}
                  </div>
+                 <details className="text-xs flex-1" ><summary className="text-accent cursor-pointer">Score rationale</summary><p className="mt-2 text-text-secondary">{event.riskRationale}</p></details>
                </div>
              </div>
            );
