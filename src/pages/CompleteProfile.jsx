@@ -1,3 +1,4 @@
+import { consumeLoginDestination } from '../util/console';
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -80,7 +81,7 @@ const CompleteProfile = () => {
         onSuccess: (res) => {
             localStorage.setItem('authToken', res.data.token);
             toast.success('Registration completed successfully!');
-            navigate('/rewind', { replace: true });
+            navigate(consumeLoginDestination(), { replace: true });
         },
         onError: (err) => {
             const errMsg = err.response?.data?.message || err.response?.data?.error || err.message || 'Failed to complete registration';
