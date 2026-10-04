@@ -4,32 +4,34 @@
 
 @layer base {
     :root {
-        --background: 224 71% 4%;
-        --foreground: 210 40% 98%;
-        --card: 222 47% 7%;
-        --border: 217 33% 15%;
-        --accent: 239 84% 67%;
-        --muted: 222 30% 12%;
-        --muted-foreground: 215 20% 65%;
+        --background: 150 12% 7%;
+        --foreground: 100 6% 94%;
+        --card: 150 12% 10%;
+        --border: 150 5% 17%;
+        --accent: 144 56% 82%;
+        --muted: 150 10% 12%;
+        --muted-foreground: 150 5% 64%;
 
-        --gradient-hero: linear-gradient(180deg, #07090e 0%, #0d1322 100%);
-        --gradient-card: linear-gradient(135deg, #0f172a 0%, #0b101d 100%);
-        --gradient-accent: linear-gradient(135deg, #6366f1 0%, #38bdf8 100%);
-        --gradient-glow: radial-gradient(circle at top center, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+        --gradient-hero: linear-gradient(180deg, #101413 0%, #151b18 100%);
+        --gradient-card: linear-gradient(135deg, #151b18 0%, #131816 100%);
+        --gradient-accent: linear-gradient(135deg, #b6edce 0%, #8fd9ae 100%);
+        --gradient-glow: radial-gradient(circle at top center, rgba(182, 237, 206, 0.08) 0%, transparent 70%);
         --gradient-incident: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(185, 28, 28, 0.05) 100%);
     }
 
     body {
-        @apply antialiased min-h-screen relative overflow-x-hidden text-sm selection:bg-indigo-500/30 selection:text-indigo-100;
-        background-color: #07090e;
-        color: #f8fafc;
-        font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-        letter-spacing: -0.011em;
+        @apply antialiased min-h-screen relative overflow-x-hidden text-sm selection:bg-[#b6edce]/30 selection:text-[#f1f2ef];
+        background-color: #101413;
+        color: #f1f2ef;
+        font-family: Arial, Helvetica, sans-serif;
+        letter-spacing: -0.01em;
     }
+
+    h1, h2, h3 { letter-spacing: -0.03em; }
 
     /* Code & Telemetry Monospace Defaults */
     code, kbd, samp, pre, .font-mono {
-        font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
 
     /* Custom Scrollbars */
@@ -38,7 +40,7 @@
         height: 6px;
     }
     ::-webkit-scrollbar-track {
-        background: rgba(7, 9, 14, 0.5);
+        background: rgba(16, 20, 19, 0.5);
     }
     ::-webkit-scrollbar-thumb {
         background: rgba(255, 255, 255, 0.12);
@@ -46,13 +48,13 @@
         border: 1px solid rgba(255, 255, 255, 0.05);
     }
     ::-webkit-scrollbar-thumb:hover {
-        background: rgba(99, 102, 241, 0.4);
+        background: rgba(182, 237, 206, 0.35);
     }
 }
 
 @layer components {
     .font-inria-serif, .font-serif {
-        font-family: 'Inria Serif', 'Instrument Serif', Georgia, serif;
+        font-family: Arial, Helvetica, sans-serif;
     }
 
     .bg-grid-dots {
@@ -72,19 +74,19 @@
     }
 
     .surface-glass {
-        @apply bg-[#0f172a]/80 backdrop-blur-md border border-slate-800/80 shadow-xl;
+        @apply bg-[#151b18]/80 backdrop-blur-md border border-slate-800/80 shadow-xl;
     }
 
     .surface-card {
-        @apply bg-[#0e1424] border border-slate-800/80 hover:border-slate-700/90 transition-all duration-200 rounded-xl shadow-sm;
+        @apply bg-[#151b18] border border-slate-800/80 hover:border-slate-700/90 transition-all duration-200 rounded-xl shadow-sm;
     }
 
     .surface-card-interactive {
-        @apply bg-[#0e1424] border border-slate-800/80 hover:border-indigo-500/40 hover:shadow-indigo-500/5 hover:-translate-y-0.5 transition-all duration-200 rounded-xl shadow-sm cursor-pointer;
+        @apply bg-[#151b18] border border-slate-800/80 hover:border-indigo-500/40 hover:shadow-indigo-500/5 hover:-translate-y-0.5 transition-all duration-200 rounded-xl shadow-sm cursor-pointer;
     }
 
     .input-field {
-        @apply bg-[#07090e] border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-500 font-sans transition-all outline-none;
+        @apply bg-[#101413] border border-slate-800 hover:border-slate-700 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 rounded-lg px-3 py-2 text-xs text-white placeholder:text-slate-500 font-sans transition-all outline-none;
     }
 
     .badge-status-pill {
