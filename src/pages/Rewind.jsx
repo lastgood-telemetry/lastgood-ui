@@ -1,3 +1,4 @@
+import { environmentLabel, eventEnvironmentLabel } from '../util/console';
 import React, { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Search, Calendar, Clock, AlertCircle, History, Sparkles } from "lucide-react";
@@ -128,7 +129,7 @@ const Rewind = () => {
             ) : latestEvent ? (
               <>
                 <p>Latest event: <span className="text-zinc-200 font-mono">{dayjs(latestEvent.occurred_at).utc().format('MMM D, YYYY HH:mm:ss [UTC]')}</span></p>
-                <p>{latestEvent.service} / {latestEvent.environment} - {latestEvent.summary || latestEvent.type}</p>
+                <p>{latestEvent.service} / {eventEnvironmentLabel(latestEvent)} - {latestEvent.summary || latestEvent.type}</p>
                 {discovery?.pagination?.total > events.length && <p>Selectors show values from the latest {events.length} events. Browse Events Stream for older values.</p>}
               </>
             ) : <p>No events ingested yet. Connect a source, confirm an event in Events Stream, then run your first diagnosis.</p>}
@@ -198,7 +199,7 @@ const Rewind = () => {
               className="w-full bg-[#070709] border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-500"
             >
               <option value="">All environments</option>
-              {environments.map(value => <option key={value} value={value}>{value}</option>)}
+              {environments.map(value => <option key={value} value={value}>{environmentLabel(value)} ({value})</option>)}
             </select>
           </div>
 
