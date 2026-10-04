@@ -37,7 +37,7 @@ const SandboxTimeline = ({ events, selectedEventId, onSelectEvent }) => {
             </div>
             
             {/* Event Card */}
-            <div className={`p-4 rounded-xl border transition-all duration-300 ${isSelected ? 'bg-white/10 border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'bg-black/40 border-white/5 hover:bg-white/5'}`}>
+            <div className={`p-4 rounded-xl border transition-all duration-300 ${isSelected ? 'bg-white/10 border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'bg-[#0b0f0d]/40 border-white/5 hover:bg-white/5'}`}>
                <div className="flex justify-between items-start mb-2">
                  <div className="flex items-center gap-2">
                    <div className={`p-1.5 rounded-md border ${colorClass}`}>
