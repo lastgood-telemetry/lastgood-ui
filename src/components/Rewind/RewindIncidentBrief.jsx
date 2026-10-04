@@ -19,7 +19,7 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
 
   if (!items || items.length === 0) {
     return (
-      <div className="border border-dashed border-white/10 rounded-2xl p-12 text-center space-y-3 bg-black/40 max-w-5xl mx-auto">
+      <div className="border border-dashed border-white/10 rounded-2xl p-12 text-center space-y-3 bg-[#0b0f0d]/40 max-w-5xl mx-auto">
         <Clock size={28} className="text-accent/60 mx-auto" />
         <h3 className="text-sm font-semibold text-white">No Change Events Found</h3>
         <p className="text-xs text-text-muted max-w-md mx-auto leading-relaxed">
@@ -63,7 +63,7 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
     <div className="space-y-6 animate-fade-in max-w-5xl mx-auto">
       
       {/* Executive Summary Spotlight Banner */}
-      <div className="bg-black/50 border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative">
+      <div className="bg-[#0b0f0d]/50 border border-white/10 rounded-2xl overflow-hidden shadow-2xl relative">
         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-rose-500 via-amber-500 to-accent"></div>
         
         {/* Header Bar */}
@@ -96,7 +96,7 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
         </div>
 
         {/* The 2-Paragraph Core Incident Brief Body */}
-        <div className="p-6 md:p-8 space-y-6 bg-black/40">
+        <div className="p-6 md:p-8 space-y-6 bg-[#0b0f0d]/40">
           
           {/* AI Primary Cause Headline (if returned from AI backend) */}
           {aiDiagnosis?.primary_cause_headline && (
@@ -109,7 +109,7 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
           )}
 
           {/* Paragraph 1: WHAT HAPPENED */}
-          <div className="space-y-2.5 bg-black/60 border border-white/10 p-5 rounded-xl">
+          <div className="space-y-2.5 bg-[#0b0f0d]/60 border border-white/10 p-5 rounded-xl">
             <div className="flex items-center gap-2 text-xs font-bold text-accent uppercase tracking-wider">
               <Sparkles size={16} className="text-accent animate-pulse" />
               1. What Happened
@@ -172,7 +172,7 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
                       className={`p-3 rounded-xl border flex items-start gap-3 transition-all ${
                         isUrgent
                           ? 'bg-rose-500/10 border-rose-500/30 text-rose-300 shadow-[0_0_15px_rgba(244,63,94,0.1)]'
-                          : 'bg-black/50 border-white/10 text-text-primary'
+                          : 'bg-[#0b0f0d]/50 border-white/10 text-text-primary'
                       }`}
                     >
                       <div className={`p-1 rounded-md shrink-0 mt-0.5 ${isUrgent ? 'bg-rose-500/20 text-rose-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
@@ -187,7 +187,7 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
                   );
                 })
               ) : (
-                <div className="p-3 bg-black/40 border border-white/10 rounded-xl text-xs text-text-secondary">
+                <div className="p-3 bg-[#0b0f0d]/40 border border-white/10 rounded-xl text-xs text-text-secondary">
                   Investigate logs for <span className="text-accent font-mono">{primaryService}</span> and coordinate rollback with change author @{primaryAuthor}.
                 </div>
               )}
@@ -202,7 +202,7 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
                 onClick={() => {
                   toast.info(`Contact change author: ${primaryAuthor}`);
                 }}
-                className="bg-accent hover:opacity-90 text-white font-bold px-4 py-2 rounded-xl flex items-center gap-2 text-xs transition-all shadow-lg shadow-accent/15"
+                className="bg-accent hover:opacity-90 text-[#101413] font-bold px-4 py-2 rounded-xl flex items-center gap-2 text-xs transition-all shadow-lg shadow-accent/15"
               >
                 <User size={14} />
                 <span>Contact Author (@{primaryAuthor})</span>
