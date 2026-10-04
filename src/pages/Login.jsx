@@ -1,3 +1,4 @@
+import { consumeLoginDestination, rememberSetupDestination } from '../util/console';
 import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -51,6 +52,7 @@ const timelineSteps = [
 const Login = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    React.useEffect(() => { if (searchParams.get('setup') === 'github') rememberSetupDestination(); }, [searchParams]);
     const isTestMode = searchParams.get('testMode') === 'true';
     const { count, maxOrgs, isLimitReached } = useOrganizationCount();
 
@@ -173,7 +175,7 @@ const Login = () => {
             }
 
             localStorage.setItem('authToken', data?.token)
-            navigate('/rewind');
+            navigate(consumeLoginDestination());
         },
         onError: (err) => {
             const errMsg = err.response?.data?.message || err.response?.data?.error || err.message || "Invalid email or password";
@@ -739,4 +741,3 @@ const Login = () => {
 };
 
 export default Login;
-
