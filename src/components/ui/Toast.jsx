@@ -30,7 +30,7 @@ export const ToastContainer = () => {
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
       {toasts.map((t) => (
-        <div key={t.id} className="flex items-center gap-3 px-4 py-3 bg-[#0a0a0a] border border-white/10 shadow-lg rounded-xl text-sm text-white animate-fade-in min-w-[250px]">
+        <div key={t.id} className="flex items-center gap-3 px-4 py-3 bg-[#101413] border border-white/10 shadow-lg rounded-xl text-sm text-white animate-fade-in min-w-[250px]">
           {t.type === "error" && <AlertCircle className="text-status-error w-5 h-5 shrink-0" />}
           {t.type === "success" && <CheckCircle2 className="text-status-success w-5 h-5 shrink-0" />}
           {t.type === "info" && <Info className="text-accent w-5 h-5 shrink-0" />}
