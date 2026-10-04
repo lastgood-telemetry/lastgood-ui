@@ -54,7 +54,7 @@ const SandboxServices = ({ services, setServices }) => {
         </div>
         <button
             onClick={() => setIsCreateOpen(true)}
-            className="flex items-center gap-2 bg-gradient-accent px-4 py-2.5 rounded-lg text-[10px] font-semibold hover:opacity-90 transition-all text-white shadow-lg shadow-accent/15"
+            className="flex items-center gap-2 bg-gradient-accent px-4 py-2.5 rounded-lg text-[10px] font-semibold hover:opacity-90 transition-all text-[#101413] shadow-lg shadow-accent/15"
         >
             <Plus size={14} />
             Connect Service
@@ -63,7 +63,7 @@ const SandboxServices = ({ services, setServices }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
          {services.map(service => (
-            <div key={service.id} className="bg-[#090d16]/80 border border-white/5 rounded-xl p-5 hover:border-white/10 transition-all relative group flex flex-col justify-between">
+            <div key={service.id} className="bg-[#101413]/80 border border-white/5 rounded-xl p-5 hover:border-white/10 transition-all relative group flex flex-col justify-between">
                <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center gap-2">
                      <span className="w-2.5 h-2.5 rounded-lg bg-accent/20 flex items-center justify-center shrink-0">
@@ -91,7 +91,7 @@ const SandboxServices = ({ services, setServices }) => {
                   <div className="flex justify-between items-center text-[10px] text-text-muted">
                      <span className="flex items-center gap-1"><Shield size={10} /> Dedicated API Key:</span>
                   </div>
-                  <div className="flex items-center justify-between bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-[10px]">
+                  <div className="flex items-center justify-between bg-[#0b0f0d]/40 border border-white/10 rounded-lg px-3 py-2 text-[10px]">
                      <span className="font-mono text-text-secondary select-all">
                         {service.apiKeyValue ? service.apiKeyValue.substring(0, 10) + '••••••••' : '••••••••••••••••'}
                      </span>
@@ -110,8 +110,8 @@ const SandboxServices = ({ services, setServices }) => {
       {/* CREATE MODAL */}
       {isCreateOpen && (
          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={handleCloseModal} />
-            <div className="bg-[#0b0f19] border border-white/10 rounded-2xl p-6 w-full max-w-[400px] relative z-10 space-y-6 animate-fade-in">
+            <div className="absolute inset-0 bg-[#0b0f0d]/70 backdrop-blur-sm" onClick={handleCloseModal} />
+            <div className="bg-[#101413] border border-white/10 rounded-2xl p-6 w-full max-w-[400px] relative z-10 space-y-6 animate-fade-in">
                <div className="flex justify-between items-center">
                   <h3 className="text-xs font-semibold text-white flex items-center gap-2">
                      <Shield className="text-accent" size={16} />
@@ -128,7 +128,7 @@ const SandboxServices = ({ services, setServices }) => {
                      </div>
                      <div className="space-y-1.5">
                         <label className="text-[10px] text-text-muted font-mono uppercase">API KEY</label>
-                        <div className="flex items-center justify-between bg-black/50 border border-white/10 rounded-lg p-3 text-[10px]">
+                        <div className="flex items-center justify-between bg-[#0b0f0d]/50 border border-white/10 rounded-lg p-3 text-[10px]">
                            <span className="font-mono text-white break-all select-all pr-2">{generatedKey}</span>
                            <button onClick={() => handleCopy(generatedKey, 'new')} className="text-text-muted hover:text-white shrink-0">
                               {copiedKeyId === 'new' ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
@@ -143,7 +143,7 @@ const SandboxServices = ({ services, setServices }) => {
                   <form onSubmit={handleCreateSubmit} className="space-y-4">
                      <div className="space-y-1.5">
                         <label className="text-[10px] text-text-muted font-mono uppercase">Service Name</label>
-                        <div className="flex items-center gap-3 bg-black/40 border border-white/10 rounded-lg px-3 py-2.5 focus-within:border-accent/50 transition-all">
+                        <div className="flex items-center gap-3 bg-[#0b0f0d]/40 border border-white/10 rounded-lg px-3 py-2.5 focus-within:border-accent/50 transition-all">
                            <Server size={15} className="text-text-muted shrink-0" />
                            <input
                               type="text"
@@ -155,7 +155,7 @@ const SandboxServices = ({ services, setServices }) => {
                            />
                         </div>
                      </div>
-                     <button type="submit" className="w-full flex items-center justify-center gap-2 bg-gradient-accent py-2.5 rounded-lg text-xs font-semibold hover:opacity-95 transition-all text-white shadow-lg shadow-accent/10 mt-6">
+                     <button type="submit" className="w-full flex items-center justify-center gap-2 bg-gradient-accent py-2.5 rounded-lg text-xs font-semibold hover:opacity-95 transition-all text-[#101413] shadow-lg shadow-accent/10 mt-6">
                         Generate Dedicated Key <ArrowRight size={13} />
                      </button>
                   </form>
