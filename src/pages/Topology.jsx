@@ -11,6 +11,8 @@ export default function Topology() {
   const navigate = useNavigate();
   const [dependencies, setDependencies] = useState([]);
   const [userServices, setUserServices] = useState([]);
+  const [servicesLoading, setServicesLoading] = useState(true);
+  const [servicesError, setServicesError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,6 +27,8 @@ export default function Topology() {
   }, []);
 
   const fetchUserServices = async () => {
+    setServicesLoading(true);
+    setServicesError(false);
     try {
       const servicesData = await getServices();
       const list = Array.isArray(servicesData) ? servicesData : [];
@@ -40,7 +44,10 @@ export default function Topology() {
         setDependsOnService("");
       }
     } catch (err) {
+      setServicesError(true);
       console.error("Failed to fetch user services:", err);
+    } finally {
+      setServicesLoading(false);
     }
   };
 
@@ -162,7 +169,7 @@ export default function Topology() {
       />
 
       {/* Main Content */}
-      {realServiceNames.length === 0 ? (
+      {servicesLoading ? <div role="status" className="p-6 text-xs text-text-muted">Loading services...</div> : servicesError ? <div role="alert" className="p-6 text-xs text-text-muted">Services could not be loaded. <button className="text-accent underline" onClick={fetchUserServices}>Retry services</button></div> : realServiceNames.length === 0 ? (
         /* Empty State Blueprint Preview Canvas */
         <div className="space-y-6">
           <div className="bg-[#0b0f0d]/40 border border-white/10 rounded-2xl p-8 backdrop-blur-xl shadow-xl text-center space-y-6">

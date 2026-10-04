@@ -1,3 +1,4 @@
+import { groupDeploymentEvents } from '../util/console';
 import React, { useState, useMemo, useEffect } from 'react';
 import { useEvents } from '../hooks/useEvents';
 import { Timeline } from '../components/Timeline/Timeline';
@@ -85,14 +86,14 @@ const Events = () => {
         return { prodCount, migrationCount, deployCount, serviceCount };
     }, [events]);
 
-    const filteredEvents = events || [];
+    const filteredEvents = groupDeploymentEvents(events || []);
 
     return (
         <PageContainer>
             <PageHeader
                 category="REAL-TIME TELEMETRY STREAM"
                 icon={Activity}
-                title="Production Audit Stream"
+                title="Events Stream"
                 description="Real-time telemetry audit feed tracking deployments, migrations, and infrastructure configuration mutations."
                 actions={
                     <button
@@ -148,6 +149,7 @@ const Events = () => {
                 </div>
             </div>
 
+            <p className="text-xs text-text-muted mb-4">Lifecycle events with the same explicit deployment ID, repository, service and environment are grouped within the loaded results. A unique nearby push with matching SHA and scope is shown as associated evidence. Expand a group to inspect every original event. Total counts include raw events.</p>
             {/* Filter & Search Bar */}
             <div className="flex flex-col md:flex-row gap-3 mb-6 items-stretch md:items-center">
                 <div className="flex-1">

@@ -1,3 +1,4 @@
+import { consumeLoginDestination } from '../util/console';
 import React, { useEffect, useRef } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Loader2, Activity } from 'lucide-react';
@@ -38,7 +39,7 @@ const OAuthCallback = () => {
                     // User already exists, login successful
                     localStorage.setItem('authToken', response.data.token);
                     toast.success('Logged in successfully!');
-                    navigate('/rewind', { replace: true });
+                    navigate(consumeLoginDestination(), { replace: true });
                 } else {
                     // New user, redirect to complete profile onboarding screen
                     toast.info('Please complete your profile to set up your account.');

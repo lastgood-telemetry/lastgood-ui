@@ -1,5 +1,7 @@
 import Logo from '../components/Logo';
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { SETUP_PATH, rememberSetupDestination } from '../util/console';
 import { History, Sparkles, List, Clock, Blocks, Server } from 'lucide-react';
 import SandboxTimeline from '../components/sandbox/SandboxTimeline';
 import AiDiagnosisPanel from '../components/sandbox/AiDiagnosisPanel';
@@ -37,7 +39,7 @@ const Sandbox = () => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span className="text-[11px] font-mono text-zinc-300 font-medium">Diagnostic AI Ready</span>
+            <span className="text-[11px] font-mono text-zinc-300 font-medium">Simulated incident demo</span>
           </div>
         </div>
 
@@ -89,6 +91,10 @@ const Sandbox = () => {
       <main className="flex-1 ml-64 relative min-w-0 bg-transparent">
          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
          <div className="p-4">
+           <div className="mb-4 p-4 border border-accent/25 rounded-xl bg-accent/5 flex flex-wrap items-center justify-between gap-3">
+             <div><h1 className="text-sm font-semibold">Explore a simulated incident</h1><p className="text-xs text-text-muted mt-1">All events, connectors and scores here are sample data. Demo actions do not change your systems.</p></div>
+             <Link to={localStorage.getItem('authToken') ? SETUP_PATH : '/login?setup=github'} onClick={rememberSetupDestination} className="text-xs font-semibold px-4 py-2 rounded-lg bg-accent text-black focus-visible:outline focus-visible:outline-2">Start with your own data</Link>
+           </div>
            {activeTab === 'telemetry' && (
             <SandboxTelemetry events={mockTimelineEvents} />
          )}

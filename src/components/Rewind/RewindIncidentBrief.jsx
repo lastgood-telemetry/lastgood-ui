@@ -1,3 +1,5 @@
+import ScoreEvidence from '../Evidence/ScoreEvidence';
+import { environmentLabel } from '../../util/console';
 import React, { useState } from 'react';
 import { ShieldAlert, CheckCircle2, AlertCircle, Copy, User, ExternalLink, ArrowRight, Sparkles, Terminal, FileCode, Check, RefreshCw, Clock } from 'lucide-react';
 import { RiskScoreRing } from '../RiskScoreRing/RiskScoreRing';
@@ -9,9 +11,9 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
 
   const aiDiagnosis = scoringResult.ai_diagnosis || scoringResult.aiDiagnosis || null;
   const overallAssessment = scoringResult.overall_assessment || scoringResult.overallScore || {};
-  const overallScore = typeof overallAssessment.score === 'number' ? overallAssessment.score : 100;
+  const overallScore = typeof overallAssessment.score === 'number' ? overallAssessment.score : null;
   const overallLevel = overallAssessment.level || 'critical';
-  const overallExplanation = aiDiagnosis?.executive_summary || overallAssessment.explanation || 'Analyzed change events and isolated root cause triggers.';
+  const overallExplanation = aiDiagnosis?.executive_summary || overallAssessment.explanation || 'Changes ranked for investigation. Confirm any suspected contributor against incident evidence.';
   const overallRecommendations = overallAssessment.recommendations || scoringResult.recommendations || [];
   const correlations = scoringResult.correlations || [];
   const summaryStats = scoringResult.summary || {};
@@ -71,10 +73,10 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className={`px-2.5 py-0.5 border rounded text-[10px] font-bold uppercase tracking-widest ${getLevelBadge(overallLevel)}`}>
-                {overallLevel} SEVERITY
+                {overallLevel} RISK LEVEL
               </span>
               <span className="text-xs font-mono text-accent bg-accent/10 border border-accent/20 px-2 py-0.5 rounded">
-                Primary Target: {primaryService} ({primaryEnv})
+                Primary Target: {primaryService} ({environmentLabel(primaryEnv)})
               </span>
               {correlations.length > 0 && (
                 <span className="text-xs font-mono text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
@@ -89,12 +91,14 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 shrink-0 flex items-center justify-center">
+            <div className="w-16 h-16 shrink-0 flex flex-col items-center justify-center">
               <RiskScoreRing score={overallScore} level={overallLevel} radius={28} stroke={4} />
+              <span className="text-[10px] text-text-muted">Risk /100</span>
             </div>
           </div>
         </div>
 
+        <div className="px-6 pt-4"><ScoreEvidence assessment={overallAssessment} label="Overall risk score: rationale and evidence" /></div>
         {/* The 2-Paragraph Core Incident Brief Body */}
         <div className="p-6 md:p-8 space-y-6 bg-[#0b0f0d]/40">
           
@@ -115,7 +119,7 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
               1. What Happened
             </div>
             <p className="text-xs md:text-sm text-text-primary leading-relaxed">
-              <strong className="text-white font-semibold">{primarySummary}</strong> was applied to <span className="text-accent font-mono">{primaryService}</span> (<span className="text-white">{primaryEnv}</span>) by <span className="text-white font-medium">@{primaryAuthor}</span> at <span className="font-mono text-white">{primaryTime}</span>. {overallExplanation}
+              <strong className="text-white font-semibold">{primarySummary}</strong> was applied to <span className="text-accent font-mono">{primaryService}</span> (<span className="text-white">{environmentLabel(primaryEnv)}</span>) by <span className="text-white font-medium">@{primaryAuthor}</span> at <span className="font-mono text-white">{primaryTime}</span>. {overallExplanation}
             </p>
 
             {/* Primary Event Metadata Pill */}

@@ -1,3 +1,4 @@
+import { environmentLabel, eventEnvironmentLabel, utcTimestamp } from '../util/console';
 import React, { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -63,7 +64,7 @@ const EventDetail = () => {
             <div className="mb-4">
                 <Link to="/events" className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-all text-xs font-mono mb-4">
                     <ArrowLeft size={14} />
-                    <span>Back to Production Stream</span>
+                    <span>Back to Events Stream</span>
                 </Link>
             </div>
 
@@ -91,7 +92,7 @@ const EventDetail = () => {
                             {event.service}
                         </span>
                         <span className="px-2.5 py-1 bg-slate-800 border border-slate-700 text-slate-300 rounded text-xs font-mono uppercase tracking-wider">
-                            {event.environment}
+                            {eventEnvironmentLabel(event)}
                         </span>
                         <span className="px-2.5 py-1 bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 rounded text-xs font-mono uppercase tracking-wider font-semibold">
                             {event.type}
@@ -143,7 +144,7 @@ const EventDetail = () => {
                                 <Server size={12} className="text-indigo-400" /> Source & Scope
                             </span>
                             <span className="text-sm font-semibold text-white">
-                                {event.source || 'System'} • {event.environment}
+                                {event.source || 'System'} • {eventEnvironmentLabel(event)}
                             </span>
                         </div>
 

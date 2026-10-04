@@ -39,7 +39,7 @@ const Settings = () => {
       <PageHeader
         category="ACCOUNT & ORGANIZATION"
         icon={UserCircle}
-        title="Project Profile & Settings"
+        title="Workspace Settings"
         description="Manage organization details, team access, and subscription preferences."
       />
 

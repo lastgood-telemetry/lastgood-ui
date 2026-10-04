@@ -1,3 +1,6 @@
+import { suspectedWording, utcTimestamp, evidenceEventId, isSuggestedOwner, postmortemDraft, resolveReportEvidence } from '../util/console';
+import { Link } from 'react-router-dom';
+import { toast } from '../components/ui/Toast';
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
@@ -11,10 +14,36 @@ export default function Postmortems() {
   const navigate = useNavigate();
   const [postmortems, setPostmortems] = useState([]);
   const [userServices, setUserServices] = useState([]);
+  const [servicesLoading, setServicesLoading] = useState(true);
+  const [servicesError, setServicesError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
   const [selectedPostmortem, setSelectedPostmortem] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [evidenceEvents, setEvidenceEvents] = useState([]);
+  const [evidenceStatus, setEvidenceStatus] = useState("idle");
+  const [ownerDrafts, setOwnerDrafts] = useState({});
+  const [ownersReviewed, setOwnersReviewed] = useState(false);
+  useEffect(() => { setOwnerDrafts({}); setOwnersReviewed(false); }, [selectedPostmortem?.id]);
+  useEffect(() => {
+    let active = true;
+    setEvidenceEvents([]);
+    const timeline = selectedPostmortem?.timeline_json || [];
+    const times = timeline.map(row => new Date(row.timestamp).getTime()).filter(Number.isFinite);
+    if (!times.length) { setEvidenceStatus('idle'); return; }
+    setEvidenceStatus('loading');
+    api.get('/change-events', { params: { limit: 1000, offset: 0, from_date: new Date(Math.min(...times)).toISOString(), to_date: new Date(Math.max(...times)).toISOString() } }).then(res => {
+      if (!active) return;
+      if (!res.data.success) throw new Error('Evidence unavailable');
+      setEvidenceEvents(res.data.data || []);
+      setEvidenceStatus(res.data.pagination?.total > 1000 ? 'partial' : 'ready');
+    }).catch(() => { if (active) setEvidenceStatus('error'); });
+    return () => { active = false; };
+  }, [selectedPostmortem?.id]);
+  const resolvedTimeline = resolveReportEvidence(selectedPostmortem?.timeline_json || [], evidenceEvents);
+  const reviewedMarkdown = postmortemDraft(selectedPostmortem ? { ...selectedPostmortem, timeline_json: resolvedTimeline } : null, ownerDrafts, ownersReviewed);
+  const actionItems = selectedPostmortem?.action_items_json || [];
+  const allOwnersAssigned = actionItems.every((item, idx) => (ownerDrafts[idx] ?? (isSuggestedOwner(item.owner) ? '' : item.owner)).trim());
 
   // Form State for generating new postmortem
   const [service, setService] = useState("");
@@ -31,6 +60,8 @@ export default function Postmortems() {
   }, []);
 
   const fetchUserServices = async () => {
+    setServicesLoading(true);
+    setServicesError(false);
     try {
       const servicesData = await getServices();
       const list = Array.isArray(servicesData) ? servicesData : [];
@@ -45,7 +76,10 @@ export default function Postmortems() {
         setIncidentTitle("");
       }
     } catch (err) {
+      setServicesError(true);
       console.error("Failed to fetch services:", err);
+    } finally {
+      setServicesLoading(false);
     }
   };
 
@@ -116,11 +150,12 @@ export default function Postmortems() {
   };
 
   const handleCopyMarkdown = () => {
-    if (!selectedPostmortem?.markdown_report) return;
-    navigator.clipboard.writeText(selectedPostmortem.markdown_report);
-    setCopied(true);
-    toast.success("Markdown report copied to clipboard!");
-    setTimeout(() => setCopied(false), 2000);
+    if (!reviewedMarkdown) return;
+    navigator.clipboard.writeText(reviewedMarkdown).then(() => {
+      setCopied(true);
+      toast.success("Reviewed draft copied. The stored report is unchanged.");
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => toast.error("Could not copy. Select the draft text below to copy it manually."));
   };
 
   return (
@@ -129,7 +164,7 @@ export default function Postmortems() {
         category="RELIABILITY & COMPLIANCE"
         icon={FileText}
         title="SRE Incident Postmortems"
-        description="Automated 1-click postmortem report generator featuring AI root-cause analysis, timeline reconstruction, and corrective action items."
+        description="Draft incident summaries from change events. Review suspected contributors, supporting evidence and action owners before sharing."
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -142,14 +177,14 @@ export default function Postmortems() {
               <span>Generate New SRE Postmortem</span>
             </div>
 
-            {userServices.length === 0 ? (
+            {servicesLoading ? <div role="status" className="p-6 text-xs text-text-muted">Loading services...</div> : servicesError ? <div role="alert" className="p-6 text-xs text-text-muted">Services could not be loaded. <button className="text-accent underline" onClick={fetchUserServices}>Retry services</button></div> : userServices.length === 0 ? (
               /* Empty State for Generator */
               <div className="p-5 rounded-xl bg-white/5 border border-white/10 text-center space-y-3">
                 <Server size={28} className="mx-auto text-text-muted opacity-60" />
                 <div className="space-y-1">
                   <h4 className="text-xs font-bold text-white">No Services Ingested Yet</h4>
                   <p className="text-[11px] text-text-muted leading-relaxed">
-                    Ingest your change events via GitHub, Vercel, or API Keys to select a target service and generate 1-click postmortems.
+                    Ingest your change events via GitHub or the custom REST API to select a target service and generate 1-click postmortems.
                   </p>
                 </div>
                 <button
@@ -314,7 +349,7 @@ export default function Postmortems() {
               {/* Report Header */}
               <div className="flex items-center justify-between border-b border-white/10 pb-4">
                 <div>
-                  <h2 className="text-lg font-bold text-white">{selectedPostmortem.title}</h2>
+                  <h2 className="text-lg font-bold text-white">{suspectedWording(selectedPostmortem.title)}</h2>
                   <p className="text-xs text-text-muted">
                     Incident Date: {new Date(selectedPostmortem.incident_at).toUTCString()}
                   </p>
@@ -334,12 +369,17 @@ export default function Postmortems() {
                   <ShieldAlert size={16} />
                   <span>Executive Summary</span>
                 </div>
-                <p>{selectedPostmortem.executive_summary}</p>
+                <p>{suspectedWording(selectedPostmortem.executive_summary)}</p>
                 <div className="pt-1 text-[11px] font-mono text-red-300">
-                  Headline: "{selectedPostmortem.primary_cause_headline}"
+                  Suspected contributor: "{suspectedWording(selectedPostmortem.primary_cause_headline)}"
                 </div>
               </div>
 
+              <div className="p-4 border border-amber-500/25 rounded-xl text-xs text-text-secondary space-y-2">
+                <p>AI-generated draft. Correlation is not proof of causation. Inspect source events and verify the suspected contributor before sharing.</p>
+                <p>{evidenceStatus === 'loading' ? 'Resolving source evidence...' : evidenceStatus === 'error' ? 'Source lookup failed. Unlinked rows remain unverified.' : evidenceStatus === 'partial' ? 'Only the first 1,000 events in this report window were checked.' : 'Links use explicit IDs or a unique exact timestamp, service, event type and summary match.'}</p>
+                <Link to="/events" className="text-accent underline">Browse supporting change events</Link>
+              </div>
               {/* Action Items List */}
               <div className="space-y-3">
                 <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider">Preventative SRE Action Items</h3>
@@ -350,25 +390,33 @@ export default function Postmortems() {
                         <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-accent/20 text-accent font-mono">
                           {item.priority}
                         </span>
-                        <span className="text-[10px] text-text-muted font-mono">{item.owner}</span>
+                        <span className="text-[10px] text-text-muted">{ownersReviewed ? "Owner reviewed" : "Review required"}</span>
                       </div>
-                      <p className="text-xs text-white font-medium line-clamp-2">{item.title}</p>
+                      <p className="text-xs text-white font-medium">{item.title}</p>
+                      <label className="block text-[11px] text-text-muted pt-2">Action owner
+                        <input aria-label={`Action owner ${idx + 1}`} className="mt-1 w-full rounded-lg bg-[#0b0f0d]/40 border border-white/15 p-2 text-white text-xs" placeholder="Assign a real person" value={ownerDrafts[idx] ?? (isSuggestedOwner(item.owner) ? '' : item.owner)} onChange={e => { setOwnerDrafts(prev => ({ ...prev, [idx]: e.target.value })); setOwnersReviewed(false); }} />
+                      </label>
                     </div>
                   ))}
                 </div>
               </div>
 
+              <div className="text-xs text-text-secondary space-y-2">
+                <p>Owner edits apply to this local draft and its Markdown export only. They are not saved to the stored report and reset when you switch reports or reload.</p>
+                <label className="flex items-center gap-2"><input type="checkbox" checked={ownersReviewed} disabled={!allOwnersAssigned} onChange={e => setOwnersReviewed(e.target.checked)} /> I have reviewed these action owners{!allOwnersAssigned && ' (assign every owner first)'}</label>
+              </div>
               {/* Timeline List */}
               <div className="space-y-3">
                 <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider">Chronological Incident Timeline</h3>
                 <div className="border border-white/10 rounded-xl overflow-hidden divide-y divide-white/5">
-                  {(selectedPostmortem.timeline_json || []).map((t, idx) => (
+                  {resolvedTimeline.map((t, idx) => (
                     <div key={idx} className="p-3 bg-[#0b0f0d]/20 flex items-center justify-between text-xs">
                       <div className="flex items-center gap-3">
                         <span className="font-mono text-[10px] text-text-muted">
-                          {new Date(t.timestamp).toISOString().substring(11, 19)} UTC
+                          {utcTimestamp(t.timestamp)}
                         </span>
-                        <span className="font-semibold text-white">{t.summary}</span>
+                        <div className="space-y-1"><span className="font-semibold text-white">{suspectedWording(t.summary)}</span>
+                        {evidenceEventId(t) ? <Link className="text-accent underline block" to={`/events/${encodeURIComponent(evidenceEventId(t))}`}>Inspect source event</Link> : <span className="text-text-muted block text-[10px]">Source event not linked by the report</span>}</div>
                       </div>
                       <span
                         className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${t.impact_level === "PRIMARY_CULPRIT"
@@ -376,7 +424,7 @@ export default function Postmortems() {
                             : "bg-white/10 text-text-secondary"
                           }`}
                       >
-                        {t.impact_level}
+                        {suspectedWording(t.impact_level)}
                       </span>
                     </div>
                   ))}
@@ -385,9 +433,9 @@ export default function Postmortems() {
 
               {/* Markdown Raw Preview Box */}
               <div className="space-y-2">
-                <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider">Raw Markdown Report</h3>
+                <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider">Reviewed Markdown Draft</h3>
                 <pre className="p-4 rounded-xl bg-[#0b0f0d]/60 border border-white/10 text-text-secondary text-[11px] font-mono whitespace-pre-wrap max-h-64 overflow-y-auto custom-scrollbar">
-                  {selectedPostmortem.markdown_report}
+                  {reviewedMarkdown}
                 </pre>
               </div>
             </div>
@@ -402,3 +450,4 @@ export default function Postmortems() {
     </PageContainer>
   );
 }
+

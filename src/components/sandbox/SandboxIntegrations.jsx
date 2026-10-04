@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { SETUP_PATH, rememberSetupDestination } from '../../util/console';
 import { Blocks, Github, Terminal, ChevronRight, Copy, CheckCircle2, ArrowLeft } from 'lucide-react';
 
 const SandboxIntegrations = () => {
@@ -30,6 +32,15 @@ const SandboxIntegrations = () => {
     }
   ];
 
+  if (selectedChannel === 'github') return (
+    <section className="p-8 max-w-3xl mx-auto space-y-4">
+      <button onClick={() => setSelectedChannel(null)} className="text-accent text-xs underline">Back to demo integrations</button>
+      <h2 className="text-xl font-bold">GitHub setup is available in your workspace</h2>
+      <p className="text-sm text-text-secondary">This sandbox uses simulated webhooks. Sign in or create an account to get your organization's webhook URL and the real three-step GitHub setup guide.</p>
+      <Link onClick={rememberSetupDestination} to={localStorage.getItem('authToken') ? SETUP_PATH : '/login?setup=github'} className="inline-block px-4 py-2 rounded-lg bg-accent text-black text-sm font-semibold">Open real GitHub setup</Link>
+    </section>
+  );
+
   if (selectedChannel === 'api') {
     return (
       <div className="p-4 md:p-8 max-w-4xl mx-auto animate-fade-in">
@@ -37,13 +48,13 @@ const SandboxIntegrations = () => {
           <ArrowLeft size={16} className="group-hover:-translate-x-0.5 transition-transform" /> Back
         </button>
         <div className="mb-8">
-          <h1 className="text-xl font-bold text-white flex items-center gap-2"><Terminal className="text-accent" /> Custom REST API</h1>
+          <h1 className="text-xl font-bold text-white flex items-center gap-2"><Terminal className="text-accent" /> Custom REST API (demo only)</h1>
           <p className="text-text-muted text-xs mt-1">Send POST payloads to report change events from custom systems.</p>
         </div>
         <div className="bg-[#0b0f0d]/40 border border-white/5 rounded-2xl p-6">
            <h4 className="text-[10px] font-semibold text-white mb-2">cURL Example</h4>
            <div className="bg-[#0b0f0d]/60 border border-white/10 rounded-xl p-4 relative">
-             <button onClick={() => handleCopy('curl', 'curl ...')} className="absolute top-2 right-2 text-text-muted hover:text-white">
+             <button onClick={() => handleCopy('curl', 'Demo only. Generate a real API key in your workspace.')} className="absolute top-2 right-2 text-text-muted hover:text-white">
                 {copiedStates['curl'] ? <CheckCircle2 size={16} className="text-status-success" /> : <Copy size={16} />}
              </button>
              <pre className="text-[11px] text-emerald-400/90 font-mono leading-relaxed overflow-x-auto">
@@ -81,10 +92,11 @@ const SandboxIntegrations = () => {
         {channels.map((channel) => {
           const Icon = channel.icon;
           return (
-            <div
+            <button
+              type="button"
               key={channel.id}
               onClick={() => channel.active && setSelectedChannel(channel.id)}
-              className="surface border border-white/5 rounded-2xl p-6 hover:border-accent/40 cursor-pointer hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group"
+              className="text-left focus-visible:outline focus-visible:outline-2 surface border border-white/5 rounded-2xl p-6 hover:border-accent/40 cursor-pointer hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group"
             >
               <div>
                 <div className="flex justify-between items-start mb-4">
@@ -101,7 +113,7 @@ const SandboxIntegrations = () => {
               <div className="flex items-center gap-1.5 text-xs text-accent font-bold group-hover:text-accent-hover mt-auto">
                 Configure Integration <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
@@ -110,3 +122,4 @@ const SandboxIntegrations = () => {
 };
 
 export default SandboxIntegrations;
+

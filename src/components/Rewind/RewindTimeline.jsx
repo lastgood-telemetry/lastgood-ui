@@ -1,3 +1,4 @@
+import { environmentLabel, eventEnvironmentLabel, utcTimestamp } from '../../util/console';
 import React from 'react';
 import { GitCommit, Box, ToggleRight, AlertTriangle, Database, ShieldAlert, ExternalLink } from 'lucide-react';
 import dayjs from 'dayjs';
@@ -16,7 +17,7 @@ const getRoleBadge = (role, level, causalPos) => {
   if (role === 'primary') {
     return (
       <span className="px-2 py-0.5 rounded bg-rose-500/20 border border-rose-500/40 text-rose-400 font-bold text-[9px] uppercase tracking-wider flex items-center gap-1 shadow-sm">
-        <ShieldAlert size={10} /> Primary Trigger{posText}
+        <ShieldAlert size={10} /> Suspected contributor{posText}
       </span>
     );
   }
@@ -44,7 +45,7 @@ const RewindTimeline = ({ events, selectedEventId, onSelectEvent, windowMinutes 
       {events.map((item) => {
         const event = item.event || item;
         const scoreObj = item.risk_assessment || item.riskAssessment || item.score || {};
-        const score = typeof scoreObj.score === 'number' ? scoreObj.score : (typeof item.score === 'number' ? item.score : 0);
+        const score = typeof scoreObj.score === 'number' ? scoreObj.score : (typeof item.score === 'number' ? item.score : null);
         const level = scoreObj.level || (typeof item.score === 'object' ? item.score?.level : 'low');
         const role = item.role;
         const causalPos = item.causal_position ?? item.causalPosition;
@@ -52,7 +53,7 @@ const RewindTimeline = ({ events, selectedEventId, onSelectEvent, windowMinutes 
         const isSelected = eventId === selectedEventId;
 
         const timeFormatted = event.occurred_at
-          ? dayjs(event.occurred_at).format('HH:mm:ss UTC')
+          ? utcTimestamp(event.occurred_at)
           : 'Unknown';
 
         const isHighRisk = score >= 50 || level === 'critical' || level === 'high';
@@ -103,7 +104,7 @@ const RewindTimeline = ({ events, selectedEventId, onSelectEvent, windowMinutes 
                     {event.service}
                   </span>
                   <span className="text-[10px] font-mono text-text-muted px-1.5 py-0.5 rounded bg-white/5 border border-white/5">
-                    {event.environment}
+                    {eventEnvironmentLabel(event)}
                   </span>
                 </div>
                 <span className="text-[10px] font-mono text-text-muted shrink-0">{timeFormatted}</span>
@@ -132,7 +133,7 @@ const RewindTimeline = ({ events, selectedEventId, onSelectEvent, windowMinutes 
                       : 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
                   }`}
                 >
-                  Score: {score}/100
+                  Risk: {score ?? "Not supplied"}/100
                 </span>
               </div>
 

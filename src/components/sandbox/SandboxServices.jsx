@@ -46,7 +46,7 @@ const SandboxServices = ({ services, setServices }) => {
         <div>
             <h1 className="text-lg font-bold text-white flex items-center gap-2">
                 <Server className="text-accent" size={24} />
-                Services & Projects
+                Services Catalog
             </h1>
             <p className="text-[10px] text-text-muted mt-1 leading-relaxed">
                 Register your backend servers or microservices to isolate incoming change events with dedicated API keys.

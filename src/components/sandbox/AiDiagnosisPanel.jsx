@@ -1,4 +1,5 @@
 import React from 'react';
+import { mockTimelineEvents } from './MockData';
 import { Sparkles, ArrowRight, ShieldAlert, Cpu } from 'lucide-react';
 import { RiskScoreRing } from '../RiskScoreRing/RiskScoreRing';
 import { RiskFactorDetails } from '../RiskFactorDetails/RiskFactorDetails';
@@ -20,7 +21,8 @@ const AiDiagnosisPanel = ({ diagnosis, incident }) => {
             <div className="text-xs text-text-secondary mt-1">Impacted Service: <span className="text-accent">{incident.service}</span></div>
          </div>
          <div className="w-16 h-16 shrink-0">
-            <RiskScoreRing score={diagnosis.rootCauseConfidence} level="critical" radius={32} stroke={4} />
+            <RiskScoreRing score={diagnosis.rootCauseConfidence} level="medium" label="Illustrative confidence" radius={32} stroke={4} />
+            <span className="text-[9px] text-text-muted block text-center">Demo confidence</span>
          </div>
       </div>
 
@@ -28,13 +30,19 @@ const AiDiagnosisPanel = ({ diagnosis, incident }) => {
       <div className="p-6 border-b border-white/5">
          <div className="flex items-center gap-2 mb-3 text-xs font-bold text-accent uppercase tracking-wider">
             <Sparkles size={16} className="animate-pulse" />
-            AI Root Cause Analysis
+            Simulated Change Investigation
          </div>
          <p className="text-xs text-text-secondary leading-relaxed">
             {diagnosis.summary}
          </p>
       </div>
 
+      <details className="m-6 p-3 rounded-lg border border-white/10 text-xs text-text-secondary">
+        <summary className="text-accent cursor-pointer">Why 94? View demo evidence</summary>
+        <p className="mt-3">94 is an illustrative confidence value, not a measured probability or a calculated live result. Risk ranks each change; severity describes incident impact. This simulated scenario puts the flag change five minutes before the latency alert in the same service.</p>
+        <ul className="mt-2 space-y-2">{mockTimelineEvents.map(event => <li key={event.id}><a className="text-accent underline" href={`#demo-event-${event.id}`}>{event.title}</a> · {new Date(event.timestamp).toISOString()}</li>)}</ul>
+        <p className="mt-2">Correlation alone does not establish a cause. Review real telemetry before acting.</p>
+      </details>
       {/* Correlations */}
       <div className="p-6 border-b border-white/5 bg-white/[0.01]">
          <h3 className="text-xs font-bold text-white mb-4 flex items-center gap-2">
@@ -72,8 +80,8 @@ const AiDiagnosisPanel = ({ diagnosis, incident }) => {
                   <div className="p-2 bg-[#0b0f0d]/60 rounded border border-white/5 font-mono text-xs text-accent break-all">
                      {rec.command}
                   </div>
-                  <button className="mt-3 w-full py-2 bg-white/5 hover:bg-white/10 text-white text-xs font-bold rounded flex items-center justify-center gap-2 transition-colors">
-                     Execute Action <ArrowRight size={14} />
+                  <button disabled title="Demo only: no action is executed" className="opacity-60 cursor-not-allowed mt-3 w-full py-2 bg-white/5 hover:bg-white/10 text-white text-xs font-bold rounded flex items-center justify-center gap-2 transition-colors">
+                     Demo only - no action executed <ArrowRight size={14} />
                   </button>
                </div>
             ))}

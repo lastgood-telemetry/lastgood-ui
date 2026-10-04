@@ -1,3 +1,5 @@
+import ScoreEvidence, { EvidenceValue } from '../Evidence/ScoreEvidence';
+import { environmentLabel } from '../../util/console';
 import React, { useState } from 'react';
 import { Sparkles, ArrowRight, ShieldAlert, Cpu, CheckCircle2, AlertCircle, FileCode, User, Database, GitCommit, Check, ChevronDown, Sliders, Clock } from 'lucide-react';
 import { RiskScoreRing } from '../RiskScoreRing/RiskScoreRing';
@@ -36,7 +38,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
 
   const aiDiagnosis = scoringResult.ai_diagnosis || scoringResult.aiDiagnosis || null;
   const overallAssessment = scoringResult.overall_assessment || scoringResult.overallScore || {};
-  const overallScore = typeof overallAssessment.score === 'number' ? overallAssessment.score : 0;
+  const overallScore = typeof overallAssessment.score === 'number' ? overallAssessment.score : null;
   const overallLevel = overallAssessment.level || 'low';
   const explanation = aiDiagnosis?.executive_summary || overallAssessment.explanation || 'Analysis complete.';
   const overallRecommendations = overallAssessment.recommendations || scoringResult.recommendations || [];
@@ -81,7 +83,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <span className={`px-2 py-0.5 border rounded text-[9px] font-bold uppercase tracking-widest ${getLevelColor(overallLevel)}`}>
-              {overallLevel} SEVERITY
+              {overallLevel} RISK LEVEL
             </span>
             {queryParams?.service && (
               <span className="text-[10px] font-mono text-accent bg-accent/10 border border-accent/20 px-2 py-0.5 rounded">
@@ -96,20 +98,23 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
           </div>
           <h2 className="text-base font-bold text-white flex items-center gap-2">
             <ShieldAlert className={overallLevel === 'critical' ? 'text-rose-500 animate-pulse' : 'text-amber-400'} size={18} />
-            AI Root Cause Diagnosis
+            AI Change Investigation
           </h2>
           <p className="text-xs text-text-muted">
-            Incident Window: <span className="text-white font-mono">{queryParams?.windowMinutes || 30}m</span> | Target Time: <span className="text-white font-mono">{dayjs(queryParams?.incidentTime).format('HH:mm UTC')}</span>
+            Incident Window: <span className="text-white font-mono">{queryParams?.windowMinutes || 30}m</span> | Target Time: <span className="text-white font-mono">{dayjs.utc(queryParams?.incidentTime).format('YYYY-MM-DD HH:mm:ss [UTC]')}</span>
           </p>
         </div>
 
-        <div className="w-14 h-14 shrink-0 flex items-center justify-center">
+        <div className="w-14 h-14 shrink-0 flex flex-col items-center justify-center">
           <RiskScoreRing score={overallScore} level={overallLevel} radius={26} stroke={4} />
+              <span className="text-[10px] text-text-muted">Risk /100</span>
         </div>
       </div>
 
       {/* Scrollable Body Content */}
       <div className="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-5">
+        <ScoreEvidence assessment={overallAssessment} label="Overall risk score: rationale and evidence" />
+        <ScoreEvidence assessment={selectedRiskAssessment} eventId={selectedEvent?.id} label="Selected change: rationale and source evidence" />
         {/* AI Summary Banner */}
         <div className="p-4 rounded-xl border border-white/10 bg-[#0b0f0d]/60 space-y-3">
           <div className="flex items-center justify-between">
@@ -159,7 +164,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
                     ? 'bg-rose-500/20 text-rose-400 border-rose-500/40' 
                     : 'bg-amber-500/20 text-amber-400 border-amber-500/40'
                 }`}>
-                  {selectedItem.role} trigger {selectedItem.causal_position != null ? `#${selectedItem.causal_position}` : ''}
+                  {selectedItem.role === 'primary' ? 'Suspected contributor' : 'Possible contributor'} {selectedItem.causal_position != null ? `#${selectedItem.causal_position}` : ''}
                 </span>
               )}
             </div>
@@ -173,7 +178,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
                   <div className="flex items-center gap-2 text-[10px] text-text-muted">
                     <span className="font-mono text-accent">{selectedEvent.service}</span>
                     <span>•</span>
-                    <span>{selectedEvent.environment}</span>
+                    <span>{environmentLabel(selectedEvent.environment)}</span>
                     {selectedEvent.meta?.author && (
                       <>
                         <span>•</span>
@@ -185,7 +190,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
                   </div>
                 </div>
                 <span className={`text-xs font-mono font-bold px-2 py-1 rounded border ${getScoreBadgeColor(selectedScoreValue, selectedLevel)}`}>
-                  Score: {selectedScoreValue}/100 ({selectedLevel.toUpperCase()})
+                  Risk: {selectedScoreValue ?? "Not supplied"}/100 ({selectedLevel.toUpperCase()})
                 </span>
               </div>
               
@@ -205,7 +210,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
                   >
                     <span className="flex items-center gap-1 font-semibold">
                       <Sliders size={12} className="text-accent" />
-                      {showFactors ? 'Hide Risk Factor Calculation' : `Why this score? (View ${selectedFactors.length} Risk Factors)`}
+                      {showFactors ? 'Hide API Risk Factors' : `Why this score? (View ${selectedFactors.length} Risk Factors)`}
                     </span>
                     <ChevronDown size={14} className={`transition-transform duration-200 ${showFactors ? 'rotate-180 text-accent' : ''}`} />
                   </button>
@@ -213,7 +218,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
                   {showFactors && (
                     <div className="space-y-2 pt-1 animate-in fade-in duration-200">
                       {selectedFactors.map((f, i) => {
-                        const pts = Math.round(f.score * (f.weight ?? 1));
+                        const pts = f.score;
                         return (
                           <div key={i} className="bg-white/5 border border-white/5 p-2.5 rounded-lg text-[11px] space-y-1">
                             <div className="flex justify-between items-center">
@@ -226,7 +231,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
                                   <span className="text-[10px] text-text-muted">Weight: {f.weight}</span>
                                 )}
                                 <span className="font-mono text-xs font-bold text-accent bg-accent/10 px-1.5 py-0.5 rounded border border-accent/20">
-                                  {pts} pts
+                                  {pts}/100
                                 </span>
                               </div>
                             </div>
@@ -236,7 +241,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
                             {f.evidence && f.evidence.length > 0 && (
                               <ul className="pl-3 pt-1 space-y-0.5 list-disc text-[10px] text-text-muted marker:text-accent/60">
                                 {f.evidence.map((ev, evIdx) => (
-                                  <li key={evIdx}>{ev}</li>
+                                  <li key={evIdx}><EvidenceValue value={ev} /></li>
                                 ))}
                               </ul>
                             )}
