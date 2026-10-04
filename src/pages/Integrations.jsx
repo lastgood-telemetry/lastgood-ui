@@ -141,21 +141,21 @@ const Integrations = () => {
 
         <section className="surface border border-accent/20 rounded-3xl overflow-hidden shadow-2xl relative">
           <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent"></div>
-          <div className="p-6 bg-black/20 space-y-8 relative before:absolute before:inset-0 before:ml-10 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-white/10 before:via-white/10 before:to-transparent">
+          <div className="p-6 bg-[#0b0f0d]/20 space-y-8 relative before:absolute before:inset-0 before:ml-10 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-white/10 before:via-white/10 before:to-transparent">
 
             {/* Step 1 */}
             <div className="relative flex items-start gap-6 group">
               <div className="flex shrink-0 items-center justify-center w-8 h-8 rounded-full border-2 border-accent bg-background text-accent font-bold z-10 shadow-[0_0_10px_rgba(45,212,191,0.5)]">
                 1
               </div>
-              <div className="flex-1 p-5 rounded-xl bg-black/40 border border-white/10 shadow-lg min-w-0">
+              <div className="flex-1 p-5 rounded-xl bg-[#0b0f0d]/40 border border-white/10 shadow-lg min-w-0">
                 <h3 className="font-bold text-white mb-2 text-sm uppercase tracking-wide">Configure Webhook</h3>
                 <p className="text-text-muted text-xs mb-3 leading-relaxed">
                   Go to your GitHub repository <ArrowRight size={10} className="inline mx-1" /> Settings <ArrowRight size={10} className="inline mx-1" /> Webhooks and click <strong className="text-white">"Add webhook"</strong>.
-                  Paste your unique ingestion URL and set the <strong className="text-white">Content type</strong> to <code className="bg-black/50 px-1.5 py-0.5 rounded text-xs">application/json</code>.
+                  Paste your unique ingestion URL and set the <strong className="text-white">Content type</strong> to <code className="bg-[#0b0f0d]/50 px-1.5 py-0.5 rounded text-xs">application/json</code>.
                 </p>
 
-                <div className="flex items-center justify-between gap-2 bg-black/60 border border-white/5 rounded-md p-1 focus-within:border-accent/50 transition-colors min-w-0">
+                <div className="flex items-center justify-between gap-2 bg-[#0b0f0d]/60 border border-white/5 rounded-md p-1 focus-within:border-accent/50 transition-colors min-w-0">
                   <code className="px-2 text-xs text-accent font-mono truncate min-w-0 flex-1">{webhookUrl}</code>
                   <button
                     onClick={() => handleCopy('github-url', webhookUrl)}
@@ -173,7 +173,7 @@ const Integrations = () => {
               <div className="flex shrink-0 items-center justify-center w-8 h-8 rounded-full border-2 border-white/20 bg-background text-white/50 font-bold z-10">
                 2
               </div>
-              <div className="flex-1 p-5 rounded-xl bg-black/40 border border-white/10 shadow-lg min-w-0">
+              <div className="flex-1 p-5 rounded-xl bg-[#0b0f0d]/40 border border-white/10 shadow-lg min-w-0">
                 <h3 className="font-bold text-white mb-2 text-sm uppercase tracking-wide">Webhook Secret</h3>
                 <p className="text-text-muted text-xs mb-3 leading-relaxed">
                   We cryptographically verify all payloads coming from GitHub using your API Key to prevent spoofing.
@@ -182,7 +182,7 @@ const Integrations = () => {
                   Paste your <strong className="font-bold">LastGood API Key</strong> into GitHub's <strong className="font-bold">"Secret"</strong> field.
                 </div>
 
-                <div className="flex items-center justify-between gap-2 bg-black/60 border border-white/5 rounded-md p-1 focus-within:border-accent/50 transition-colors min-w-0">
+                <div className="flex items-center justify-between gap-2 bg-[#0b0f0d]/60 border border-white/5 rounded-md p-1 focus-within:border-accent/50 transition-colors min-w-0">
                   <code className="px-2 text-xs text-accent font-mono truncate min-w-0 flex-1">
                     {showSecret ? apiSecret : "••••••••••••••••••••••••••••••••"}
                   </code>
@@ -211,7 +211,7 @@ const Integrations = () => {
               <div className="flex shrink-0 items-center justify-center w-8 h-8 rounded-full border-2 border-white/20 bg-background text-white/50 font-bold z-10">
                 3
               </div>
-              <div className="flex-1 p-5 rounded-xl bg-black/40 border border-white/10 shadow-lg min-w-0">
+              <div className="flex-1 p-5 rounded-xl bg-[#0b0f0d]/40 border border-white/10 shadow-lg min-w-0">
                 <h3 className="font-bold text-white mb-2 text-sm uppercase tracking-wide">Event Triggers</h3>
                 <p className="text-text-muted text-xs mb-3 leading-relaxed">
                   Under "Which events would you like to trigger this webhook?", explicitly select <strong className="text-white">"Let me select individual events"</strong> and enable:
@@ -254,8 +254,8 @@ const Integrations = () => {
           </div>
         </div>
 
-        <section className="bg-black/30 border border-white/5 rounded-3xl overflow-hidden shadow-xl min-w-0">
-          <div className="px-6 py-4 border-b border-white/5 bg-black/40">
+        <section className="bg-[#0b0f0d]/30 border border-white/5 rounded-3xl overflow-hidden shadow-xl min-w-0">
+          <div className="px-6 py-4 border-b border-white/5 bg-[#0b0f0d]/40">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
               REST API Integration Payload
             </h2>
@@ -267,8 +267,8 @@ const Integrations = () => {
               </p>
             </div>
 
-            <div className="bg-[#050510] border border-white/10 rounded-xl overflow-hidden shadow-inner">
-              <div className="bg-black/40 px-4 py-3 border-b border-white/10 flex items-center justify-between">
+            <div className="bg-[#101413] border border-white/10 rounded-xl overflow-hidden shadow-inner">
+              <div className="bg-[#0b0f0d]/40 px-4 py-3 border-b border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="flex gap-1.5 mr-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-white/20"></div>
@@ -338,8 +338,8 @@ const Integrations = () => {
             <div
               key={channel.id}
               onClick={() => channel.active && setSelectedChannel(channel.id)}
-              className={`bg-[#0c0c0e] border rounded-xl p-5 transition-all duration-200 flex flex-col justify-between ${channel.active
-                ? "border-white/10 hover:border-white/20 cursor-pointer hover:bg-[#0e0e11]"
+              className={`bg-[#101413] border rounded-xl p-5 transition-all duration-200 flex flex-col justify-between ${channel.active
+                ? "border-white/10 hover:border-white/20 cursor-pointer hover:bg-[#101413]"
                 : "border-white/5 opacity-50 grayscale cursor-not-allowed"
                 }`}
             >
