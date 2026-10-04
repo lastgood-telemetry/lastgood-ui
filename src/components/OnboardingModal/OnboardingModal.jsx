@@ -11,7 +11,7 @@ export const OnboardingModal = ({ onFinished }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center animate-fade-in">
+        <div className="fixed inset-0 bg-[#0b0f0d]/70 backdrop-blur-md z-50 flex items-center justify-center animate-fade-in">
             <div className="bg-gradient-card border border-white/10 rounded-2xl shadow-2xl w-full max-w-md m-4 relative overflow-hidden shadow-[0_0_50px_rgba(45,212,191,0.15)] animate-slide-up">
                 <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-accent via-blue-500 to-purple-500"></div>
                 {isCreatingKey ? (
@@ -37,7 +37,7 @@ export const OnboardingModal = ({ onFinished }) => {
                         </p>
                         <button 
                             onClick={() => setIsCreatingKey(true)} 
-                            className="bg-gradient-accent hover:opacity-90 text-white font-bold px-8 py-3.5 rounded-xl flex items-center gap-2 transition-opacity w-full justify-center text-base active:scale-[0.98] transition-transform shadow-lg shadow-accent/20"
+                            className="bg-gradient-accent hover:opacity-90 text-[#101413] font-bold px-8 py-3.5 rounded-xl flex items-center gap-2 transition-opacity w-full justify-center text-base active:scale-[0.98] transition-transform shadow-lg shadow-accent/20"
                         >
                             <KeyRound size={18} />
                             Create Secure API Key
