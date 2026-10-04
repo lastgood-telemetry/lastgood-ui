@@ -165,7 +165,7 @@ export default function Topology() {
       {realServiceNames.length === 0 ? (
         /* Empty State Blueprint Preview Canvas */
         <div className="space-y-6">
-          <div className="bg-black/40 border border-white/10 rounded-2xl p-8 backdrop-blur-xl shadow-xl text-center space-y-6">
+          <div className="bg-[#0b0f0d]/40 border border-white/10 rounded-2xl p-8 backdrop-blur-xl shadow-xl text-center space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-semibold">
               <Eye size={14} />
               <span>Topology Preview Mode (No Ingested Services Found)</span>
@@ -179,7 +179,7 @@ export default function Topology() {
             </div>
 
             {/* Blueprint Flow Preview Graphic */}
-            <div className="p-6 rounded-2xl bg-black/60 border border-dashed border-white/15 max-w-3xl mx-auto space-y-4">
+            <div className="p-6 rounded-2xl bg-[#0b0f0d]/60 border border-dashed border-white/15 max-w-3xl mx-auto space-y-4">
               <div className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Example Blueprint Topology Workflow Flow</div>
               <div className="flex flex-col md:flex-row items-center justify-center gap-4">
                 <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-1 w-48 text-left">
@@ -221,7 +221,7 @@ export default function Topology() {
             <div className="pt-2">
               <button
                 onClick={() => navigate("/integrations")}
-                className="py-3 px-6 rounded-xl bg-accent text-white font-semibold text-xs inline-flex items-center gap-2 hover:brightness-110 transition-all shadow-lg"
+                className="py-3 px-6 rounded-xl bg-accent text-[#101413] font-semibold text-xs inline-flex items-center gap-2 hover:brightness-110 transition-all shadow-lg"
               >
                 <span>Set Up Integration to Ingest Services</span>
                 <ArrowRight size={14} />
@@ -234,7 +234,7 @@ export default function Topology() {
           {/* Left: Quick Add Connector & Summary */}
           <div className="lg:col-span-1 space-y-6">
             {/* Workflow Connector Card */}
-            <div className="bg-black/40 border border-white/10 rounded-2xl p-6 backdrop-blur-xl shadow-xl space-y-4">
+            <div className="bg-[#0b0f0d]/40 border border-white/10 rounded-2xl p-6 backdrop-blur-xl shadow-xl space-y-4">
               <div className="flex items-center gap-2 text-white font-semibold text-sm">
                 <GitFork size={16} className="text-accent" />
                 <span>Link Ingested Services</span>
@@ -286,7 +286,7 @@ export default function Topology() {
                 <button
                   type="submit"
                   disabled={adding}
-                  className="w-full py-2.5 px-4 rounded-xl bg-accent text-white font-semibold text-xs flex items-center justify-center gap-2 hover:brightness-110 transition-all disabled:opacity-50"
+                  className="w-full py-2.5 px-4 rounded-xl bg-accent text-[#101413] font-semibold text-xs flex items-center justify-center gap-2 hover:brightness-110 transition-all disabled:opacity-50"
                 >
                   <Plus size={14} />
                   <span>Link Dependency Edge</span>
@@ -295,7 +295,7 @@ export default function Topology() {
             </div>
 
             {/* Stats Summary Box */}
-            <div className="bg-black/40 border border-white/10 rounded-2xl p-6 backdrop-blur-xl shadow-xl space-y-3">
+            <div className="bg-[#0b0f0d]/40 border border-white/10 rounded-2xl p-6 backdrop-blur-xl shadow-xl space-y-3">
               <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider">Topology Metrics</h3>
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-xl bg-white/5 border border-white/10">
@@ -312,7 +312,7 @@ export default function Topology() {
 
           {/* Right: Visual Node Workflow Canvas */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="bg-black/40 border border-white/10 rounded-2xl p-6 backdrop-blur-xl shadow-xl space-y-6">
+            <div className="bg-[#0b0f0d]/40 border border-white/10 rounded-2xl p-6 backdrop-blur-xl shadow-xl space-y-6">
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-sm font-bold text-white uppercase tracking-wider">Service Architecture Workflow Canvas</h2>
@@ -367,7 +367,7 @@ export default function Topology() {
                           </div>
 
                           {data.upstream.length === 0 ? (
-                            <div className="p-2.5 rounded-xl bg-black/20 border border-white/5 text-[11px] text-text-muted italic">
+                            <div className="p-2.5 rounded-xl bg-[#0b0f0d]/20 border border-white/5 text-[11px] text-text-muted italic">
                               No upstream dependencies linked
                             </div>
                           ) : (
@@ -375,7 +375,7 @@ export default function Topology() {
                               {data.upstream.map((dep) => (
                                 <div
                                   key={dep.id}
-                                  className="p-2.5 rounded-xl bg-black/40 border border-white/10 flex items-center justify-between text-xs group/item"
+                                  className="p-2.5 rounded-xl bg-[#0b0f0d]/40 border border-white/10 flex items-center justify-between text-xs group/item"
                                 >
                                   <div className="flex items-center gap-2">
                                     <ArrowRight size={14} className="text-accent" />
@@ -435,7 +435,7 @@ export default function Topology() {
 
       {/* Modal for Quick Link Creation */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-[#0b0f0d]/80 backdrop-blur-md flex items-center justify-center p-4">
           <div className="bg-zinc-950 border border-white/10 rounded-2xl p-6 max-w-md w-full space-y-5 shadow-2xl">
             <div className="flex items-center justify-between border-b border-white/10 pb-4">
               <div className="flex items-center gap-2 text-white font-bold text-sm">
@@ -504,7 +504,7 @@ export default function Topology() {
                 <button
                   type="submit"
                   disabled={adding}
-                  className="px-4 py-2 rounded-xl bg-accent text-white font-semibold text-xs flex items-center gap-1.5 hover:brightness-110"
+                  className="px-4 py-2 rounded-xl bg-accent text-[#101413] font-semibold text-xs flex items-center gap-1.5 hover:brightness-110"
                 >
                   <Plus size={14} />
                   <span>Create Link</span>
