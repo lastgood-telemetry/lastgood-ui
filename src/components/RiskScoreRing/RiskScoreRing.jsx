@@ -24,7 +24,7 @@ export const RiskScoreRing = ({ score, level, radius = 30, stroke = 4 }) => {
                 width={radius * 2}
             >
                 <circle
-                    stroke="#374151"
+                    stroke="#292e2c"
                     fill="transparent"
                     strokeWidth={stroke}
                     r={normalizedRadius}
