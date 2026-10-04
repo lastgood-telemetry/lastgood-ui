@@ -45,7 +45,7 @@ const MainLayout = () => {
     { path: "/topology", label: "Topology Map", icon: Network },
     { path: "/postmortems", label: "Postmortems", icon: FileText },
     { path: "/integrations", label: "Integrations", icon: Blocks },
-    { path: "/settings", label: "Project Profile", icon: UserCircle },
+    { path: "/settings", label: "Workspace Settings", icon: UserCircle },
   ];
 
   const currentNav = navItems.find((n) => location.pathname.startsWith(n.path)) || navItems[0];
