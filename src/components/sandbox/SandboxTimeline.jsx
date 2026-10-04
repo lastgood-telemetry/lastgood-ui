@@ -27,10 +27,10 @@ const SandboxTimeline = ({ events, selectedEventId, onSelectEvent }) => {
       {events.map((event, index) => {
         const isSelected = event.id === selectedEventId;
         const colorClass = getColorClass(event.color);
-        const timeFormatted = new Date(event.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const timeFormatted = new Date(event.timestamp).toISOString().replace('T', ' ').replace(/\.\d{3}Z$/, ' UTC');
         
         return (
-          <div key={event.id} className="relative pl-6 group cursor-pointer" onClick={() => onSelectEvent(event.id)}>
+          <div id={`demo-event-${event.id}`} key={event.id} className="relative pl-6 group cursor-pointer" onClick={() => onSelectEvent(event.id)} role="button" tabIndex={0} aria-pressed={isSelected} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectEvent(event.id); } }}>
             {/* Timeline Dot */}
             <div className={`absolute -left-2.5 top-1.5 w-5 h-5 rounded-full border-2 border-black flex items-center justify-center transition-all ${isSelected ? 'scale-125' : 'group-hover:scale-110'} ${colorClass.split(' ')[0]}`}>
                {isSelected && <div className={`w-2 h-2 rounded-full ${colorClass.split(' ')[1].replace('text-', 'bg-')}`}></div>}
@@ -38,7 +38,7 @@ const SandboxTimeline = ({ events, selectedEventId, onSelectEvent }) => {
             
             {/* Event Card */}
             <div className={`p-4 rounded-xl border transition-all duration-300 ${isSelected ? 'bg-white/10 border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]' : 'bg-black/40 border-white/5 hover:bg-white/5'}`}>
-               <div className="flex justify-between items-start mb-2">
+               <div className="flex flex-wrap gap-2 justify-between items-start mb-2">
                  <div className="flex items-center gap-2">
                    <div className={`p-1.5 rounded-md border ${colorClass}`}>
                      {getIconForType(event.type)}
@@ -55,8 +55,9 @@ const SandboxTimeline = ({ events, selectedEventId, onSelectEvent }) => {
                    <p className="text-xs text-text-secondary mb-3">{event.description}</p>
                    <div className="flex items-center gap-4 text-xs">
                      <span className="text-text-muted">Author: <span className="text-white">{event.author}</span></span>
-                     <span className="text-text-muted">Risk Score: <span className={event.riskScore > 80 ? 'text-status-error font-bold' : 'text-accent font-bold'}>{event.riskScore}/100</span></span>
+                     <span className="text-text-muted">Risk Score: <span className={event.riskScore > 80 ? 'text-status-error font-bold' : 'text-accent font-bold'}>{event.riskScore}/100 (demo)</span></span>
                    </div>
+                   <details className="mt-3 text-xs text-text-secondary" onClick={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}><summary className="text-accent cursor-pointer">Why this demo risk score?</summary><p className="mt-2">{event.riskRationale}</p><p className="mt-1">Evidence: {event.description}</p></details>
                  </div>
                )}
             </div>
