@@ -292,7 +292,7 @@ const Services = () => {
                 <div className="bg-amber-500/5 border border-amber-500/10 p-4 rounded-xl flex items-start gap-3 text-amber-400">
                     <AlertCircle size={18} className="shrink-0 mt-0.5" />
                     <div className="space-y-1">
-                        <h4 className="text-xs font-semibold text-white">Project Ingestion Limit Reached (2/2)</h4>
+                        <h4 className="text-xs font-semibold text-white">Service Ingestion Limit Reached (2/2)</h4>
                         <p className="text-[11px] text-text-muted leading-relaxed">
                             You are on the Free plan which supports up to 2 distinct active services. Ingesting signals from additional services will require upgrading to a paid plan.
                         </p>

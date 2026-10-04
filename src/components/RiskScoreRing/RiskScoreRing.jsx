@@ -1,9 +1,11 @@
 import React from 'react';
 
-export const RiskScoreRing = ({ score, level, radius = 30, stroke = 4 }) => {
+export const RiskScoreRing = ({ score, level, radius = 30, stroke = 4, label = "Risk" }) => {
+    const validScore = typeof score === "number" && Number.isFinite(score);
+    const displayScore = validScore ? Math.max(0, Math.min(100, score)) : null;
     const normalizedRadius = radius - stroke * 2;
     const circumference = normalizedRadius * 2 * Math.PI;
-    const strokeDashoffset = circumference - (score / 100) * circumference;
+    const strokeDashoffset = circumference - ((displayScore ?? 0) / 100) * circumference;
 
     const getRiskColor = (level) => {
         switch (level) {
@@ -18,7 +20,7 @@ export const RiskScoreRing = ({ score, level, radius = 30, stroke = 4 }) => {
     const color = getRiskColor(level);
 
     return (
-        <div className="relative" style={{ width: radius * 2, height: radius * 2 }}>
+        <div role="img" aria-label={`${label}: ${displayScore ?? "not supplied"}${validScore ? " out of 100" : ""}`} title={`${label}, not proof of causation`} className="relative" style={{ width: radius * 2, height: radius * 2 }}>
             <svg
                 height={radius * 2}
                 width={radius * 2}
@@ -44,7 +46,7 @@ export const RiskScoreRing = ({ score, level, radius = 30, stroke = 4 }) => {
                 />
             </svg>
             <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-lg font-bold" style={{ color }}>{score}</span>
+                <span className="text-lg font-bold" style={{ color }}>{displayScore ?? "—"}</span>
             </div>
         </div>
     );

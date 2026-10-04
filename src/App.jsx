@@ -15,8 +15,8 @@ import Sandbox from "./pages/Sandbox";
 import Postmortems from "./pages/Postmortems";
 import Topology from "./pages/Topology";
 import { ToastContainer } from "./components/ui/Toast";
-import useHelpLoom from "./hooks/useHelpLoom";
-import { isIframe, isDevelopment } from "./util";
+
+
 import { initGA, trackPageView } from "./util/analytics";
 
 // Global Guard for handling query params or flags without locking production users to Sandbox
@@ -49,11 +49,9 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
 
-  console.log({ isIframe })
 
-  if (!isIframe) {
-    useHelpLoom()
-  }
+
+
   return (
     <BrowserRouter>
       <GlobalGuard>

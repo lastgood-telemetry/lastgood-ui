@@ -1,9 +1,10 @@
+import { environmentLabel, eventEnvironmentLabel, utcTimestamp } from '../../util/console';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { ChevronDown, GitCommit, User } from 'lucide-react';
 import { RiskScoreRing } from '../RiskScoreRing/RiskScoreRing';
-import { RiskFactorDetails } from '../RiskFactorDetails/RiskFactorDetails';
+import ScoreEvidence from '../Evidence/ScoreEvidence';
 
 const getRiskColor = (level) => {
     switch (level) {
@@ -27,7 +28,7 @@ const ROLE_BADGE_STYLES = {
 };
 
 const ROLE_BADGE_LABELS = {
-    primary: 'PRIMARY TRIGGER',
+    primary: 'SUSPECTED CONTRIBUTOR',
     contributing: 'CONTRIBUTING FACTOR',
 };
 
@@ -83,7 +84,7 @@ export const EventCard = ({ event, riskAssessment, isLast, roleBadge = null, cau
                                 <div className="flex items-center gap-2 mb-3 text-sm text-text-secondary flex-wrap">
                                     {roleBadge && <RoleBadge variant={roleBadge} />}
                                     <span className="font-semibold uppercase tracking-wide text-accent text-xs">{service}</span>
-                                    <span className="bg-black/30 px-2 py-0.5 rounded text-xs border border-white/10">{environment}</span>
+                                    <span className="bg-black/30 px-2 py-0.5 rounded text-xs border border-white/10">{eventEnvironmentLabel(event)}</span>
                                 </div>
                                 <Link to={`/events/${id}`} className="block group/link">
                                     <h3 className="m-0 mb-3 text-lg font-medium text-text-primary group-hover/link:text-accent transition-colors">{summary}</h3>
@@ -129,8 +130,9 @@ export const EventCard = ({ event, riskAssessment, isLast, roleBadge = null, cau
                                 {riskAssessment && (
                                     <div className="flex flex-col items-center">
                                         <RiskScoreRing score={score} level={level} />
+                                        <span className="text-[10px] text-text-muted">Risk /100</span>
                                         <button onClick={() => setIsExpanded(!isExpanded)} className="mt-2 text-xs text-text-muted hover:text-accent flex items-center gap-1">
-                                            Why?
+                                            Risk rationale
                                             <ChevronDown size={14} className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                                         </button>
                                     </div>
@@ -138,9 +140,10 @@ export const EventCard = ({ event, riskAssessment, isLast, roleBadge = null, cau
                             </div>
                         </div>
                     </div>
+                    {event.lifecycleEvents?.length > 1 && <details className="p-4 border-t border-white/10 text-xs"><summary className="text-accent cursor-pointer">{event.lifecycleEvents.length} deployment lifecycle / associated push events (grouped)</summary><ul className="mt-2 space-y-2">{event.lifecycleEvents.map(child => <li key={child.id}><Link className="text-accent underline" to={`/events/${encodeURIComponent(child.id)}`}>{child.relatedPush ? "Associated push" : child.type}: {child.summary}</Link> · {utcTimestamp(child.occurred_at)}</li>)}</ul></details>}
                     {isExpanded && riskAssessment && (
                         <div className="p-5 border-t border-white/5 bg-black/20">
-                            <RiskFactorDetails factors={riskAssessment.factors} />
+                            <ScoreEvidence assessment={riskAssessment} eventId={id} />
                         </div>
                     )}
                 </div>
