@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Search, Calendar, Clock, AlertCircle, History, Sparkles, SlidersHorizontal, ShieldAlert } from "lucide-react";
+import { Search, Calendar, Clock, AlertCircle, History, Sparkles } from "lucide-react";
 import api from "../api";
+import { Link, useLocation } from 'react-router-dom';
+import { eventRewindContext, readRewindContext, rewindRequestParams, rewindOptions } from '../util/rewind';
 import RewindTimeline from "../components/Rewind/RewindTimeline";
 import RewindAiDiagnosisPanel from "../components/Rewind/RewindAiDiagnosisPanel";
 import { RewindIncidentBrief } from "../components/Rewind/RewindIncidentBrief";
@@ -17,13 +19,27 @@ import { PageHeader } from "../components/ui/PageHeader";
 import { PageContainer } from "../components/ui/PageContainer";
 
 const Rewind = () => {
-  // Default to "now" formatted for datetime-local input (YYYY-MM-DDThh:mm)
-  const [incidentTime, setIncidentTime] = useState(() => {
-    return dayjs().utc().format("YYYY-MM-DDTHH:mm");
-  });
+  const location = useLocation();
+  const routeContext = useMemo(() => readRewindContext(location.search), [location.search]);
+  const [incidentTime, setIncidentTime] = useState(routeContext.incidentTime);
   const [windowMinutes, setWindowMinutes] = useState(30);
-  const [service, setService] = useState("");
-  const [environment, setEnvironment] = useState("");
+  const [service, setService] = useState(routeContext.service);
+  const [environment, setEnvironment] = useState(routeContext.environment);
+
+  // The list endpoint is organization-scoped and sorted by occurred_at DESC.
+  // Keep discovery bounded; manual event links retain values outside this list.
+  const { data: discovery, isLoading: discovering, error: discoveryError, refetch: retryDiscovery } = useQuery({
+    queryKey: ['rewind-event-discovery'],
+    queryFn: async () => {
+      const response = await api.get('/change-events', { params: { limit: 1000, offset: 0 } });
+      if (!response.data.success) throw new Error('Could not load ingested events');
+      return response.data;
+    },
+  });
+  const events = discovery?.data || [];
+  const latestEvent = events.find(event => eventRewindContext(event));
+  const services = rewindOptions(events, 'service', service);
+  const environments = rewindOptions(events, 'environment', environment);
   const [queryParams, setQueryParams] = useState(null);
   const [selectedEventId, setSelectedEventId] = useState(null);
   const [viewMode, setViewMode] = useState('brief'); // 'brief' | 'detailed'
@@ -41,13 +57,7 @@ const Rewind = () => {
   const fetchRewindEvents = async () => {
     if (!queryParams) return null;
 
-    const params = {
-      incidentAt: dayjs.utc(queryParams.incidentTime).toISOString(),
-      window: `${queryParams.windowMinutes}m`,
-    };
-
-    if (queryParams.service) params.service = queryParams.service;
-    if (queryParams.environment) params.environment = queryParams.environment;
+    const params = rewindRequestParams(queryParams);
 
     const response = await api.get("/scoring/incident", { params });
 
@@ -69,6 +79,25 @@ const Rewind = () => {
     retry: false,
   });
 
+  useEffect(() => {
+    setIncidentTime(routeContext.incidentTime);
+    setService(routeContext.service);
+    setEnvironment(routeContext.environment);
+    setQueryParams(null);
+    setSelectedEventId(null);
+  }, [routeContext]);
+
+  const analyzeLatest = () => {
+    const context = eventRewindContext(latestEvent);
+    if (!context) return;
+    setIncidentTime(context.incidentTime);
+    setService(context.service);
+    setEnvironment(context.environment);
+    setSelectedEventId(null);
+    setQueryParams({ ...context, windowMinutes });
+  };
+  const hasNoResults = result && !(result.individual_scores || result.individualScores || []).length;
+
   // Auto-select primary trigger event or first event when result is fetched
   useEffect(() => {
     if (result) {
@@ -87,11 +116,29 @@ const Rewind = () => {
         category="INCIDENT CORRELATION ENGINE"
         icon={History}
         title="AI Diagnostics Rewind"
-        description="Time-travel through infrastructure mutations and telemetry events to isolate root cause triggers during production outages."
+        description="Review changes around an incident, or start with your latest ingested event."
       />
 
       {/* Search Controls Form */}
       <div className="bg-[#0c0c0e] border border-white/10 rounded-xl p-4 shadow-sm mb-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-4 border-b border-white/10">
+          <div className="text-xs text-zinc-400 space-y-1">
+            {discovering ? <p>Loading ingested events...</p> : discoveryError ? (
+              <p>Could not load event suggestions. <button type="button" onClick={() => retryDiscovery()} className="text-indigo-300 underline">Retry</button> or <Link to="/events" className="text-indigo-300 underline">browse events</Link>.</p>
+            ) : latestEvent ? (
+              <>
+                <p>Latest event: <span className="text-zinc-200 font-mono">{dayjs(latestEvent.occurred_at).utc().format('MMM D, YYYY HH:mm:ss [UTC]')}</span></p>
+                <p>{latestEvent.service} / {latestEvent.environment} - {latestEvent.summary || latestEvent.type}</p>
+                {discovery?.pagination?.total > events.length && <p>Selectors show values from the latest {events.length} events. Browse Events Stream for older values.</p>}
+              </>
+            ) : <p>No events ingested yet. Connect a source, confirm an event in Events Stream, then run your first diagnosis.</p>}
+          </div>
+          {latestEvent ? (
+            <button type="button" onClick={analyzeLatest} disabled={isLoading} className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2">
+              <Sparkles size={14} /> Analyze latest event
+            </button>
+          ) : !discovering && !discoveryError && <Link to="/integrations" className="text-xs text-indigo-300 underline">Connect a source</Link>}
+        </div>
         <form
           onSubmit={handleSearch}
           className="flex flex-wrap items-end gap-4"
@@ -126,29 +173,33 @@ const Rewind = () => {
           </div>
 
           <div className="w-40">
-            <label className="text-[11px] font-mono font-semibold text-zinc-400 mb-1.5 block uppercase">
+            <label htmlFor="rewind-service" className="text-[11px] font-mono font-semibold text-zinc-400 mb-1.5 block uppercase">
               Target Service
             </label>
-            <input
-              type="text"
+            <select
+              id="rewind-service"
               value={service}
               onChange={(e) => setService(e.target.value)}
-              placeholder="e.g. user-fe"
-              className="w-full bg-[#070709] border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-500 transition-all placeholder:text-zinc-600"
-            />
+              className="w-full bg-[#070709] border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-500"
+            >
+              <option value="">All services</option>
+              {services.map(value => <option key={value} value={value}>{value}</option>)}
+            </select>
           </div>
 
           <div className="w-36">
-            <label className="text-[11px] font-mono font-semibold text-zinc-400 mb-1.5 block uppercase">
+            <label htmlFor="rewind-environment" className="text-[11px] font-mono font-semibold text-zinc-400 mb-1.5 block uppercase">
               Environment
             </label>
-            <input
-              type="text"
+            <select
+              id="rewind-environment"
               value={environment}
               onChange={(e) => setEnvironment(e.target.value)}
-              placeholder="e.g. prod"
-              className="w-full bg-[#070709] border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-500 transition-all placeholder:text-zinc-600"
-            />
+              className="w-full bg-[#070709] border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-500"
+            >
+              <option value="">All environments</option>
+              {environments.map(value => <option key={value} value={value}>{value}</option>)}
+            </select>
           </div>
 
           <button
@@ -172,7 +223,24 @@ const Rewind = () => {
           </div>
         )}
 
-        {isFetched && result && (
+        {hasNoResults && (
+          <div className="border border-dashed border-white/10 rounded-xl p-8 text-center space-y-4 bg-[#08080a]">
+            <Clock size={24} className="text-zinc-400 mx-auto" />
+            <h3 className="text-sm font-semibold text-white">No Change Events Found</h3>
+            <p className="text-xs text-zinc-400">No matching events in the {queryParams.windowMinutes}-minute window ending {dayjs.utc(queryParams.incidentTime).format('MMM D, YYYY HH:mm:ss [UTC]')}. Try a wider window or another service/environment.</p>
+            <div className="flex flex-wrap justify-center items-center gap-4 text-xs">
+              {queryParams.windowMinutes < 1440 && <button type="button" onClick={() => {
+                const widerWindow = [60, 120, 360, 1440].find(value => value > queryParams.windowMinutes);
+                setWindowMinutes(widerWindow);
+                setQueryParams({ ...queryParams, windowMinutes: widerWindow });
+              }} className="text-indigo-300 underline">Try a wider window</button>}
+              {latestEvent && <button type="button" onClick={analyzeLatest} className="text-indigo-300 underline">Analyze latest event</button>}
+              <Link to="/events" className="text-indigo-300 underline">Browse Events Stream</Link>
+            </div>
+          </div>
+        )}
+
+        {isFetched && result && !hasNoResults && (
           <div className="space-y-6 animate-in fade-in duration-300">
             {/* View Mode Segmented Control Bar */}
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-3">
@@ -262,9 +330,9 @@ const Rewind = () => {
         {!queryParams && (
           <div className="border border-dashed border-white/10 rounded-xl p-16 text-center space-y-3 bg-[#08080a]">
             <Sparkles size={24} className="text-zinc-400 mx-auto" />
-            <h3 className="text-sm font-semibold text-white">Ready for Root Cause Analysis</h3>
+            <h3 className="text-sm font-semibold text-white">Ready for your first diagnosis</h3>
             <p className="text-xs text-zinc-400 max-w-sm mx-auto leading-relaxed">
-              Select an incident timestamp and window above to analyze correlated changes across your infrastructure.
+              Analyze the latest event to explore real data, or choose an incident time, service and environment above. All times are UTC.
             </p>
           </div>
         )}
