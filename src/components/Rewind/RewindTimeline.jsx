@@ -91,7 +91,7 @@ const RewindTimeline = ({ events, selectedEventId, onSelectEvent, windowMinutes 
               className={`p-4 rounded-xl border transition-all duration-200 ${
                 isSelected
                   ? 'bg-white/10 border-white/20 shadow-[0_0_20px_rgba(255,255,255,0.08)]'
-                  : 'bg-black/40 border-white/5 hover:bg-white/5 hover:border-white/10'
+                  : 'bg-[#0b0f0d]/40 border-white/5 hover:bg-white/5 hover:border-white/10'
               }`}
             >
               <div className="flex justify-between items-start mb-2 gap-2">
