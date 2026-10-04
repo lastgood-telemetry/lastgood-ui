@@ -83,7 +83,7 @@ export const EventCard = ({ event, riskAssessment, isLast, roleBadge = null, cau
                                 <div className="flex items-center gap-2 mb-3 text-sm text-text-secondary flex-wrap">
                                     {roleBadge && <RoleBadge variant={roleBadge} />}
                                     <span className="font-semibold uppercase tracking-wide text-accent text-xs">{service}</span>
-                                    <span className="bg-black/30 px-2 py-0.5 rounded text-xs border border-white/10">{environment}</span>
+                                    <span className="bg-[#0b0f0d]/30 px-2 py-0.5 rounded text-xs border border-white/10">{environment}</span>
                                 </div>
                                 <Link to={`/events/${id}`} className="block group/link">
                                     <h3 className="m-0 mb-3 text-lg font-medium text-text-primary group-hover/link:text-accent transition-colors">{summary}</h3>
@@ -139,7 +139,7 @@ export const EventCard = ({ event, riskAssessment, isLast, roleBadge = null, cau
                         </div>
                     </div>
                     {isExpanded && riskAssessment && (
-                        <div className="p-5 border-t border-white/5 bg-black/20">
+                        <div className="p-5 border-t border-white/5 bg-[#0b0f0d]/20">
                             <RiskFactorDetails factors={riskAssessment.factors} />
                         </div>
                     )}
