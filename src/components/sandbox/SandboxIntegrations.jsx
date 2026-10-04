@@ -40,9 +40,9 @@ const SandboxIntegrations = () => {
           <h1 className="text-xl font-bold text-white flex items-center gap-2"><Terminal className="text-accent" /> Custom REST API</h1>
           <p className="text-text-muted text-xs mt-1">Send POST payloads to report change events from custom systems.</p>
         </div>
-        <div className="bg-black/40 border border-white/5 rounded-2xl p-6">
+        <div className="bg-[#0b0f0d]/40 border border-white/5 rounded-2xl p-6">
            <h4 className="text-[10px] font-semibold text-white mb-2">cURL Example</h4>
-           <div className="bg-black/60 border border-white/10 rounded-xl p-4 relative">
+           <div className="bg-[#0b0f0d]/60 border border-white/10 rounded-xl p-4 relative">
              <button onClick={() => handleCopy('curl', 'curl ...')} className="absolute top-2 right-2 text-text-muted hover:text-white">
                 {copiedStates['curl'] ? <CheckCircle2 size={16} className="text-status-success" /> : <Copy size={16} />}
              </button>
