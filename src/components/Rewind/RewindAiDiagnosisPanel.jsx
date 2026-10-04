@@ -1,4 +1,4 @@
-import ScoreEvidence from '../Evidence/ScoreEvidence';
+import ScoreEvidence, { EvidenceValue } from '../Evidence/ScoreEvidence';
 import { environmentLabel } from '../../util/console';
 import React, { useState } from 'react';
 import { Sparkles, ArrowRight, ShieldAlert, Cpu, CheckCircle2, AlertCircle, FileCode, User, Database, GitCommit, Check, ChevronDown, Sliders, Clock } from 'lucide-react';
@@ -241,7 +241,7 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
                             {f.evidence && f.evidence.length > 0 && (
                               <ul className="pl-3 pt-1 space-y-0.5 list-disc text-[10px] text-text-muted marker:text-accent/60">
                                 {f.evidence.map((ev, evIdx) => (
-                                  <li key={evIdx}>{ev}</li>
+                                  <li key={evIdx}><EvidenceValue value={ev} /></li>
                                 ))}
                               </ul>
                             )}
