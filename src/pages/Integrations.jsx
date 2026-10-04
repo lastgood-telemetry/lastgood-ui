@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   Terminal,
@@ -25,7 +26,8 @@ import { PageHeader } from "../components/ui/PageHeader";
 
 const Integrations = () => {
   const { org } = useOrgStore();
-  const [selectedChannel, setSelectedChannel] = useState(null);
+  const [searchParams] = useSearchParams();
+  const [selectedChannel, setSelectedChannel] = useState(() => ["github", "api"].includes(searchParams.get("channel")) ? searchParams.get("channel") : null);
   const [copiedStates, setCopiedStates] = useState({});
   const [showSecret, setShowSecret] = useState(false);
 
@@ -337,7 +339,6 @@ const Integrations = () => {
           return (
             <div
               key={channel.id}
-              onClick={() => channel.active && setSelectedChannel(channel.id)}
               className={`bg-[#0c0c0e] border rounded-xl p-5 transition-all duration-200 flex flex-col justify-between ${channel.active
                 ? "border-white/10 hover:border-white/20 cursor-pointer hover:bg-[#0e0e11]"
                 : "border-white/5 opacity-50 grayscale cursor-not-allowed"
@@ -363,10 +364,10 @@ const Integrations = () => {
               </div>
 
               {channel.active ? (
-                <div className="flex items-center gap-1.5 text-xs font-mono font-semibold text-white group-hover:text-sky-400 pt-2 border-t border-white/5">
-                  <span>Configure Pipeline</span>
+                <button type="button" onClick={() => setSelectedChannel(channel.id)} className="flex items-center gap-1.5 text-xs font-mono font-semibold text-white hover:text-sky-400 pt-2 border-t border-white/5 focus-visible:outline focus-visible:outline-2">
+                  <span>Configure {channel.title}</span>
                   <ChevronRight size={14} className="text-zinc-500" />
-                </div>
+                </button>
               ) : (
                 <span className="text-[11px] font-mono text-zinc-600 pt-2 border-t border-white/5">Integration in Development</span>
               )}
