@@ -137,13 +137,13 @@ const CommandPaletteModal = () => {
   );
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-20 px-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-20 px-4 bg-[#0b0f0d]/70 backdrop-blur-md animate-in fade-in duration-150">
       <div
-        className="w-full max-w-2xl bg-[#0e1424] border border-slate-700/80 rounded-xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150"
+        className="w-full max-w-2xl bg-[#151b18] border border-slate-700/80 rounded-xl shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Search Input Bar */}
-        <div className="flex items-center px-4 py-3 border-b border-slate-800 bg-[#07090e]">
+        <div className="flex items-center px-4 py-3 border-b border-slate-800 bg-[#101413]">
           <Search size={18} className="text-slate-400 mr-3 shrink-0" />
           <input
             type="text"
@@ -194,7 +194,7 @@ const CommandPaletteModal = () => {
         </div>
 
         {/* Footer info */}
-        <div className="px-4 py-2 bg-[#07090e] border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
+        <div className="px-4 py-2 bg-[#101413] border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
           <div className="flex items-center gap-2">
             <Logo size="xs" />
             <span>LastGood SRE Navigation Engine</span>
