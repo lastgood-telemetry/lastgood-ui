@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Code, Activity, Clock, Database, Sparkles, ChevronDown, User, GitCommit, ExternalLink, Server, Box } from 'lucide-react';
 import { LoadingState } from '../components/LoadingState/LoadingState';
 import api from '../api';
+import { eventRewindUrl } from '../util/rewind';
 import dayjs from 'dayjs';
 import { PageHeader } from '../components/ui/PageHeader';
 import { PageContainer } from '../components/ui/PageContainer';
@@ -53,7 +54,7 @@ const EventDetail = () => {
     const commitUrl = meta.commit_url || meta.url || (meta.repository && meta.commit ? `https://github.com/${meta.repository}/commit/${meta.commit}` : null);
 
     const handleRunRewind = () => {
-        navigate(`/rewind`);
+        navigate(eventRewindUrl(event));
     };
 
     return (
