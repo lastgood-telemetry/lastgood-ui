@@ -43,7 +43,7 @@ const Settings = () => {
         description="Manage organization details, team access, and subscription preferences."
       />
 
-      <div className="bg-[#0c0c0e] border border-white/10 rounded-xl p-6 shadow-sm relative overflow-hidden space-y-6">
+      <div className="bg-[#101413] border border-white/10 rounded-xl p-6 shadow-sm relative overflow-hidden space-y-6">
         <h3 className="font-mono font-bold text-xs uppercase tracking-wider text-white border-b border-white/[0.08] pb-3">
           Organization Configuration
         </h3>
@@ -78,7 +78,7 @@ const Settings = () => {
               <label className="block text-[10px] text-zinc-500 font-mono uppercase tracking-wider mb-1">
                 Organization ID
               </label>
-              <div className="text-zinc-300 font-mono text-xs select-all bg-[#070709] border border-white/10 px-3 py-1.5 rounded-md inline-block">
+              <div className="text-zinc-300 font-mono text-xs select-all bg-[#101413] border border-white/10 px-3 py-1.5 rounded-md inline-block">
                 {organization.id}
               </div>
             </div>
