@@ -1,28 +1,21 @@
 import React from 'react';
 
+// Original LastGood artwork, tinted mint to match the site theme.
 const Logo = ({ size = 'md', className = '', showText = false, textClassName = '' }) => {
-  const sizeMap = {
-    xs: 'h-4 w-4',
-    sm: 'h-6 w-6',
-    md: 'h-7 w-7',
-    lg: 'h-9 w-9',
-    xl: 'h-12 w-12',
-  };
-
-  const imageSizeClass = typeof size === 'string' ? (sizeMap[size] || sizeMap.md) : '';
-  const inlineStyle = typeof size === 'number' ? { width: `${size}px`, height: `${size}px` } : {};
+  const px = typeof size === 'number' ? size : { xs: 16, sm: 24, md: 28, lg: 36, xl: 48 }[size] || 28;
+  const mask = "url(/logo.png) center / contain no-repeat";
 
   return (
     <div className={`inline-flex items-center gap-2.5 ${className}`}>
-      <img
-        src="/logo.png"
-        alt="LastGood Logo"
-        className={`object-contain shrink-0 ${imageSizeClass}`}
-        style={inlineStyle}
+      <span
+        role="img"
+        aria-label="LastGood logo"
+        className="block shrink-0 bg-[#b6edce]"
+        style={{ width: px, height: px, WebkitMask: mask, mask }}
       />
       {showText && (
-        <span className={`font-bold tracking-tight text-white ${textClassName || 'text-base'}`}>
-          Last<span className="text-indigo-400">Good</span>
+        <span className={`font-semibold tracking-[-0.06em] text-[#f1f2ef] ${textClassName || 'text-base'}`}>
+          LastGood
         </span>
       )}
     </div>
