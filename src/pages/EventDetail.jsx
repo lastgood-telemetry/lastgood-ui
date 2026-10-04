@@ -75,7 +75,7 @@ const EventDetail = () => {
                 actions={
                     <button
                         onClick={handleRunRewind}
-                        className="bg-indigo-600 hover:bg-indigo-500 text-white font-mono font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-all text-xs shadow-sm cursor-pointer"
+                        className="bg-[#b6edce] hover:bg-[#d5f7e4] text-[#101413] font-mono font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-all text-xs shadow-sm cursor-pointer"
                     >
                         <Sparkles size={14} />
                         <span>Analyze in Rewind</span>
@@ -84,8 +84,8 @@ const EventDetail = () => {
             />
 
             {/* Event Hero Details Card */}
-            <div className="bg-[#111827] border border-slate-800 rounded-xl overflow-hidden shadow-sm space-y-6">
-                <div className="p-6 border-b border-slate-800/80 bg-[#0f172a] space-y-4">
+            <div className="bg-[#151b18] border border-slate-800 rounded-xl overflow-hidden shadow-sm space-y-6">
+                <div className="p-6 border-b border-slate-800/80 bg-[#151b18] space-y-4">
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="px-2.5 py-1 bg-indigo-950/60 border border-indigo-500/30 text-indigo-300 rounded text-xs font-mono font-bold uppercase tracking-wider">
                             {event.service}
@@ -103,7 +103,7 @@ const EventDetail = () => {
                 <div className="p-6 space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 font-mono text-xs">
                         {/* Author */}
-                        <div className="p-4 bg-[#0b0e14] border border-slate-800 rounded-xl space-y-1">
+                        <div className="p-4 bg-[#101413] border border-slate-800 rounded-xl space-y-1">
                             <span className="text-[10px] uppercase font-mono text-slate-400 block font-semibold flex items-center gap-1">
                                 <User size={12} className="text-indigo-400" /> Change Author
                             </span>
@@ -113,7 +113,7 @@ const EventDetail = () => {
                         </div>
 
                         {/* Commit / Hash */}
-                        <div className="p-4 bg-[#0b0e14] border border-slate-800 rounded-xl space-y-1">
+                        <div className="p-4 bg-[#101413] border border-slate-800 rounded-xl space-y-1">
                             <span className="text-[10px] uppercase font-mono text-slate-400 block font-semibold flex items-center gap-1">
                                 <GitCommit size={12} className="text-indigo-400" /> Commit Reference
                             </span>
@@ -138,7 +138,7 @@ const EventDetail = () => {
                         </div>
 
                         {/* Environment & Source */}
-                        <div className="p-4 bg-[#0b0e14] border border-slate-800 rounded-xl space-y-1">
+                        <div className="p-4 bg-[#101413] border border-slate-800 rounded-xl space-y-1">
                             <span className="text-[10px] uppercase font-mono text-slate-400 block font-semibold flex items-center gap-1">
                                 <Server size={12} className="text-indigo-400" /> Source & Scope
                             </span>
@@ -149,7 +149,7 @@ const EventDetail = () => {
 
                         {/* Version */}
                         {meta.version && (
-                            <div className="p-4 bg-[#0b0e14] border border-slate-800 rounded-xl space-y-1">
+                            <div className="p-4 bg-[#101413] border border-slate-800 rounded-xl space-y-1">
                                 <span className="text-[10px] uppercase font-mono text-slate-400 block font-semibold flex items-center gap-1">
                                     <Box size={12} className="text-emerald-400" /> Version Tag
                                 </span>
@@ -161,7 +161,7 @@ const EventDetail = () => {
 
                         {/* Branch */}
                         {meta.branch && (
-                            <div className="p-4 bg-[#0b0e14] border border-slate-800 rounded-xl space-y-1">
+                            <div className="p-4 bg-[#101413] border border-slate-800 rounded-xl space-y-1">
                                 <span className="text-[10px] uppercase font-mono text-slate-400 block font-semibold">
                                     Branch Target
                                 </span>
@@ -173,7 +173,7 @@ const EventDetail = () => {
 
                         {/* Tables Affected */}
                         {meta.tables_affected && meta.tables_affected.length > 0 && (
-                            <div className="p-4 bg-[#0b0e14] border border-slate-800 rounded-xl space-y-1 sm:col-span-2">
+                            <div className="p-4 bg-[#101413] border border-slate-800 rounded-xl space-y-1 sm:col-span-2">
                                 <span className="text-[10px] uppercase font-mono text-slate-400 block font-semibold flex items-center gap-1">
                                     <Database size={12} className="text-amber-400" /> Database Tables Affected
                                 </span>
@@ -193,7 +193,7 @@ const EventDetail = () => {
                         <button
                             type="button"
                             onClick={() => setShowRawJson(!showRawJson)}
-                            className="flex items-center justify-between w-full py-2.5 px-4 bg-[#0b0e14] hover:bg-slate-900 border border-slate-800 rounded-xl text-xs font-mono text-slate-300 hover:text-white transition-all cursor-pointer"
+                            className="flex items-center justify-between w-full py-2.5 px-4 bg-[#101413] hover:bg-slate-900 border border-slate-800 rounded-xl text-xs font-mono text-slate-300 hover:text-white transition-all cursor-pointer"
                         >
                             <span className="flex items-center gap-2">
                                 <Code size={14} className="text-indigo-400" />
@@ -203,7 +203,7 @@ const EventDetail = () => {
                         </button>
 
                         {showRawJson && (
-                            <div className="mt-3 bg-[#030712] rounded-xl border border-slate-800 overflow-hidden shadow-inner animate-in fade-in duration-200">
+                            <div className="mt-3 bg-[#0b0f0d] rounded-xl border border-slate-800 overflow-hidden shadow-inner animate-in fade-in duration-200">
                                 <div className="flex items-center gap-2 px-4 py-2 border-b border-slate-800 bg-slate-900/50">
                                     <Code size={13} className="text-slate-400" />
                                     <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest font-semibold">RAW_TELEMETRY.JSON</span>
