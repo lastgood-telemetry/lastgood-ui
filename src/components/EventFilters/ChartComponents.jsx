@@ -3,7 +3,7 @@ import React from 'react';
 export const SimpleBarChart = ({ data, title, height = "h-48" }) => {
     if (!data || data.length === 0) {
         return (
-            <div className={`${height} flex items-center justify-center bg-black/20 border border-white/5 rounded-lg`}>
+            <div className={`${height} flex items-center justify-center bg-[#0b0f0d]/20 border border-white/5 rounded-lg`}>
                 <span className="text-text-muted text-sm">No data available</span>
             </div>
         );
@@ -13,13 +13,13 @@ export const SimpleBarChart = ({ data, title, height = "h-48" }) => {
     const scale = 100 / (maxValue || 1);
 
     return (
-        <div className="bg-black/20 border border-white/5 rounded-lg p-4">
+        <div className="bg-[#0b0f0d]/20 border border-white/5 rounded-lg p-4">
             {title && <h3 className="text-sm font-semibold text-white mb-4">{title}</h3>}
             <div className={`${height} flex flex-col justify-between`}>
                 {data.map((item, index) => (
                     <div key={index} className="flex items-center gap-2 mb-2">
                         <span className="text-xs text-text-muted min-w-20 truncate">{item.label}</span>
-                        <div className="flex-1 h-6 bg-black/40 rounded overflow-hidden border border-white/5">
+                        <div className="flex-1 h-6 bg-[#0b0f0d]/40 rounded overflow-hidden border border-white/5">
                             <div
                                 className="h-full bg-gradient-to-r from-accent to-blue-500 transition-all duration-300 flex items-center justify-end pr-2"
                                 style={{ width: `${item.value * scale}%` }}
@@ -42,7 +42,7 @@ export const SimpleBarChart = ({ data, title, height = "h-48" }) => {
 export const SimpleLineChart = ({ data, title, height = "h-48" }) => {
     if (!data || data.length === 0) {
         return (
-            <div className={`${height} flex items-center justify-center bg-black/20 border border-white/5 rounded-lg`}>
+            <div className={`${height} flex items-center justify-center bg-[#0b0f0d]/20 border border-white/5 rounded-lg`}>
                 <span className="text-text-muted text-sm">No data available</span>
             </div>
         );
@@ -58,7 +58,7 @@ export const SimpleLineChart = ({ data, title, height = "h-48" }) => {
     const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
 
     return (
-        <div className="bg-black/20 border border-white/5 rounded-lg p-4">
+        <div className="bg-[#0b0f0d]/20 border border-white/5 rounded-lg p-4">
             {title && <h3 className="text-sm font-semibold text-white mb-4">{title}</h3>}
             <svg viewBox="0 0 100 100" className={`${height} w-full`} preserveAspectRatio="none">
                 {/* Grid */}
@@ -78,8 +78,8 @@ export const SimpleLineChart = ({ data, title, height = "h-48" }) => {
                 {/* Gradient */}
                 <defs>
                     <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#2dd4bf" />
-                        <stop offset="100%" stopColor="#3b82f6" />
+                        <stop offset="0%" stopColor="#b6edce" />
+                        <stop offset="100%" stopColor="#b6edce" />
                     </linearGradient>
                 </defs>
 
@@ -90,7 +90,7 @@ export const SimpleLineChart = ({ data, title, height = "h-48" }) => {
                         cx={p.x}
                         cy={p.y}
                         r="1.5"
-                        fill="#2dd4bf"
+                        fill="#b6edce"
                         vectorEffect="non-scaling-stroke"
                     />
                 ))}
@@ -122,7 +122,7 @@ export const StatsCard = ({ label, value, icon: Icon, trend = null, color = "acc
                     <p className="text-2xl font-bold text-white">{value}</p>
                 </div>
                 {Icon && (
-                    <div className="p-2 rounded-lg bg-black/20">
+                    <div className="p-2 rounded-lg bg-[#0b0f0d]/20">
                         <Icon size={18} className={colorClasses[color].split(' ')[0]} />
                     </div>
                 )}
