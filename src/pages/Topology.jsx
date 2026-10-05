@@ -151,10 +151,9 @@ export default function Topology() {
   return (
     <PageContainer>
       <PageHeader
-        category="SERVICE DEPENDENCY GRAPH"
         icon={Network}
-        title="Service Topology & Workflow Map"
-        description="Build your system architecture dependency map so LastGood's scoring engine calculates cascading blast radius propagation automatically during outages."
+        title="Topology"
+        description="Map service dependencies to put changes in context."
         actions={
           realServiceNames.length > 0 && (
             <button
@@ -523,4 +522,4 @@ export default function Topology() {
       )}
     </PageContainer>
   );
-}
+      }
