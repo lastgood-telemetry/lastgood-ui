@@ -5,8 +5,6 @@ import { Search, Calendar, Clock, AlertCircle, History, Sparkles, SlidersHorizon
 import api from "../api";
 import { Link, useLocation } from 'react-router-dom';
 import { eventRewindContext, readRewindContext, rewindRequestParams, rewindOptions } from '../util/rewind';
-import RewindTimeline from "../components/Rewind/RewindTimeline";
-import RewindAiDiagnosisPanel from "../components/Rewind/RewindAiDiagnosisPanel";
 import { RewindIncidentBrief } from "../components/Rewind/RewindIncidentBrief";
 import { LoadingState } from "../components/LoadingState/LoadingState";
 import dayjs from "dayjs";
@@ -57,8 +55,6 @@ const Rewind = () => {
   const services = rewindOptions(events, 'service', service);
   const environments = rewindOptions(events, 'environment', environment);
   const [queryParams, setQueryParams] = useState(null);
-  const [selectedEventId, setSelectedEventId] = useState(null);
-  const [viewMode, setViewMode] = useState('brief'); // 'brief' | 'detailed'
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -100,7 +96,6 @@ const Rewind = () => {
     setService(routeContext.service);
     setEnvironment(routeContext.environment);
     setQueryParams(null);
-    setSelectedEventId(null);
   }, [routeContext]);
 
   const analyzeLatest = () => {
@@ -109,23 +104,10 @@ const Rewind = () => {
     setIncidentTime(context.incidentTime);
     setService(context.service);
     setEnvironment(context.environment);
-    setSelectedEventId(null);
     setQueryParams({ ...context, windowMinutes });
   };
-  const effectiveViewMode = isMobile ? 'brief' : viewMode;
   const hasNoResults = result && !(result.individual_scores || result.individualScores || []).length;
 
-  // Auto-select primary trigger event or first event when result is fetched
-  useEffect(() => {
-    if (result) {
-      const items = result.individual_scores || result.individualScores || [];
-      if (items.length > 0) {
-        const primary = items.find(i => i.role === 'primary');
-        const target = primary ? (primary.event?.id || primary.id) : (items[0].event?.id || items[0].id);
-        setSelectedEventId(target);
-      }
-    }
-  }, [result]);
 
   return (
     <PageContainer>
@@ -270,81 +252,7 @@ const Rewind = () => {
 
         {isFetched && result && !hasNoResults && (
           <div className="space-y-6 animate-in fade-in duration-300">
-            {/* View Mode Segmented Control Bar */}
-            <div className="hidden md:flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] pb-3">
-              <div className="flex items-center gap-1.5 p-1 bg-[#101413] border border-white/10 rounded-lg">
-                <button
-                  type="button"
-                  onClick={() => setViewMode('brief')}
-                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-mono font-medium transition-all ${
-                    viewMode === 'brief'
-                      ? 'bg-zinc-700 text-white shadow-sm'
-                      : 'text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  <Sparkles size={13} />
-                  <span>Incident brief</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setViewMode('detailed')}
-                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-mono font-medium transition-all ${
-                    viewMode === 'detailed'
-                      ? 'bg-zinc-700 text-white shadow-sm'
-                      : 'text-zinc-400 hover:text-white'
-                  }`}
-                >
-                  <Clock size={13} />
-                  <span>Timeline & evidence</span>
-                </button>
-              </div>
-
-            </div>
-
-            {/* View Mode 1: Incident brief Mode (Default) */}
-            {effectiveViewMode === 'brief' && (
-              <RewindIncidentBrief
-                scoringResult={result}
-                queryParams={queryParams}
-                onSwitchToDetailed={() => setViewMode('detailed')}
-              />
-            )}
-
-            {/* View Mode 2: Detailed Split Timeline & Diagnosis Mode */}
-            {effectiveViewMode === 'detailed' && (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-                {/* Left Column (1/3 Width): Interactive Timeline */}
-                <div className="lg:col-span-1 space-y-3">
-                  <div className="flex items-center justify-between px-1 mb-2">
-                    <h3 className="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                      <Clock size={14} className="text-zinc-400" />
-                      Change timeline
-                    </h3>
-                    <span className="text-[10px] font-mono text-zinc-400">
-                      {(result.individual_scores || result.individualScores || []).length} events
-                    </span>
-                  </div>
-
-                  <div className="max-h-[750px] overflow-y-auto pr-2 custom-scrollbar">
-                    <RewindTimeline
-                      events={result.individual_scores || result.individualScores || []}
-                      selectedEventId={selectedEventId}
-                      onSelectEvent={setSelectedEventId}
-                      windowMinutes={queryParams?.windowMinutes || windowMinutes}
-                    />
-                  </div>
-                </div>
-
-                {/* Right Column (2/3 Width): Live AI Diagnosis Panel */}
-                <div className="lg:col-span-2 space-y-6">
-                  <RewindAiDiagnosisPanel
-                    scoringResult={result}
-                    selectedEventId={selectedEventId}
-                    queryParams={queryParams}
-                  />
-                </div>
-              </div>
-            )}
+            <RewindIncidentBrief scoringResult={result} queryParams={queryParams} />
 
           </div>
         )}
