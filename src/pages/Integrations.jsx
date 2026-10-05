@@ -328,7 +328,7 @@ const Integrations = () => {
     <PageContainer>
       <PageHeader
         icon={Blocks}
-        title="Integrations"
+        title="Ingestion Channels"
         description="Connect sources to collect deployments and configuration changes."
       />
 
