@@ -327,10 +327,9 @@ const Integrations = () => {
   return (
     <PageContainer>
       <PageHeader
-        category="INGESTION PIPELINES"
         icon={Blocks}
-        title="Ingestion Channels"
-        description="Connect your engineering ecosystem to LastGood. Automatically ingest, correlate, and analyze system changes to discover failure root causes instantly."
+        title="Integrations"
+        description="Connect sources to collect deployments and configuration changes."
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -393,4 +392,3 @@ const Integrations = () => {
 };
 
 export default Integrations;
-

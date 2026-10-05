@@ -203,10 +203,9 @@ const Services = () => {
     return (
         <PageContainer>
             <PageHeader
-                category="INFRASTRUCTURE CATALOG"
                 icon={Server}
-                title="Services Architecture"
-                description="Configure operational criticality tiers for change risk scoring and manage service API credentials."
+                title="Services"
+                description="Manage service tiers and API keys for change-risk scoring."
                 actions={
                     <div className="flex items-center gap-2.5">
                         <button

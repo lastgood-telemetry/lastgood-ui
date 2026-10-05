@@ -16,10 +16,10 @@ const Sandbox = () => {
   const [mockServices, setMockServices] = useState(initialMockServices);
 
   const tabs = [
-    { id: 'rewind', label: 'AI Incident Rewind', icon: Clock },
-    { id: 'telemetry', label: 'Telemetry Feed', icon: List },
-    { id: 'ingestions', label: 'Ingestion Channels', icon: Blocks },
-    { id: 'services', label: 'Services & Keys', icon: Server },
+    { id: 'rewind', label: 'Rewind', icon: Clock },
+    { id: 'telemetry', label: 'Events', icon: List },
+    { id: 'ingestions', label: 'Integrations', icon: Blocks },
+    { id: 'services', label: 'Services', icon: Server },
   ];
 
   return (
@@ -36,7 +36,6 @@ const Sandbox = () => {
         <div className="px-4 py-2 border-b border-white/[0.06] mb-3">
           <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-md border border-white/10 bg-white/[0.03]">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
             <span className="text-[11px] font-mono text-zinc-300 font-medium">Simulated incident demo</span>
@@ -44,7 +43,7 @@ const Sandbox = () => {
         </div>
 
         <div className="px-4 py-1">
-           <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-wider mb-2 block">Interactive Suite</span>
+           <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-wider mb-2 block">Explore</span>
         </div>
 
         <nav className="flex-1 px-3 space-y-1">
@@ -104,8 +103,8 @@ const Sandbox = () => {
                {/* Timeline Section */}
                <div className="w-full md:w-1/3 flex flex-col h-full">
                   <div className="mb-4">
-                     <h2 className="text-xl font-bold text-white">Event Timeline</h2>
-                     <p className="text-sm text-text-muted mt-1">Select an event to view AI analysis.</p>
+                     <h2 className="text-xl font-bold text-white">Change timeline</h2>
+                     <p className="text-sm text-text-muted mt-1">Select a change to inspect the sample analysis.</p>
                   </div>
                   <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
                      <SandboxTimeline 

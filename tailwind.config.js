@@ -57,7 +57,7 @@ export default {
                 mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
             },
             borderRadius: {
-                md: '3px', lg: '4px', xl: '6px', '2xl': '6px', '3xl': '8px',
+                DEFAULT: '4px', sm: '4px', md: '4px', lg: '4px', xl: '4px', '2xl': '4px', '3xl': '4px',
             },
             fontSize: {
                 xs: '11px',      // Minimum readable size

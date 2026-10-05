@@ -53,8 +53,8 @@ const CommandPaletteModal = () => {
   const actions = [
     {
       id: 'rewind-now',
-      title: 'Run AI Rewind Diagnostic (Now)',
-      subtitle: 'Analyze correlated changes over lookback window',
+      title: 'Open Rewind',
+      subtitle: 'Choose an incident time and review nearby changes',
       icon: Clock,
       color: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/30',
       action: () => {
@@ -64,8 +64,8 @@ const CommandPaletteModal = () => {
     },
     {
       id: 'toggle-incident',
-      title: isIncidentMode ? 'Exit On-Call Incident Mode' : 'Trigger On-Call Incident Mode (P1 Active)',
-      subtitle: isIncidentMode ? 'Return to normal operational telemetry' : 'Switch dashboard to high-density incident HUD',
+      title: isIncidentMode ? 'Exit demo incident mode' : 'Enter demo incident mode',
+      subtitle: isIncidentMode ? 'Return to the standard view' : 'Show a simulated incident banner, not a real alert',
       icon: ShieldAlert,
       color: isIncidentMode ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' : 'text-rose-400 bg-rose-500/10 border-rose-500/30',
       action: () => {
@@ -75,8 +75,8 @@ const CommandPaletteModal = () => {
     },
     {
       id: 'services-tier1',
-      title: 'Services Catalog (Tier-1 Mission Critical)',
-      subtitle: 'Inspect API endpoints, P99 latency, & error budgets',
+      title: 'Open services',
+      subtitle: 'Manage service tiers and API keys',
       icon: Server,
       color: 'text-sky-400 bg-sky-500/10 border-sky-500/30',
       action: () => {
@@ -86,8 +86,8 @@ const CommandPaletteModal = () => {
     },
     {
       id: 'topology-map',
-      title: 'Infrastructure Topology Map',
-      subtitle: 'Inspect service dependencies and blast radius graph',
+      title: 'Open topology',
+      subtitle: 'Review service dependencies',
       icon: Network,
       color: 'text-purple-400 bg-purple-500/10 border-purple-500/30',
       action: () => {
@@ -97,8 +97,8 @@ const CommandPaletteModal = () => {
     },
     {
       id: 'events-stream',
-      title: 'Live Event Stream & Mutations',
-      subtitle: 'Filter deployments, feature flags, & infrastructure events',
+      title: 'Open events',
+      subtitle: 'Browse deployments, commits and configuration changes',
       icon: List,
       color: 'text-amber-400 bg-amber-500/10 border-amber-500/30',
       action: () => {
@@ -108,8 +108,8 @@ const CommandPaletteModal = () => {
     },
     {
       id: 'postmortems-archive',
-      title: 'Blameless Postmortems & Incident Reports',
-      subtitle: 'View past incident timelines, root causes, & action items',
+      title: 'Open postmortems',
+      subtitle: 'Review incident drafts, evidence and action owners',
       icon: FileText,
       color: 'text-teal-400 bg-teal-500/10 border-teal-500/30',
       action: () => {
@@ -119,8 +119,8 @@ const CommandPaletteModal = () => {
     },
     {
       id: 'toggle-density',
-      title: `Toggle Density: Currently ${densityMode.toUpperCase()}`,
-      subtitle: densityMode === 'comfortable' ? 'Switch to Compact (High-Density SRE Mode)' : 'Switch to Comfortable (Standard Mode)',
+      title: `View density: ${densityMode.toUpperCase()}`,
+      subtitle: densityMode === 'comfortable' ? 'Use compact spacing' : 'Use comfortable spacing',
       icon: Sliders,
       color: 'text-zinc-400 bg-zinc-500/10 border-zinc-500/30',
       action: () => {
@@ -148,7 +148,7 @@ const CommandPaletteModal = () => {
           <input
             type="text"
             autoFocus
-            placeholder="Type a command, search services, or jump to page... (ESC to close)"
+            placeholder="Find a page or command..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="w-full bg-transparent text-sm text-white placeholder-slate-500 focus:outline-none font-sans"
@@ -197,10 +197,10 @@ const CommandPaletteModal = () => {
         <div className="px-4 py-2 bg-[#101413] border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
           <div className="flex items-center gap-2">
             <Logo size="xs" />
-            <span>LastGood SRE Navigation Engine</span>
+            <span>LastGood commands</span>
           </div>
           <div className="flex items-center gap-3">
-            <span>Press <kbd className="text-[10px] bg-slate-800 px-1.5 py-0.5 rounded border border-slate-700">↵</kbd> to execute</span>
+            <span>Select a command to open it</span>
           </div>
         </div>
       </div>

@@ -91,17 +91,16 @@ const Events = () => {
     return (
         <PageContainer>
             <PageHeader
-                category="REAL-TIME TELEMETRY STREAM"
                 icon={Activity}
-                title="Events Stream"
-                description="Real-time telemetry audit feed tracking deployments, migrations, and infrastructure configuration mutations."
+                title="Events"
+                description="Browse deployments, commits and configuration changes across your services."
                 actions={
                     <button
                         onClick={() => navigate('/rewind')}
                         className="bg-[#b6edce] hover:bg-[#d5f7e4] text-[#101413] font-mono font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-all text-xs shadow-sm cursor-pointer"
                     >
                         <Sparkles size={14} />
-                        <span>Run AI Rewind Diagnosis</span>
+                        <span>Open Rewind</span>
                     </button>
                 }
             />
@@ -110,53 +109,53 @@ const Events = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                 <div className="p-3.5 bg-[#151b18] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
                     <div>
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">Total Telemetry Events</span>
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">Matching events</span>
                         <span className="text-xl font-bold text-white font-mono">{totalEventsCount}</span>
                     </div>
-                    <div className="p-2 rounded-lg bg-indigo-950/60 border border-indigo-500/30 text-indigo-400">
+                    <div className="p-2 text-slate-400">
                         <List size={16} />
                     </div>
                 </div>
 
                 <div className="p-3.5 bg-[#151b18] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
                     <div>
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">Prod Changes</span>
-                        <span className="text-xl font-bold text-rose-400 font-mono">{metrics.prodCount}</span>
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">Production in view</span>
+                        <span className="text-xl font-bold text-white font-mono">{metrics.prodCount}</span>
                     </div>
-                    <div className="p-2 rounded-lg bg-rose-950/60 border border-rose-500/30 text-rose-400">
+                    <div className="p-2 text-slate-400">
                         <ShieldAlert size={16} />
                     </div>
                 </div>
 
                 <div className="p-3.5 bg-[#151b18] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
                     <div>
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">DB Schema Migrations</span>
-                        <span className="text-xl font-bold text-amber-400 font-mono">{metrics.migrationCount}</span>
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">Migrations in view</span>
+                        <span className="text-xl font-bold text-white font-mono">{metrics.migrationCount}</span>
                     </div>
-                    <div className="p-2 rounded-lg bg-amber-950/60 border border-amber-500/30 text-amber-400">
+                    <div className="p-2 text-slate-400">
                         <Database size={16} />
                     </div>
                 </div>
 
                 <div className="p-3.5 bg-[#151b18] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
                     <div>
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">Services Changed</span>
+                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">Services in view</span>
                         <span className="text-xl font-bold text-white font-mono">{metrics.serviceCount}</span>
                     </div>
-                    <div className="p-2 rounded-lg bg-indigo-950/60 border border-indigo-500/30 text-indigo-400">
+                    <div className="p-2 text-slate-400">
                         <Server size={16} />
                     </div>
                 </div>
             </div>
 
-            <p className="text-xs text-text-muted mb-4">Lifecycle events with the same explicit deployment ID, repository, service and environment are grouped within the loaded results. A unique nearby push with matching SHA and scope is shown as associated evidence. Expand a group to inspect every original event. Total counts include raw events.</p>
+            <p className="text-xs text-text-muted mb-4">Matching events counts all results. Other metrics count loaded events only. Related deployment events are grouped; expand a group for the originals.</p>
             {/* Filter & Search Bar */}
             <div className="flex flex-col md:flex-row gap-3 mb-6 items-stretch md:items-center">
                 <div className="flex-1">
                     <SearchBar
                         value={searchQuery}
                         onChange={setSearchQuery}
-                        placeholder="Search audit trail by commit SHA, service, author..."
+                        placeholder="Search by commit, service or author..."
                     />
                 </div>
                 <div className="flex items-center gap-2 flex-wrap shrink-0">
@@ -174,7 +173,7 @@ const Events = () => {
             </div>
 
             {/* Scrollable Timeline Section (Only Events Stream Scrolls) */}
-            <div className="bg-[#151b18] border border-slate-800 rounded-xl p-6 relative shadow-sm max-h-[calc(100vh-310px)] overflow-y-auto custom-scrollbar">
+            <div className="bg-[#151b18] border border-slate-800 rounded-xl p-6 relative shadow-sm ">
                 <Timeline events={filteredEvents} isLoading={isLoading || !data} error={error} />
 
                 {hasNextPage && (
@@ -182,7 +181,7 @@ const Events = () => {
                         <button
                             onClick={() => fetchNextPage()}
                             disabled={isFetchingNextPage}
-                            className="flex items-center gap-2 px-5 py-2 bg-[#101413] hover:bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-lg text-xs font-mono font-bold text-white transition-all disabled:opacity-50 uppercase tracking-wider cursor-pointer"
+                            className="flex items-center gap-2 px-5 py-2 bg-[#101413] hover:bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-lg text-xs font-mono font-bold text-white transition-all disabled:opacity-50 cursor-pointer"
                         >
                             {isFetchingNextPage ? (
                                 <>
@@ -190,7 +189,7 @@ const Events = () => {
                                     <span>Loading...</span>
                                 </>
                             ) : (
-                                <span>Load More Events</span>
+                                <span>Load more events</span>
                             )}
                         </button>
                     </div>

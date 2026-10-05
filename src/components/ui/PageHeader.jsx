@@ -10,11 +10,11 @@ export const PageHeader = ({
   className = "",
 }) => {
   return (
-    <div className={`flex flex-col gap-3 border-b border-slate-800/60 pb-6 mb-8 ${className}`}>
+    <div className={`flex flex-col gap-3 border-b border-slate-800/60 pb-4 mb-6 ${className}`}>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="space-y-1">
           {category && (
-            <span className="text-[10px] font-mono tracking-[0.1em] text-slate-400 uppercase block mb-2">
+            <span className="text-xs font-medium text-slate-500 block mb-2">
               {category}
             </span>
           )}
@@ -24,7 +24,7 @@ export const PageHeader = ({
                 <Icon size={18} />
               </div>
             )}
-            <h1 className="text-2xl md:text-[32px] md:leading-[1.1] font-normal tracking-[-0.045em] text-[#f1f2ef] flex items-center gap-2 font-sans">
+            <h1 className="text-2xl md:text-[28px] md:leading-[1.2] font-normal tracking-[-0.045em] text-[#f1f2ef] flex items-center gap-2 font-sans">
               {title}
             </h1>
           </div>

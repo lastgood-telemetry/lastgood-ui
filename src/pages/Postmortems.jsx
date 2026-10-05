@@ -161,10 +161,9 @@ export default function Postmortems() {
   return (
     <PageContainer>
       <PageHeader
-        category="RELIABILITY & COMPLIANCE"
         icon={FileText}
-        title="SRE Incident Postmortems"
-        description="Draft incident summaries from change events. Review suspected contributors, supporting evidence and action owners before sharing."
+        title="Postmortems"
+        description="Draft incident summaries. Review suspected contributors, evidence and action owners before sharing."
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -450,4 +449,3 @@ export default function Postmortems() {
     </PageContainer>
   );
 }
-

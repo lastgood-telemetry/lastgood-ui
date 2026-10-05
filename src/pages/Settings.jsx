@@ -37,10 +37,9 @@ const Settings = () => {
   return (
     <PageContainer>
       <PageHeader
-        category="ACCOUNT & ORGANIZATION"
         icon={UserCircle}
-        title="Workspace Settings"
-        description="Manage organization details, team access, and subscription preferences."
+        title="Settings"
+        description="Manage your workspace and account."
       />
 
       <div className="bg-[#101413] border border-white/10 rounded-xl p-6 shadow-sm relative overflow-hidden space-y-6">
