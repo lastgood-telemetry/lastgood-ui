@@ -1,202 +1,69 @@
-import { groupDeploymentEvents } from '../util/console';
 import React, { useState, useMemo, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Activity, Loader2, ArrowUpRight } from 'lucide-react';
 import { useEvents } from '../hooks/useEvents';
-import { Timeline } from '../components/Timeline/Timeline';
-import { List, Loader2, Info, Activity, Database, ShieldAlert, Sparkles, Filter, Server } from 'lucide-react';
+import { groupDeploymentEvents, eventEnvironmentLabel, utcTimestamp } from '../util/console';
+import { eventRewindContext } from '../util/rewind';
 import { DateRangeFilter } from '../components/EventFilters/DateRangeFilter';
-import { SearchBar, MultiSelectFilter } from '../components/EventFilters/FilterComponents';
-import dayjs from 'dayjs';
-import { useNavigate } from 'react-router-dom';
-
+import { SearchBar } from '../components/EventFilters/FilterComponents';
 import { PageHeader } from '../components/ui/PageHeader';
 import { PageContainer } from '../components/ui/PageContainer';
 
 const Events = () => {
-    const navigate = useNavigate();
-    // Filter state
-    const [searchQuery, setSearchQuery] = useState('');
-    const [debouncedSearch, setDebouncedSearch] = useState('');
-    const [fromDate, setFromDate] = useState('');
-    const [toDate, setToDate] = useState('');
-    const [selectedServices, setSelectedServices] = useState([]);
-    const [selectedEnvironments, setSelectedEnvironments] = useState([]);
-    const [presetFilter, setPresetFilter] = useState('all'); // 'all' | 'prod' | 'migrations' | 'deployments'
-
-    // Debounce search query by 300ms to avoid firing requests on every keystroke
-    useEffect(() => {
-        const handler = setTimeout(() => {
-            setDebouncedSearch(searchQuery);
-        }, 300);
-        return () => clearTimeout(handler);
-    }, [searchQuery]);
-
-    // Server-side filter params for query
-    const queryFilters = useMemo(() => {
-        const filters = {};
-        if (debouncedSearch.trim()) filters.search = debouncedSearch.trim();
-        if (fromDate) filters.from_date = fromDate;
-        if (toDate) filters.to_date = toDate;
-        if (selectedServices.length > 0) filters.services = selectedServices;
-        if (selectedEnvironments.length > 0) filters.environments = selectedEnvironments;
-
-        if (presetFilter === 'prod') {
-            filters.environments = Array.from(new Set([...(filters.environments || []), 'prod', 'production']));
-        } else if (presetFilter === 'migrations') {
-            filters.type = 'migration';
-        } else if (presetFilter === 'deployments') {
-            filters.type = 'deployment';
-        }
-        return filters;
-    }, [debouncedSearch, fromDate, toDate, selectedServices, selectedEnvironments, presetFilter]);
-
-    const {
-        data,
-        isLoading,
-        error,
-        fetchNextPage,
-        hasNextPage,
-        isFetchingNextPage
-    } = useEvents(queryFilters);
-
-    // Fetch baseline events without filter for populating filter dropdown options
-    const { data: allEventsData } = useEvents({});
-    const allEvents = allEventsData ? allEventsData.pages.flatMap(page => page.data) : [];
-
-    const events = data ? data.pages.flatMap(page => page.data) : null;
-    const totalEventsCount = data?.pages[0]?.pagination?.total || (events ? events.length : 0);
-
-    // Extract unique services and environments from overall events
-    const uniqueServices = useMemo(() => {
-        const sourceList = allEvents.length > 0 ? allEvents : (events || []);
-        return [...new Set(sourceList.map(e => e.service).filter(Boolean))].sort();
-    }, [allEvents, events]);
-
-    const uniqueEnvironments = useMemo(() => {
-        const sourceList = allEvents.length > 0 ? allEvents : (events || []);
-        return [...new Set(sourceList.map(e => e.environment).filter(Boolean))].sort();
-    }, [allEvents, events]);
-
-    // Calculate SRE Quick Metrics
-    const metrics = useMemo(() => {
-        const sourceList = events || [];
-        const prodCount = sourceList.filter(e => e.environment?.toLowerCase() === 'prod' || e.environment?.toLowerCase() === 'production').length;
-        const migrationCount = sourceList.filter(e => (e.type || '').toLowerCase().includes('migration')).length;
-        const deployCount = sourceList.filter(e => (e.type || '').toLowerCase().includes('deploy') || (e.type || '').toLowerCase().includes('commit')).length;
-        const serviceCount = new Set(sourceList.map(e => e.service)).size;
-        return { prodCount, migrationCount, deployCount, serviceCount };
-    }, [events]);
-
-    const filteredEvents = groupDeploymentEvents(events || []);
-
-    return (
-        <PageContainer>
-            <PageHeader
-                icon={Activity}
-                title="Events"
-                description="Browse deployments, commits and configuration changes across your services."
-                actions={
-                    <button
-                        onClick={() => navigate('/rewind')}
-                        className="bg-[#b6edce] hover:bg-[#d5f7e4] text-[#101413] font-mono font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-all text-xs shadow-sm cursor-pointer"
-                    >
-                        <Sparkles size={14} />
-                        <span>Open Rewind</span>
-                    </button>
-                }
-            />
-
-            {/* SRE Stat Cards Bar */}
-            <div className="hidden md:grid grid-cols-4 gap-3 mb-6">
-                <div className="p-3.5 bg-[#151b18] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
-                    <div>
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">Matching events</span>
-                        <span className="text-xl font-bold text-white font-mono">{totalEventsCount}</span>
-                    </div>
-                    <div className="p-2 text-slate-400">
-                        <List size={16} />
-                    </div>
-                </div>
-
-                <div className="p-3.5 bg-[#151b18] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
-                    <div>
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">Production in view</span>
-                        <span className="text-xl font-bold text-white font-mono">{metrics.prodCount}</span>
-                    </div>
-                    <div className="p-2 text-slate-400">
-                        <ShieldAlert size={16} />
-                    </div>
-                </div>
-
-                <div className="p-3.5 bg-[#151b18] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
-                    <div>
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">Migrations in view</span>
-                        <span className="text-xl font-bold text-white font-mono">{metrics.migrationCount}</span>
-                    </div>
-                    <div className="p-2 text-slate-400">
-                        <Database size={16} />
-                    </div>
-                </div>
-
-                <div className="p-3.5 bg-[#151b18] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
-                    <div>
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">Services in view</span>
-                        <span className="text-xl font-bold text-white font-mono">{metrics.serviceCount}</span>
-                    </div>
-                    <div className="p-2 text-slate-400">
-                        <Server size={16} />
-                    </div>
-                </div>
-            </div>
-
-            <p className="hidden md:block text-xs text-text-muted mb-4">Matching events counts all results. Other metrics count loaded events only. Related deployment events are grouped; expand a group for the originals.</p>
-            {/* Filter & Search Bar */}
-            <div className="flex flex-col md:flex-row gap-3 mb-6 items-stretch md:items-center">
-                <div className="flex-1">
-                    <SearchBar
-                        value={searchQuery}
-                        onChange={setSearchQuery}
-                        placeholder="Search by commit, service or author..."
-                    />
-                </div>
-                <div className="flex items-center gap-2 flex-wrap shrink-0">
-                    <DateRangeFilter
-                        fromDate={fromDate}
-                        toDate={toDate}
-                        onFromDateChange={setFromDate}
-                        onToDateChange={setToDate}
-                        onClear={() => {
-                            setFromDate('');
-                            setToDate('');
-                        }}
-                    />
-                </div>
-            </div>
-
-            {/* Scrollable Timeline Section (Only Events Stream Scrolls) */}
-            <div className="bg-[#151b18] border border-slate-800 rounded-xl p-3 md:p-6 relative shadow-sm ">
-                <Timeline events={filteredEvents} isLoading={isLoading || !data} error={error} />
-
-                {hasNextPage && (
-                    <div className="mt-8 flex justify-center">
-                        <button
-                            onClick={() => fetchNextPage()}
-                            disabled={isFetchingNextPage}
-                            className="flex items-center gap-2 px-5 py-2 bg-[#101413] hover:bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-lg text-xs font-mono font-bold text-white transition-all disabled:opacity-50 cursor-pointer"
-                        >
-                            {isFetchingNextPage ? (
-                                <>
-                                    <Loader2 size={15} className="animate-spin text-indigo-400" />
-                                    <span>Loading...</span>
-                                </>
-                            ) : (
-                                <span>Load more events</span>
-                            )}
-                        </button>
-                    </div>
-                )}
-            </div>
-        </PageContainer>
-    );
+  const navigate = useNavigate();
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [scope, setScope] = useState('all');
+  const [service, setService] = useState('');
+  useEffect(() => { const timer = setTimeout(() => setDebouncedSearch(search), 300); return () => clearTimeout(timer); }, [search]);
+  const filters = useMemo(() => ({ ...(debouncedSearch.trim() && { search: debouncedSearch.trim() }), ...(fromDate && { from_date: fromDate }), ...(toDate && { to_date: toDate }), ...(service && { services: [service] }) }), [debouncedSearch, fromDate, toDate, service]);
+  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage, refetch } = useEvents(filters);
+  const { data: baseline } = useEvents({});
+  const loaded = data?.pages.flatMap(page => page.data) || [];
+  const services = [...new Set((baseline?.pages.flatMap(page => page.data) || loaded).map(event => event.service).filter(Boolean))].sort();
+  // Production is a display-only filter over loaded rows: provider env wins over
+  // historical defaults. Never claim this count covers unloaded pages.
+  const events = groupDeploymentEvents(loaded).filter(event => scope !== 'production' || eventEnvironmentLabel(event) === 'Production').sort((a, b) => new Date(b.occurred_at) - new Date(a.occurred_at));
+  const active = search || fromDate || toDate || service || scope !== 'all';
+  return <PageContainer>
+    <PageHeader icon={Activity} title="Change log" description="What changed before the incident? Newest first. Times in UTC." actions={<Link to="/rewind" className="bg-accent text-[#101413] px-3 py-2 rounded text-xs font-semibold">Open Rewind</Link>} />
+    <div className="space-y-3 mb-5">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex border border-white/10 rounded p-1 gap-1" aria-label="Environment scope">
+          {[['all', 'All environments'], ['production', 'Production only']].map(([value, label]) => <button key={value} aria-pressed={scope === value} onClick={() => setScope(value)} className={`px-3 py-1.5 rounded text-xs ${scope === value ? 'bg-accent text-[#101413] font-semibold' : 'text-text-secondary hover:text-white'}`}>{label}</button>)}
+        </div>
+        <label className="text-xs text-text-muted flex items-center gap-2">Service
+          <select aria-label="Filter service" value={service} onChange={e => setService(e.target.value)} className="bg-[#151b18] border border-white/10 rounded px-2 py-2 text-white max-w-[190px]">
+            <option value="">All services</option>{services.map(value => <option key={value}>{value}</option>)}
+          </select>
+        </label>
+        {active && <button onClick={() => { setSearch(''); setFromDate(''); setToDate(''); setService(''); setScope('all'); }} className="text-xs text-accent underline">Clear filters</button>}
+      </div>
+      <div className="flex flex-col lg:flex-row gap-3">
+        <div className="flex-1 min-w-0"><SearchBar value={search} onChange={setSearch} placeholder="Search change, service, commit or author" /></div>
+        <DateRangeFilter fromDate={fromDate} toDate={toDate} onFromDateChange={setFromDate} onToDateChange={setToDate} onClear={() => { setFromDate(''); setToDate(''); }} />
+      </div>
+    </div>
+    <div className="border border-white/10 rounded bg-[#151b18] overflow-hidden">
+      <div className="px-4 py-3 border-b border-white/10 text-xs text-text-muted">{events.length} changes shown from {loaded.length} loaded events{scope === 'production' ? ' · Production only' : ''}. Related deployment events are grouped.</div>
+      <div className="hidden lg:grid grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,0.9fr)_90px] gap-4 px-4 py-2 border-b border-white/10 text-[10px] uppercase font-mono text-text-muted"><span>What changed</span><span>Service / env</span><span>When (UTC)</span><span>Who</span><span>Investigate</span></div>
+      {isLoading ? <p role="status" className="p-6 text-sm text-text-muted">Loading changes...</p> : error ? <div role="alert" className="p-6 text-sm text-rose-300">Could not load changes. {error.message} <button onClick={() => refetch()} className="text-accent underline">Retry</button></div> : events.length === 0 ? <p className="p-6 text-sm text-text-muted">No changes in the loaded events match these filters.{hasNextPage ? ' Load older events to search further.' : ' Try a wider window or clear filters.'}</p> : events.map(event => {
+        const context = eventRewindContext(event);
+        return <article key={event.id} className="border-b last:border-b-0 border-white/10 px-4 py-4 hover:bg-white/[0.02]">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,0.9fr)_90px] gap-2 lg:gap-4 lg:items-start">
+            <div className="min-w-0"><Link to={`/events/${encodeURIComponent(event.id)}`} className="text-sm font-medium text-white hover:text-accent break-words">{event.summary || event.type || 'Change'}</Link><p className="text-[10px] mt-1 text-text-muted font-mono uppercase">{event.type || 'Unknown type'}</p></div>
+            <div className="text-xs min-w-0 break-words"><p className="text-text-secondary font-medium">{event.service || 'Service unspecified'}</p><span className={eventEnvironmentLabel(event) === 'Production' ? 'text-accent' : 'text-text-muted'}>{eventEnvironmentLabel(event)}</span></div>
+            <time dateTime={event.occurred_at} className="text-xs text-text-secondary font-mono break-words" title={utcTimestamp(event.occurred_at)}>{utcTimestamp(event.occurred_at)}</time>
+            <p className="text-xs text-text-muted break-words">{event.meta?.author || 'Author unavailable'}</p>
+            {context ? <button className="inline-flex items-center gap-1 text-xs text-accent hover:underline justify-self-start" onClick={() => navigate(`/rewind?${new URLSearchParams(context).toString()}`)}>Rewind <ArrowUpRight size={12} /></button> : <span className="text-xs text-text-muted">Time unavailable</span>}
+          </div>
+          {event.lifecycleEvents?.length > 1 && <details className="mt-3 text-xs"><summary className="text-text-muted cursor-pointer">{event.lifecycleEvents.length} related events</summary><ul className="mt-2 space-y-2">{event.lifecycleEvents.map(child => <li key={child.id}><Link to={`/events/${encodeURIComponent(child.id)}`} className="text-accent underline break-words">{child.type}: {child.summary}</Link><p className="text-text-muted">{utcTimestamp(child.occurred_at)}</p></li>)}</ul></details>}
+        </article>;
+      })}
+    </div>
+    {hasNextPage && <button disabled={isFetchingNextPage} onClick={() => fetchNextPage()} className="mt-4 border border-white/10 rounded px-4 py-2 text-sm text-text-secondary inline-flex gap-2 items-center disabled:opacity-50">{isFetchingNextPage && <Loader2 size={14} className="animate-spin" />}{isFetchingNextPage ? 'Loading...' : 'Load older events'}</button>}
+  </PageContainer>;
 };
-
 export default Events;
