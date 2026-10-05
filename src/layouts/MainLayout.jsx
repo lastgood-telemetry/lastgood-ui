@@ -58,7 +58,7 @@ const MainLayout = () => {
     { path: "/postmortems", label: "Postmortems", group: "Investigate", icon: FileText },
     { path: "/services", label: "Services", group: "Context", icon: Server },
     { path: "/topology", label: "Topology", group: "Context", icon: Network },
-    { path: "/integrations", label: "Integrations", group: "Workspace", icon: Blocks },
+    { path: "/integrations", label: "Ingestion Channels", group: "Workspace", icon: Blocks },
     { path: "/settings", label: "Settings", group: "Workspace", icon: UserCircle },
   ];
 
