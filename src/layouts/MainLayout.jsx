@@ -12,7 +12,6 @@ import {
   Search,
   ShieldAlert,
   ChevronRight,
-  Sparkles
 } from "lucide-react";
 import { useOrganization } from "../hooks/useOrganization";
 import LogoutConfirmationModal from "../components/LogoutConfirmationModal/LogoutConfirmationModal";
@@ -39,13 +38,13 @@ const MainLayout = () => {
   };
 
   const navItems = [
-    { path: "/rewind", label: "Rewind AI", icon: Clock },
-    { path: "/events", label: "Events Stream", icon: List },
-    { path: "/services", label: "Services Catalog", icon: Server },
-    { path: "/topology", label: "Topology Map", icon: Network },
-    { path: "/postmortems", label: "Postmortems", icon: FileText },
-    { path: "/integrations", label: "Integrations", icon: Blocks },
-    { path: "/settings", label: "Workspace Settings", icon: UserCircle },
+    { path: "/rewind", label: "Rewind", group: "Investigate", icon: Clock },
+    { path: "/events", label: "Events", group: "Investigate", icon: List },
+    { path: "/postmortems", label: "Postmortems", group: "Investigate", icon: FileText },
+    { path: "/services", label: "Services", group: "Context", icon: Server },
+    { path: "/topology", label: "Topology", group: "Context", icon: Network },
+    { path: "/integrations", label: "Integrations", group: "Workspace", icon: Blocks },
+    { path: "/settings", label: "Settings", group: "Workspace", icon: UserCircle },
   ];
 
   const currentNav = navItems.find((n) => location.pathname.startsWith(n.path)) || navItems[0];
@@ -67,40 +66,27 @@ const MainLayout = () => {
           </span>
         </div>
 
-        {/* Clean Navigation List */}
-        <div className="px-3 pt-4 pb-2">
-          <span className="text-[10px] font-mono text-slate-400 uppercase tracking-[0.1em] px-2">
-            Platform
-          </span>
-        </div>
-
-        <nav className="flex-1 px-2 space-y-0.5 overflow-y-auto custom-scrollbar">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                className={({ isActive }) =>
-                  `flex items-center gap-2.5 px-2.5 py-2 rounded text-xs font-medium transition-all ${
-                    isActive
-                      ? "bg-[#b6edce]/10 text-[#b6edce] font-semibold border border-[#b6edce]/25"
-                      : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/50"
-                  }`
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    <Icon
-                      size={15}
-                      className={isActive ? "text-indigo-400" : "text-slate-400"}
-                    />
-                    <span>{item.label}</span>
-                  </>
-                )}
-              </NavLink>
-            );
-          })}
+        <nav aria-label="Main navigation" className="flex-1 px-2 py-4 overflow-y-auto custom-scrollbar">
+          {['Investigate', 'Context', 'Workspace'].map(group => (
+            <div key={group} className="mb-5 last:mb-0">
+              <h2 className="px-2.5 mb-2 text-[11px] font-medium text-slate-500">{group}</h2>
+              <div className="space-y-0.5">
+                {navItems.filter(item => item.group === group).map(item => {
+                  const Icon = item.icon;
+                  return (
+                    <NavLink key={item.path} to={item.path} className={({ isActive }) =>
+                      `flex items-center gap-2.5 px-2.5 py-2 rounded text-sm transition-colors border ${isActive
+                        ? 'bg-[#b6edce]/10 text-[#b6edce] font-semibold border-[#b6edce]/25'
+                        : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'}`
+                    }>
+                      <Icon size={15} className="shrink-0" />
+                      <span>{item.label}</span>
+                    </NavLink>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
         {/* User Profile & Org Footer */}
@@ -115,7 +101,7 @@ const MainLayout = () => {
                   {org?.name || "Organization"}
                 </span>
                 <span className="text-[10px] text-slate-500 font-mono leading-tight">
-                  Beta
+                  Workspace
                 </span>
               </div>
             </div>
@@ -123,7 +109,7 @@ const MainLayout = () => {
             <button
               onClick={() => setIsLogoutModalOpen(true)}
               className="text-slate-500 hover:text-rose-400 p-1.5 rounded-md hover:bg-rose-950/40 transition-colors cursor-pointer"
-              title="Logout"
+              title="Log out" aria-label="Log out"
             >
               <LogOut size={14} />
             </button>
@@ -148,26 +134,14 @@ const MainLayout = () => {
             {/* System Operational Status Pill */}
             <button
               onClick={toggleIncidentMode}
-              className={`flex items-center gap-2 px-2.5 py-1 rounded-full border text-[11px] font-mono transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-2.5 py-1 rounded border text-xs transition-all cursor-pointer ${
                 isIncidentMode
                   ? "bg-rose-950/60 border-rose-500/40 text-rose-400 hover:bg-rose-900/60"
-                  : "bg-[#17241d] border-[#b6edce]/30 text-[#b6edce] hover:bg-[#1d2e25]"
+                  : "bg-[#151b18] border-slate-800 text-slate-400 hover:text-slate-200"
               }`}
-              title="Click to toggle Incident Mode"
+              title="Toggle a simulated incident. This is not live system health." aria-pressed={isIncidentMode}
             >
-              <span className="relative flex h-2 w-2">
-                <span
-                  className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                    isIncidentMode ? "bg-rose-400" : "bg-[#b6edce]"
-                  }`}
-                ></span>
-                <span
-                  className={`relative inline-flex rounded-full h-2 w-2 ${
-                    isIncidentMode ? "bg-rose-500" : "bg-[#b6edce]"
-                  }`}
-                ></span>
-              </span>
-              <span>{isIncidentMode ? "P1 Incident Active" : "Systems Healthy"}</span>
+              <span>{isIncidentMode ? "Demo incident mode on" : "Demo incident mode"}</span>
             </button>
 
             {/* Quick Search Button */}
@@ -176,7 +150,7 @@ const MainLayout = () => {
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#151b18] border border-slate-800 hover:border-slate-700 text-xs text-slate-400 hover:text-slate-200 transition-all cursor-pointer"
             >
               <Search size={13} className="text-slate-500" />
-              <span>Search...</span>
+              <span>Commands</span>
               <kbd className="text-[10px] font-mono text-slate-500 bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800 ml-1">
                 ⌘K
               </kbd>
@@ -189,13 +163,13 @@ const MainLayout = () => {
           <div className="bg-rose-950/80 border-b border-rose-500/30 px-6 py-2.5 flex items-center justify-between gap-4 text-xs font-mono text-rose-300">
             <div className="flex items-center gap-2">
               <ShieldAlert size={15} className="text-rose-400" />
-              <span><strong>{activeIncident.severity}:</strong> {activeIncident.title}</span>
+              <span><strong>Simulated incident · {activeIncident.severity}:</strong> {activeIncident.title}</span>
             </div>
             <button
               onClick={() => navigate('/rewind')}
               className="text-[11px] bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-200 font-semibold px-2.5 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer"
             >
-              <span>Launch Diagnostic</span>
+              <span>Open Rewind</span>
               <ChevronRight size={12} />
             </button>
           </div>
