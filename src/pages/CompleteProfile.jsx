@@ -1,43 +1,90 @@
 import { consumeLoginDestination } from '../util/console';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Loader2, ArrowRight, AlertCircle } from 'lucide-react';
+import {
+    Building2,
+    Mail,
+    User,
+    UserCog,
+    Loader2,
+    Activity,
+    ArrowRight,
+    AlertCircle
+} from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { oauthSignup } from '../service/auth';
 import { toast } from '../components/ui/Toast';
 import { useOrganizationCount } from '../hooks/useOrganizationCount';
 import { trackEvent } from '../util/analytics';
-import AuthShell from '../components/AuthShell';
-import { profileErrors, workspaceSlug } from '../util/onboarding';
+import Logo from '../components/Logo';
 
-const inputClass = 'w-full min-w-0 bg-bg-primary border rounded-[4px] px-3 py-3 text-[16px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent disabled:opacity-60';
 
-export default function CompleteProfile() {
+const CompleteProfile = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { count, maxOrgs, isLimitReached } = useOrganizationCount();
-    const { email: oauthEmail = '', name: oauthName = '', provider = '' } = location.state || {};
-    const [form, setForm] = useState({ email: oauthEmail, name: oauthName, org_name: '', org_slug: '', role: 'admin', provider });
+
+    // Retrieve state passed from OAuthCallback
+    const state = location.state || {};
+    const { email: oauthEmail = '', name: oauthName = '', provider = '' } = state;
+
+    const [form, setForm] = useState({
+        email: oauthEmail,
+        name: oauthName,import { consumeLoginDestination } from '../util/console';
+                                     
+import React, { useState, useEffect, useRef } from 'react';
+
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import { Loader2, ArrowRight, AlertCircle } fr
+        org_name: '',
+        org_slug: '',
+        role: 'admin',
+        provider: provider
+    });
+
     const [userEditedSlug, setUserEditedSlug] = useState(false);
-    const [errors, setErrors] = useState({});
     const [validationError, setValidationError] = useState('');
     const formRef = useRef(null);
 
     useEffect(() => {
+        // Guard: if no email or provider state exists, redirect to login
         if (!oauthEmail || !provider) {
             toast.error('Onboarding session invalid or expired. Please sign in again.');
             navigate('/login', { replace: true });
         }
     }, [oauthEmail, provider, navigate]);
 
-    const update = (key, value) => {
-        setValidationError('');
-        setErrors(previous => ({ ...previous, [key]: undefined, ...(key === 'org_name' && !userEditedSlug ? { org_slug: undefined } : {}) }));
-        setForm(previous => ({ ...previous, [key]: value, ...(key === 'org_name' && !userEditedSlug ? { org_slug: workspaceSlug(value) } : {}) }));
+    const slugify = (text) => {
+        return text
+            .toString()
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^\w\-]+/g, '')
+            .replace(/\-\-+/g, '-')
+            .replace(/^-+/, '')
+            .replace(/-+$/, '');
+    };
+
+    const handleOrgNameChange = (e) => {
+        const val = e.target.value;
+        setForm(prev => {
+            const next = { ...prev, org_name: val };
+            if (!userEditedSlug) {
+                next.org_slug = slugify(val);
+            }
+            return next;
+        });
+    };
+
+    const handleOrgSlugChange = (e) => {
+        const val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
+        setUserEditedSlug(true);
+        setForm(prev => ({ ...prev, org_slug: val }));
     };
 
     const { mutate: completeSignUp, isPending: loading } = useMutation({
-        mutationFn: () => oauthSignup({ ...form, name: form.name.trim(), org_name: form.org_name.trim() }),
+        mutationFn: () => oauthSignup(form),
         onSuccess: (res) => {
             localStorage.setItem('authToken', res.data.token);
             toast.success('Registration completed successfully!');
@@ -54,12 +101,12 @@ export default function CompleteProfile() {
         }
     });
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
+    const handleSubmit = (e) => {
+        e.preventDefault();
         setValidationError('');
-        if (loading) return;
+
         if (isLimitReached) {
-            setValidationError(`Beta signup is full (${maxOrgs} organizations). Please try again when registration reopens.`);
+            setValidationError(`We have reached the signup limit for BETA access (${maxOrgs}/${maxOrgs} organizations registered).`);
             trackEvent('oauth_signup_blocked_limit', 'auth', `count_${count}`);
             return;
         }
@@ -68,53 +115,174 @@ export default function CompleteProfile() {
         if (Object.keys(next).length) {
             return;
         }
+
         completeSignUp();
     };
 
-    const field = (key, label, placeholder, help) => (
-        <div className="space-y-2">
-            <label htmlFor={key} className="block text-[14px] font-medium">{label}</label>
-            <input id={key} name={key} value={form[key]} placeholder={placeholder} disabled={loading || isLimitReached}
-                autoComplete={key === 'name' ? 'name' : key === 'org_name' ? 'organization' : 'off'}
-                spellCheck={key !== 'org_slug'} required aria-invalid={!!errors[key]} aria-describedby={`${key}-hint${errors[key] ? ` ${key}-error` : ''}`}
-                onChange={event => {
-                    if (key === 'org_slug') setUserEditedSlug(true);
-                    update(key, key === 'org_slug' ? event.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') : event.target.value);
-                }}
-                onBlur={() => setErrors(previous => ({ ...previous, [key]: profileErrors(form)[key] }))}
-                className={`${inputClass} ${errors[key] ? 'border-red-400' : 'border-border'}`} />
-            <p id={`${key}-hint`} className="text-[13px] leading-relaxed text-muted-foreground">{help}</p>
-            {errors[key] && <p id={`${key}-error`} role="alert" className="text-[13px] text-red-300">{errors[key]}</p>}
+    return (
+        <div className="min-h-screen bg-bg-primary text-text-primary flex flex-col justify-center items-center p-6 sm:p-12 relative overflow-hidden font-sans">
+            {/* Subtle background grids & ambient glow */}
+            <div className="absolute inset-0 bg-grid opacity-15 pointer-events-none" />
+            <div className="absolute top-1/4 left-1/4 w-[300px] h-[300px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-1/4 right-1/4 w-[300px] h-[300px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
+
+            <div className="w-full max-w-[400px] space-y-8 relative z-10 bg-[#0b0f0d]/30 border border-white/5 p-8 rounded-2xl backdrop-blur-xl">
+                {/* Logo */}
+                <div className="flex items-center justify-center">
+                    <Logo size="md" showText={true} />
+                </div>
+
+                <div className="text-center space-y-2">
+                    <h1 className="text-xl font-semibold tracking-tight text-white">
+                        Complete your profile
+                    </h1>
+                    <p className="text-text-muted text-xs leading-relaxed">
+                        Almost there! Create your workspace and define your role to finish your {provider === 'google' ? 'Google' : 'GitHub'} registration.
+                    </p>
+
+                    {/* Capacity Badge */}
+                    <div className="flex items-center justify-between pt-2 pb-1">
+                        <span className="text-[11px] font-medium text-text-secondary">Registration Capacity</span>
+                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${
+                            isLimitReached 
+                                ? 'bg-red-500/10 border-red-500/30 text-red-400 font-semibold' 
+                                : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                        }`}>
+                            Beta: {count}/{maxOrgs} Orgs
+                        </span>
+                    </div>
+
+                    {/* BETA Limit Alert Banner */}
+                    {isLimitReached && (
+                        <div className="bg-amber-500/10 border border-amber-500/25 text-amber-300 text-xs p-3.5 rounded-xl flex items-start gap-3 text-left animate-fade-in shadow-inner my-2">
+                            <AlertCircle size={18} className="shrink-0 text-amber-400 mt-0.5" />
+                            <div className="space-y-1">
+                                <div className="font-semibold text-amber-200">Signup Limit Reached for BETA Access</div>
+                                <p className="text-[11px] text-amber-200/80 leading-relaxed font-normal">
+                                    We have reached our maximum limit of {maxOrgs} registered organizations for BETA access. Profile setup is temporarily blocked.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* Email (readonly) */}
+                    <div className="space-y-1.5">
+                        <label className="text-[11px] font-medium text-text-secondary">Email Address</label>
+                        <div className="flex items-center gap-3 bg-white/5 border border-white/5 rounded-lg px-3 py-2.5 opacity-60">
+                            <Mail size={15} className="text-text-muted shrink-0" />
+                            <input
+                                type="email"
+                                value={form.email}
+                                disabled
+                                className="flex-1 bg-transparent outline-none text-xs text-white placeholder-white/20"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Name */}
+                    <div className="space-y-1.5">
+                        <label className="text-[11px] font-medium text-text-secondary">Your Name</label>
+                        <div className="flex items-center gap-3 bg-[#0b0f0d]/40 border border-white/10 rounded-lg px-3 py-2.5 focus-within:border-accent/50 focus-within:ring-1 focus-within:ring-accent/10 transition-all">
+                            <User size={15} className="text-text-muted shrink-0" />
+                            <input
+                                type="text"
+                                value={form.name}
+                                onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
+                                className="flex-1 bg-transparent outline-none text-xs text-white placeholder-white/20"
+                                placeholder="Jane Doe"
+                                required
+                                disabled={loading}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Organization Name */}
+                    <div className="space-y-1.5">
+                        <label className="text-[11px] font-medium text-text-secondary">Organization Name</label>
+                        <div className="flex items-center gap-3 bg-[#0b0f0d]/40 border border-white/10 rounded-lg px-3 py-2.5 focus-within:border-accent/50 focus-within:ring-1 focus-within:ring-accent/10 transition-all">
+                            <Building2 size={15} className="text-text-muted shrink-0" />
+                            <input
+                                type="text"
+                                value={form.org_name}
+                                onChange={handleOrgNameChange}
+                                className="flex-1 bg-transparent outline-none text-xs text-white placeholder-white/20"
+                                placeholder="Acme Corp"
+                                required
+                                disabled={loading}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Organization Slug */}
+                    <div className="space-y-1.5">
+                        <label className="text-[11px] font-medium text-text-secondary">Organization Slug</label>
+                        <div className="flex items-center gap-3 bg-[#0b0f0d]/40 border border-white/10 rounded-lg px-3 py-2.5 focus-within:border-accent/50 focus-within:ring-1 focus-within:ring-accent/10 transition-all">
+                            <Building2 size={15} className="text-text-muted shrink-0" />
+                            <input
+                                type="text"
+                                value={form.org_slug}
+                                onChange={handleOrgSlugChange}
+                                className="flex-1 bg-transparent outline-none text-xs text-white placeholder-white/20"
+                                placeholder="acme-corp"
+                                required
+                                disabled={loading}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Role */}
+                    <div className="space-y-1.5">
+                        <label className="text-[11px] font-medium text-text-secondary">Role</label>
+                        <div className="flex items-center gap-3 bg-[#0b0f0d]/40 border border-white/10 rounded-lg px-3 py-2.5 focus-within:border-accent/50 focus-within:ring-1 focus-within:ring-accent/10 transition-all">
+                            <UserCog size={15} className="text-text-muted shrink-0" />
+                            <select
+                                value={form.role}
+                                onChange={(e) => setForm(prev => ({ ...prev, role: e.target.value }))}
+                                className="flex-1 bg-transparent outline-none text-xs text-white placeholder-white/20 border-none p-0 cursor-pointer"
+                                disabled={loading}
+                                style={{ colorScheme: 'dark' }}
+                            >
+                                <option value="admin" className="bg-[#101413] text-white">Admin</option>
+                                <option value="developer" className="bg-[#101413] text-white">Developer</option>
+                                <option value="viewer" className="bg-[#101413] text-white">Viewer</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {validationError && (
+                        <div className="bg-red-500/5 border border-red-500/10 text-red-400 text-xs p-3 rounded-lg flex items-center gap-2 animate-fade-in">
+                            <AlertCircle size={14} className="shrink-0" />
+                            <span>{validationError}</span>
+                        </div>
+                    )}
+
+                    <button
+                        type="submit"
+                        disabled={loading || isLimitReached}
+                        className="w-full flex items-center justify-center gap-2 bg-gradient-accent py-2.5 rounded-lg text-xs font-semibold hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.985] text-[#101413] shadow-lg shadow-accent/10 mt-2"
+                    >
+                        {loading ? (
+                            <>
+                                <Loader2 className="animate-spin text-white" size={14} />
+                                Creating Workspace...
+                            </>
+                        ) : isLimitReached ? (
+                            'Registration Blocked (BETA Limit Reached)'
+                        ) : (
+                            <>
+                                Complete Registration
+                                <ArrowRight size={13} className="ml-0.5" />
+                            </>
+                        )}
+                    </button>
+
+                </form>
+            </div>
         </div>
     );
+};
 
-    return (
-        <AuthShell stage="profile">
-            <div className="mb-7">
-                <h1 className="text-[30px] leading-tight tracking-[-0.035em] font-semibold">Make it your workspace.</h1>
-                <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">Signed in with {provider === 'google' ? 'Google' : 'GitHub'}. Add your details to finish setup.</p>
-            </div>
-            {isLimitReached && <div role="alert" className="mb-6 border border-amber-500/30 bg-amber-500/10 rounded-[4px] p-4 text-[14px] text-amber-200">Beta signup is full. Workspace creation is temporarily paused at {maxOrgs} organizations.</div>}
-            <form ref={formRef} onSubmit={handleSubmit} noValidate className="space-y-5" aria-busy={loading}>
-                <div className="space-y-2">
-                    <label htmlFor="email" className="block text-[14px] font-medium">Account email</label>
-                    <input id="email" type="email" value={form.email} readOnly className={`${inputClass} border-border text-muted-foreground`} aria-describedby="email-hint" />
-                    <p id="email-hint" className="text-[13px] text-muted-foreground">From your {provider === 'google' ? 'Google' : 'GitHub'} account. Not editable here.</p>
-                </div>
-                {field('name', 'Your name', 'Jane Doe', 'How your team will recognize you.')}
-                {field('org_name', 'Workspace name', 'Acme', 'Use your team or organization name.')}
-                {field('org_slug', 'Workspace slug', 'acme', 'Lowercase letters, numbers and single hyphens. Availability is checked when you create the workspace.')}
-                <div className="space-y-2">
-                    <label htmlFor="role" className="block text-[14px] font-medium">Your role</label>
-                    <select id="role" value={form.role} onChange={event => update('role', event.target.value)} disabled={loading || isLimitReached} className={`${inputClass} border-border`} style={{ colorScheme: 'dark' }}>
-                        <option value="admin">Admin</option><option value="developer">Developer</option><option value="viewer">Viewer</option>
-                    </select>
-                </div>
-                {validationError && <div role="alert" className="flex items-start gap-2 p-3 border border-red-400/30 rounded-[4px] text-[14px] text-red-300"><AlertCircle size={18} className="shrink-0 mt-0.5" /><span>{validationError}</span></div>}
-                <button type="submit" disabled={loading || isLimitReached} className="w-full min-h-[48px] px-4 py-3 bg-accent hover:bg-accent-hover text-bg-primary rounded-[4px] font-semibold text-[14px] flex items-center justify-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent disabled:opacity-50 disabled:cursor-not-allowed">
-                    {loading ? <><Loader2 size={18} className="animate-spin" />Creating workspace...</> : isLimitReached ? 'Beta signup paused' : <>Create workspace<ArrowRight size={18} /></>}
-                </button>
-            </form>
-        </AuthShell>
-    );
-}
+export default CompleteProfile;
