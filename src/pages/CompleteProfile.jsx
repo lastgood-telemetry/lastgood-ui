@@ -22,14 +22,6 @@ export default function CompleteProfile() {
     const [errors, setErrors] = useState({});
     const [validationError, setValidationError] = useState('');
     const formRef = useRef(null);
-    const focusError = useRef(false);
-    useEffect(() => {
-        if (focusError.current) {
-            const key = Object.keys(errors).find(key => errors[key]);
-            if (key) formRef.current?.querySelector(`#${key}`)?.focus();
-            focusError.current = false;
-        }
-    }, [errors]);
 
     useEffect(() => {
         if (!oauthEmail || !provider) {
@@ -55,7 +47,6 @@ export default function CompleteProfile() {
             const message = err.response?.data?.message || err.response?.data?.error || err.message || 'Failed to complete registration. Please try again.';
             // Only label a slug conflict when the server explicitly identifies it.
             if (/slug/i.test(message)) {
-                focusError.current = true;
                 setErrors(previous => ({ ...previous, org_slug: message }));
             } else {
                 setValidationError(message);
@@ -73,7 +64,6 @@ export default function CompleteProfile() {
             return;
         }
         const next = profileErrors(form);
-        focusError.current = true;
         setErrors(next);
         if (Object.keys(next).length) {
             return;
