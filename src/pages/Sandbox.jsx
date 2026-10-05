@@ -18,7 +18,7 @@ const Sandbox = () => {
   const tabs = [
     { id: 'rewind', label: 'Rewind', icon: Clock },
     { id: 'telemetry', label: 'Events', icon: List },
-    { id: 'ingestions', label: 'Integrations', icon: Blocks },
+    { id: 'ingestions', label: 'Ingestion Channels', icon: Blocks },
     { id: 'services', label: 'Services', icon: Server },
   ];
 
