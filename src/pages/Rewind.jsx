@@ -114,10 +114,9 @@ const Rewind = () => {
   return (
     <PageContainer>
       <PageHeader
-        category="INCIDENT CORRELATION ENGINE"
         icon={History}
-        title="AI Diagnostics Rewind"
-        description="Review changes around an incident, or start with your latest ingested event."
+        title="Rewind"
+        description="What changed before the incident? Choose a time to rank changes for investigation."
       />
 
       {/* Search Controls Form */}
@@ -130,9 +129,9 @@ const Rewind = () => {
               <>
                 <p>Latest event: <span className="text-zinc-200 font-mono">{dayjs(latestEvent.occurred_at).utc().format('MMM D, YYYY HH:mm:ss [UTC]')}</span></p>
                 <p>{latestEvent.service} / {eventEnvironmentLabel(latestEvent)} - {latestEvent.summary || latestEvent.type}</p>
-                {discovery?.pagination?.total > events.length && <p>Selectors show values from the latest {events.length} events. Browse Events Stream for older values.</p>}
+                {discovery?.pagination?.total > events.length && <p>Selectors show values from the latest {events.length} events. Browse Events for older values.</p>}
               </>
-            ) : <p>No events ingested yet. Connect a source, confirm an event in Events Stream, then run your first diagnosis.</p>}
+            ) : <p>No events ingested yet. Connect a source, confirm an event in Events, then run your first diagnosis.</p>}
           </div>
           {latestEvent ? (
             <button type="button" onClick={analyzeLatest} disabled={isLoading} className="bg-[#b6edce] hover:bg-[#d5f7e4] disabled:opacity-50 text-[#101413] px-4 py-2 rounded-lg text-xs font-semibold flex items-center gap-2">
@@ -146,18 +145,18 @@ const Rewind = () => {
         >
           <div className="min-w-[240px] flex-1">
             <label className="text-[11px] font-mono font-semibold text-zinc-400 mb-1.5 flex items-center gap-1.5 uppercase">
-              <Calendar size={12} className="text-zinc-300" /> Incident Time (UTC)
+              <Calendar size={12} className="text-zinc-300" /> Incident time (UTC)
             </label>
             <DateTimePicker
               value={incidentTime}
               onChange={setIncidentTime}
-              label="Select Incident Time"
+              label="Select incident time"
             />
           </div>
 
           <div className="w-40">
             <label className="text-[11px] font-mono font-semibold text-zinc-400 mb-1.5 flex items-center gap-1.5 uppercase">
-              <Clock size={12} className="text-zinc-300" /> Lookback Window
+              <Clock size={12} className="text-zinc-300" /> Lookback window
             </label>
             <select
               value={windowMinutes}
@@ -175,7 +174,7 @@ const Rewind = () => {
 
           <div className="w-40">
             <label htmlFor="rewind-service" className="text-[11px] font-mono font-semibold text-zinc-400 mb-1.5 block uppercase">
-              Target Service
+              Service
             </label>
             <select
               id="rewind-service"
@@ -208,14 +207,14 @@ const Rewind = () => {
             className="bg-[#b6edce] hover:bg-[#d5f7e4] text-[#101413] font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition-all h-[36px] text-xs shadow-sm shadow-indigo-600/20 cursor-pointer"
           >
             <Search size={14} />
-            Run Rewind Diagnostic
+            Analyze changes
           </button>
         </form>
       </div>
 
       {/* Main Results Container */}
       <div className="space-y-6">
-        {isLoading && <LoadingState message="Running AI Root Cause Diagnostic Pipeline..." />}
+        {isLoading && <LoadingState message="Ranking changes around the incident..." />}
 
         {error && (
           <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-4 rounded-xl flex items-center gap-3 text-xs font-mono">
@@ -227,7 +226,7 @@ const Rewind = () => {
         {hasNoResults && (
           <div className="border border-dashed border-white/10 rounded-xl p-8 text-center space-y-4 bg-[#101413]">
             <Clock size={24} className="text-zinc-400 mx-auto" />
-            <h3 className="text-sm font-semibold text-white">No Change Events Found</h3>
+            <h3 className="text-sm font-semibold text-white">No changes in this window</h3>
             <p className="text-xs text-zinc-400">No matching events in the {queryParams.windowMinutes}-minute window ending {dayjs.utc(queryParams.incidentTime).format('MMM D, YYYY HH:mm:ss [UTC]')}. Try a wider window or another service/environment.</p>
             <div className="flex flex-wrap justify-center items-center gap-4 text-xs">
               {queryParams.windowMinutes < 1440 && <button type="button" onClick={() => {
@@ -236,7 +235,7 @@ const Rewind = () => {
                 setQueryParams({ ...queryParams, windowMinutes: widerWindow });
               }} className="text-indigo-300 underline">Try a wider window</button>}
               {latestEvent && <button type="button" onClick={analyzeLatest} className="text-indigo-300 underline">Analyze latest event</button>}
-              <Link to="/events" className="text-indigo-300 underline">Browse Events Stream</Link>
+              <Link to="/events" className="text-indigo-300 underline">Browse Events</Link>
             </div>
           </div>
         )}
@@ -256,7 +255,7 @@ const Rewind = () => {
                   }`}
                 >
                   <Sparkles size={13} />
-                  <span>Incident Brief</span>
+                  <span>Incident brief</span>
                 </button>
                 <button
                   type="button"
@@ -268,19 +267,13 @@ const Rewind = () => {
                   }`}
                 >
                   <Clock size={13} />
-                  <span>Timeline & Risk Scoring</span>
+                  <span>Timeline & evidence</span>
                 </button>
               </div>
 
-              <div className="text-[11px] font-mono text-zinc-400 flex items-center gap-2">
-                <span>Mode:</span>
-                <span className="text-zinc-200 font-bold uppercase bg-white/10 border border-white/10 px-2 py-0.5 rounded">
-                  {viewMode === 'brief' ? 'Summary Brief' : 'Detailed Timeline'}
-                </span>
-              </div>
             </div>
 
-            {/* View Mode 1: Incident Brief Mode (Default) */}
+            {/* View Mode 1: Incident brief Mode (Default) */}
             {viewMode === 'brief' && (
               <RewindIncidentBrief
                 scoringResult={result}
@@ -297,7 +290,7 @@ const Rewind = () => {
                   <div className="flex items-center justify-between px-1 mb-2">
                     <h3 className="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center gap-2">
                       <Clock size={14} className="text-zinc-400" />
-                      Change Timeline
+                      Change timeline
                     </h3>
                     <span className="text-[10px] font-mono text-zinc-400">
                       {(result.individual_scores || result.individualScores || []).length} events
@@ -329,11 +322,11 @@ const Rewind = () => {
         )}
 
         {!queryParams && (
-          <div className="border border-dashed border-white/10 rounded-xl p-16 text-center space-y-3 bg-[#101413]">
+          <div className="border border-dashed border-white/10 rounded-xl p-8 text-center space-y-3 bg-[#101413]">
             <Sparkles size={24} className="text-zinc-400 mx-auto" />
-            <h3 className="text-sm font-semibold text-white">Ready for your first diagnosis</h3>
+            <h3 className="text-sm font-semibold text-white">Choose where to start</h3>
             <p className="text-xs text-zinc-400 max-w-sm mx-auto leading-relaxed">
-              Analyze the latest event to explore real data, or choose an incident time, service and environment above. All times are UTC.
+              Use "Analyze latest event" for a quick look, or set an incident time above. All times are UTC.
             </p>
           </div>
         )}
