@@ -69,8 +69,8 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-rose-500 via-amber-500 to-accent"></div>
         
         {/* Header Bar */}
-        <div className="p-6 border-b border-white/5 bg-gradient-to-r from-rose-500/10 via-black/40 to-transparent flex flex-wrap items-center justify-between gap-4">
-          <div className="space-y-1">
+        <div className="p-4 md:p-6 border-b border-white/5 bg-gradient-to-r from-rose-500/10 via-black/40 to-transparent flex flex-wrap items-center justify-between gap-3 md:gap-4">
+          <div className="space-y-1 min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
               <span className={`px-2.5 py-0.5 border rounded text-[10px] font-bold uppercase tracking-widest ${getLevelBadge(overallLevel)}`}>
                 {overallLevel} RISK LEVEL
@@ -79,12 +79,12 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
                 Primary Target: {primaryService} ({environmentLabel(primaryEnv)})
               </span>
               {correlations.length > 0 && (
-                <span className="text-xs font-mono text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
+                <span className="hidden md:inline text-xs font-mono text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
                   {correlations.length} Risk Correlations
                 </span>
               )}
             </div>
-            <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2 mt-1">
+            <h2 className="text-lg md:text-xl font-bold text-white tracking-tight flex items-center gap-2 mt-1">
               <ShieldAlert className="text-rose-500 animate-pulse" size={22} />
               AI Incident Diagnosis Brief
             </h2>
@@ -98,9 +98,9 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
           </div>
         </div>
 
-        <div className="px-6 pt-4"><ScoreEvidence assessment={overallAssessment} label="Overall risk score: rationale and evidence" /></div>
+        <div className="hidden md:block px-6 pt-4"><ScoreEvidence assessment={overallAssessment} label="Overall risk score: rationale and evidence" /></div>
         {/* The 2-Paragraph Core Incident Brief Body */}
-        <div className="p-6 md:p-8 space-y-6 bg-[#0b0f0d]/40">
+        <div className="p-4 md:p-8 space-y-4 md:space-y-6 bg-[#0b0f0d]/40">
           
           {/* AI Primary Cause Headline (if returned from AI backend) */}
           {aiDiagnosis?.primary_cause_headline && (
@@ -113,7 +113,7 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
           )}
 
           {/* Paragraph 1: WHAT HAPPENED */}
-          <div className="space-y-2.5 bg-[#0b0f0d]/60 border border-white/10 p-5 rounded-xl">
+          <div className="space-y-2.5 bg-[#0b0f0d]/60 border border-white/10 p-4 md:p-5 rounded-xl">
             <div className="flex items-center gap-2 text-xs font-bold text-accent uppercase tracking-wider">
               <Sparkles size={16} className="text-accent animate-pulse" />
               1. What Happened
@@ -124,7 +124,7 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
 
             {/* Primary Event Metadata Pill */}
             {primaryMeta && (
-              <div className="pt-2 flex flex-wrap items-center gap-3 text-[11px] text-text-muted border-t border-white/5">
+              <div className="hidden md:flex pt-2 flex-wrap items-center gap-3 text-[11px] text-text-muted border-t border-white/5">
                 {primaryMeta.commit && (
                   <span className="font-mono text-text-secondary bg-white/5 px-2 py-0.5 rounded border border-white/5">
                     Commit: <span className="text-accent font-bold">{primaryMeta.commit.substring(0, 7)}</span>
@@ -145,13 +145,13 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
           </div>
 
           {/* Paragraph 2: WHAT TO DO RIGHT NOW */}
-          <div className="space-y-3 bg-gradient-to-b from-black/60 to-black/80 border border-emerald-500/20 p-5 rounded-xl shadow-lg">
+          <div className="space-y-3 bg-gradient-to-b from-black/60 to-black/80 border border-emerald-500/20 p-4 md:p-5 rounded-xl shadow-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider">
                 <CheckCircle2 size={16} className="text-emerald-400" />
                 2. What To Do Right Now (SRE Playbook)
               </div>
-              <span className="text-[10px] font-mono text-emerald-400/80 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+              <span className="hidden md:inline text-[10px] font-mono text-emerald-400/80 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
                 Action Required
               </span>
             </div>
@@ -200,13 +200,13 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
 
           {/* Quick 1-Click Action Toolbar */}
           <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap w-full md:w-auto">
               <button
                 type="button"
                 onClick={() => {
                   toast.info(`Contact change author: ${primaryAuthor}`);
                 }}
-                className="bg-accent hover:opacity-90 text-[#101413] font-bold px-4 py-2 rounded-xl flex items-center gap-2 text-xs transition-all shadow-lg shadow-accent/15"
+                className="hidden md:flex bg-accent hover:opacity-90 text-[#101413] font-bold px-4 py-2 rounded-xl items-center gap-2 text-xs transition-all shadow-lg shadow-accent/15"
               >
                 <User size={14} />
                 <span>Contact Author (@{primaryAuthor})</span>
@@ -217,7 +217,7 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
                   href={primaryMeta.commit_url || `https://github.com/search?q=${primaryMeta.commit}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white/10 hover:bg-white/15 border border-white/10 text-white font-semibold px-4 py-2 rounded-xl flex items-center gap-2 text-xs transition-all"
+                  className="w-full md:w-auto justify-center bg-white/10 hover:bg-white/15 border border-white/10 text-white font-semibold px-4 py-2.5 md:py-2 rounded-xl flex items-center gap-2 text-xs transition-all"
                 >
                   <ExternalLink size={14} className="text-accent" />
                   <span>View Commit ({primaryMeta.commit.substring(0, 7)})</span>
@@ -229,7 +229,7 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, onSwitchToDeta
             <button
               type="button"
               onClick={onSwitchToDetailed}
-              className="text-xs font-semibold text-accent hover:underline flex items-center gap-1.5 ml-auto"
+              className="hidden md:flex text-xs font-semibold text-accent hover:underline items-center gap-1.5 ml-auto"
             >
               <span>Need deep evidence & timelines? Switch to Full Breakdown</span>
               <ArrowRight size={14} />
