@@ -75,19 +75,19 @@ export const EventCard = ({ event, riskAssessment, isLast, roleBadge = null, cau
             </div>
 
             {/* Content Column */}
-            <div className="flex-1 pb-8">
+            <div className="flex-1 min-w-0 pb-8">
                 <div className={`bg-gradient-card border ${riskAssessment ? riskColor.border : 'border-white/5'} rounded-lg transition-all duration-300 hover:border-accent/50 group hover:shadow-[0_0_30px_rgba(45,212,191,0.1)] relative overflow-hidden`}>
-                    <div className="p-5">
-                        <div className="grid grid-cols-12 gap-4">
+                    <div className="p-3 md:p-5">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-4">
                             {/* Left Column: Event Details */}
-                            <div className="col-span-8">
+                            <div className="md:col-span-8 min-w-0">
                                 <div className="flex items-center gap-2 mb-3 text-sm text-text-secondary flex-wrap">
                                     {roleBadge && <RoleBadge variant={roleBadge} />}
                                     <span className="font-semibold uppercase tracking-wide text-accent text-xs">{service}</span>
                                     <span className="bg-[#0b0f0d]/30 px-2 py-0.5 rounded text-xs border border-white/10">{eventEnvironmentLabel(event)}</span>
                                 </div>
                                 <Link to={`/events/${id}`} className="block group/link">
-                                    <h3 className="m-0 mb-3 text-lg font-medium text-text-primary group-hover/link:text-accent transition-colors">{summary}</h3>
+                                    <h3 className="m-0 mb-3 text-base md:text-lg font-medium break-words text-text-primary group-hover/link:text-accent transition-colors">{summary}</h3>
                                 </Link>
                                 <div className="flex flex-wrap gap-4 text-sm text-text-muted border-t border-border pt-3 mt-1">
                                     {meta?.author && (
@@ -118,7 +118,7 @@ export const EventCard = ({ event, riskAssessment, isLast, roleBadge = null, cau
                             </div>
 
                             {/* Right Column: Risk & Time */}
-                            <div className="col-span-4 text-right flex flex-col items-end justify-between">
+                            <div className="md:col-span-4 md:text-right flex flex-row md:flex-col items-center md:items-end justify-between">
                                 <div className="text-text-muted font-mono text-xs">
                                     {time_before_incident && (
                                         <span className="text-accent bg-accent/10 px-2 py-0.5 rounded border border-accent/20 block mb-1 text-xs">
@@ -151,4 +151,3 @@ export const EventCard = ({ event, riskAssessment, isLast, roleBadge = null, cau
         </div>
     );
 };
-
