@@ -106,7 +106,7 @@ const Events = () => {
             />
 
             {/* SRE Stat Cards Bar */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+            <div className="hidden md:grid grid-cols-4 gap-3 mb-6">
                 <div className="p-3.5 bg-[#151b18] border border-slate-800 rounded-xl flex items-center justify-between shadow-sm">
                     <div>
                         <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block">Matching events</span>
@@ -148,7 +148,7 @@ const Events = () => {
                 </div>
             </div>
 
-            <p className="text-xs text-text-muted mb-4">Matching events counts all results. Other metrics count loaded events only. Related deployment events are grouped; expand a group for the originals.</p>
+            <p className="hidden md:block text-xs text-text-muted mb-4">Matching events counts all results. Other metrics count loaded events only. Related deployment events are grouped; expand a group for the originals.</p>
             {/* Filter & Search Bar */}
             <div className="flex flex-col md:flex-row gap-3 mb-6 items-stretch md:items-center">
                 <div className="flex-1">
@@ -173,7 +173,7 @@ const Events = () => {
             </div>
 
             {/* Scrollable Timeline Section (Only Events Stream Scrolls) */}
-            <div className="bg-[#151b18] border border-slate-800 rounded-xl p-6 relative shadow-sm ">
+            <div className="bg-[#151b18] border border-slate-800 rounded-xl p-3 md:p-6 relative shadow-sm ">
                 <Timeline events={filteredEvents} isLoading={isLoading || !data} error={error} />
 
                 {hasNextPage && (
