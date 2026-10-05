@@ -34,7 +34,7 @@ const SandboxIntegrations = () => {
 
   if (selectedChannel === 'github') return (
     <section className="p-8 max-w-3xl mx-auto space-y-4">
-      <button onClick={() => setSelectedChannel(null)} className="text-accent text-xs underline">Back to demo integrations</button>
+      <button onClick={() => setSelectedChannel(null)} className="text-accent text-xs underline">Back to demo ingestion channels</button>
       <h2 className="text-xl font-bold">GitHub setup is available in your workspace</h2>
       <p className="text-sm text-text-secondary">This sandbox uses simulated webhooks. Sign in or create an account to get your organization's webhook URL and the real three-step GitHub setup guide.</p>
       <Link onClick={rememberSetupDestination} to={localStorage.getItem('authToken') ? SETUP_PATH : '/login?setup=github'} className="inline-block px-4 py-2 rounded-lg bg-accent text-black text-sm font-semibold">Open real GitHub setup</Link>
@@ -122,4 +122,3 @@ const SandboxIntegrations = () => {
 };
 
 export default SandboxIntegrations;
-

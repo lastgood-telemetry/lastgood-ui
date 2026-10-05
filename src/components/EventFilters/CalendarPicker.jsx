@@ -137,7 +137,7 @@ export const CalendarPicker = ({
 
             {isOpen && (
                 <div
-                    className={`absolute mt-2 z-50 p-4 bg-[#151b18] border border-slate-800 rounded-xl shadow-2xl backdrop-blur-xl text-slate-200 min-w-[310px] ${
+                    className={`absolute mt-2 z-50 p-4 bg-[#151b18] border border-slate-800 rounded-xl shadow-2xl backdrop-blur-xl text-slate-200 min-w-[280px] max-w-[calc(100vw-2rem)] ${
                         popoverAlign === 'right' ? 'right-0 left-auto' : 'left-0 right-auto'
                     }`}
                 >
