@@ -57,7 +57,7 @@ export const Timeline = ({ events, eventsWithScores, isLoading, error }) => {
     const firstCausalId = firstCausalItem?.event?.id ?? null;
 
     return (
-        <div className="max-w-3xl mx-auto py-8">
+        <div className="max-w-3xl mx-auto py-2 md:py-8">
             {items.map((item, index) => {
                 const { event, risk_assessment, role, causal_position } = item;
                 const showCausalLabel = hasCausalChain && event.id === firstCausalId;
