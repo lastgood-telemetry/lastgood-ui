@@ -41,7 +41,7 @@ export default function DiagnosisTerminal({ diagnosis = {}, state, stage, onReru
     ? suspectedWording(diagnosis.executive_summary) : '';
   const progress = diagnosisTerminalState(state, stage, !!summary);
   const delivered = stage === 'deep' ? 2 : stage === 'triage' ? 1 : 0;
-  return <aside aria-label="Diagnosis terminal" className="min-w-0 border-t lg:border-t-0 lg:border-l border-white/10 bg-[#101413] flex flex-col">
+  return <aside aria-label="Diagnosis terminal" className="min-w-0 border-t lg:border-t-0 lg:border-l border-white/10 bg-[#101413] flex flex-col lg:min-h-0 lg:overflow-y-auto overscroll-y-contain lg:items-stretch">
     <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3 md:px-5">
       <h3 className="flex items-center gap-2 text-[12px] font-mono text-slate-300"><Terminal size={15} className="text-accent" />diagnosis / summary</h3>
       <span className="text-[10px] font-mono text-slate-400">{diagnosis.cached ? 'CACHED' : progress.pending ? 'POLLING' : 'SNAPSHOT'}</span>
