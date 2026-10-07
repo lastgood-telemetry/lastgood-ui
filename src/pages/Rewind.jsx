@@ -1,4 +1,4 @@
-import { environmentLabel, eventEnvironmentLabel } from '../util/console';
+import { environmentLabel, eventEnvironmentLabel, eventTitle } from '../util/console';
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search, Calendar, Clock, AlertCircle, History, Sparkles, SlidersHorizontal } from "lucide-react";
@@ -174,7 +174,7 @@ const Rewind = () => {
             ) : latestEvent ? (
               <>
                 <p>Latest event: <span className="text-zinc-200 font-mono">{dayjs(latestEvent.occurred_at).utc().format('MMM D, YYYY HH:mm:ss [UTC]')}</span></p>
-                <p className="hidden md:block">{latestEvent.service} / {eventEnvironmentLabel(latestEvent)} - {latestEvent.summary || latestEvent.type}</p>
+                <p title={latestEvent.summary} className="hidden md:block truncate">{latestEvent.service} / {eventEnvironmentLabel(latestEvent)} - {eventTitle(latestEvent.summary, latestEvent.type)}</p>
                 {discovery?.pagination?.total > events.length && <p className="hidden md:block">Selectors show values from the latest {events.length} events. Browse Events for older values.</p>}
               </>
             ) : <p>No events ingested yet. Connect a source, confirm an event in Events, then run your first diagnosis.</p>}
