@@ -1,38 +1,14 @@
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Shield, Copy, CheckCircle2 } from "lucide-react";
-import useOrgStore from "../stores/useOrgStore";
+import { UserCircle } from "lucide-react";
 import { LoadingState } from "../components/LoadingState/LoadingState";
-import { getAPIKeyByOrg } from "../service/api-key";
 import { useOrganization } from "../hooks/useOrganization";
-import CreateAPIKey from "../components/CreateAPIKey/CreateAPIKey";
-import { toast } from "../components/ui/Toast";
-
 import { PageHeader } from "../components/ui/PageHeader";
 import { PageContainer } from "../components/ui/PageContainer";
-import { UserCircle } from "lucide-react";
+import TeamSettings from "../components/Team/TeamSettings";
 
 const Settings = () => {
-  const [showKey, setShowKey] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   // Use global store
   const { data: organization, isLoading, error } = useOrganization();
-
-  const { data: apiKeys = [], refetch: fetchApiKeys } = useQuery({
-    queryKey: ["apiKeys", organization?.id],
-    queryFn: () => getAPIKeyByOrg(organization.id),
-    enabled: !!organization?.id,
-  });
-
-  const handleCopy = () => {
-    if (!apiKeys?.key_hash) return;
-    navigator.clipboard.writeText(apiKeys.key_hash).then(() => {
-      setCopied(true);
-      toast.success("API key copied to clipboard");
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
 
   return (
     <PageContainer>
@@ -81,17 +57,10 @@ const Settings = () => {
                 {organization.id}
               </div>
             </div>
-            <div>
-              <label className="block text-[10px] text-zinc-500 font-mono uppercase tracking-wider mb-1">
-                Team Size
-              </label>
-              <div className="text-zinc-300 font-mono text-xs">
-                1 Member (Owner)
-              </div>
-            </div>
           </div>
         )}
       </div>
+      {organization && <TeamSettings organization={organization} />}
     </PageContainer>
   );
 };
