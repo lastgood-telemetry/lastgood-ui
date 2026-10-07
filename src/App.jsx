@@ -27,7 +27,7 @@ const GlobalGuard = ({ children }) => {
 
   // Initialize analytics & track route change
   React.useEffect(() => {
-    if (location.pathname.startsWith("/invite/")) return;
+    if (location.pathname.startsWith("/invite/") || location.pathname.startsWith("/auth/callback/")) return;
     initGA();
     trackPageView(location.pathname + location.search);
   }, [location]);
