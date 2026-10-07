@@ -66,7 +66,7 @@ const OAuthCallback = () => {
             } catch (err) {
                 const inviteReturn = inviteErrorDestination(err.response?.data?.redirect_url, window.location.origin);
                 if (inviteReturn) { navigate(inviteReturn, { replace: true }); return; }
-                if (state) { setCallbackError('Your sign-in session could not be verified. Open your invite link and try again.'); return; }
+                if (state || err.response?.data?.code === 'invalid_oauth_state') { setCallbackError('Your sign-in session could not be verified. Open your invite link and try again.'); return; }
                 const errMsg = err.response?.data?.message || err.response?.data?.error || err.message || 'Failed to authenticate';
                 toast.error(errMsg);
                 navigate('/login', { replace: true });
