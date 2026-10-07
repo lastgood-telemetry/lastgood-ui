@@ -47,6 +47,17 @@ const result={ai_diagnosis:rules,individual_scores:[{role:'primary',event,risk_a
  
  const boxes=await page.evaluate(()=>{const a=document.querySelector('aside');const b=document.querySelector('section[aria-label="Incident brief"]');return {a:a.getBoundingClientRect().toJSON(),b:b.getBoundingClientRect().toJSON()}});
  assert(boxes.a.x>boxes.b.x+300,'Desktop panel is on right');
+ await page.evaluate(()=>{for(const selector of ['section[aria-label=\"Incident brief\"] > div > div','section[aria-label=\"Incident brief\"] aside']){const spacer=document.createElement('div');spacer.dataset.scrollTest='true';spacer.style.cssText='height:1200px;flex:none';spacer.textContent='scroll isolation test';document.querySelector(selector).append(spacer)}});
+ const startBody=await page.evaluate(()=>document.scrollingElement.scrollTop);
+ const startLeft=await page.evaluate(()=>document.querySelector('section[aria-label=\"Incident brief\"] > div > div').scrollTop);
+ await page.mouse.move(boxes.b.x+150,boxes.b.y+200);await page.mouse.wheel(0,500);await page.waitForTimeout(100);
+ const leftScroll=await page.evaluate(()=>({left:document.querySelector('section[aria-label=\"Incident brief\"] > div > div').scrollTop,right:document.querySelector('section[aria-label=\"Incident brief\"] aside').scrollTop,body:document.scrollingElement.scrollTop}));
+ assert(leftScroll.left>startLeft,'Left investigation panel scrolls');assert.equal(leftScroll.right,0,'Left scroll does not move terminal');assert.equal(leftScroll.body,startBody,'Left scroll does not move page');
+ await page.mouse.move(boxes.a.x+150,boxes.a.y+200);await page.mouse.wheel(0,500);await page.waitForTimeout(100);
+ const rightScroll=await page.evaluate(()=>({left:document.querySelector('section[aria-label=\"Incident brief\"] > div > div').scrollTop,right:document.querySelector('section[aria-label=\"Incident brief\"] aside').scrollTop,body:document.scrollingElement.scrollTop}));
+ assert(rightScroll.right>0,'Right terminal panel scrolls');assert.equal(rightScroll.left,leftScroll.left,'Terminal scroll does not move investigation');assert.equal(rightScroll.body,startBody,'Terminal scroll does not move page');
+ console.log(JSON.stringify({desktopIndependentScroll:{leftScroll,rightScroll,bodyStayed:startBody}},null,2));
+ await page.evaluate(()=>document.querySelectorAll('[data-scroll-test]').forEach(e=>e.remove()));
  await page.screenshot({path:`${screenshots}/diagnosis-desktop-complete.png`,fullPage:true});
  await page.setViewportSize({width:390,height:844});
  const mobile=await page.evaluate(()=>({width:document.documentElement.scrollWidth,inner:innerWidth,aside:document.querySelector('aside').getBoundingClientRect().toJSON(),details:document.querySelector('section[aria-label="Incident brief"] details').getBoundingClientRect().toJSON()}));
