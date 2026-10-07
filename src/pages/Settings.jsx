@@ -61,7 +61,7 @@ const Settings = () => {
               <label className="block text-[10px] text-zinc-500 font-mono uppercase tracking-wider mb-1">
                 Organization Name
               </label>
-              <div className="text-white text-sm font-semibold">
+              <div className="text-white text-sm font-semibold break-words">
                 {organization.name}
               </div>
             </div>
@@ -70,14 +70,14 @@ const Settings = () => {
                 Subscription Plan
               </label>
               <div className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-mono font-bold bg-white/10 text-white border border-white/15">
-                {organization.plan.toUpperCase()}
+                {(organization.plan || "Unknown").toUpperCase()}
               </div>
             </div>
             <div>
               <label className="block text-[10px] text-zinc-500 font-mono uppercase tracking-wider mb-1">
                 Organization ID
               </label>
-              <div className="text-zinc-300 font-mono text-xs select-all bg-[#101413] border border-white/10 px-3 py-1.5 rounded-md inline-block">
+              <div className="text-zinc-300 font-mono text-xs break-all max-w-full select-all bg-[#101413] border border-white/10 px-3 py-1.5 rounded-md inline-block">
                 {organization.id}
               </div>
             </div>
