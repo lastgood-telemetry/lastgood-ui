@@ -1,8 +1,8 @@
 import Logo from '../components/Logo';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SETUP_PATH, rememberSetupDestination } from '../util/console';
-import { History, Sparkles, List, Clock, Blocks, Server } from 'lucide-react';
+import { List, Clock, Blocks, Server } from 'lucide-react';
 import SandboxTimeline from '../components/sandbox/SandboxTimeline';
 import AiDiagnosisPanel from '../components/sandbox/AiDiagnosisPanel';
 import SandboxServices from '../components/sandbox/SandboxServices';
@@ -15,6 +15,17 @@ const Sandbox = () => {
   const [selectedEventId, setSelectedEventId] = useState(mockTimelineEvents[2].id);
   const [mockServices, setMockServices] = useState(initialMockServices);
 
+  // Keep a desktop-only tab from leaving mobile users on a hidden view after resizing.
+  useEffect(() => {
+    const mobile = window.matchMedia('(max-width: 767px)');
+    const syncTab = () => {
+      if (mobile.matches) setActiveTab(tab => ['rewind', 'telemetry'].includes(tab) ? tab : 'rewind');
+    };
+    syncTab();
+    mobile.addEventListener('change', syncTab);
+    return () => mobile.removeEventListener('change', syncTab);
+  }, []);
+
   const tabs = [
     { id: 'rewind', label: 'Rewind', icon: Clock },
     { id: 'telemetry', label: 'Events', icon: List },
@@ -25,7 +36,7 @@ const Sandbox = () => {
   return (
     <div className="flex min-h-screen font-sans selection:bg-white/20 selection:text-white bg-[#101413] text-white">
       {/* Sidebar */}
-      <aside className="w-64 border-r border-white/[0.08] bg-[#101413] flex flex-col fixed h-full z-50">
+      <aside className="hidden md:flex w-64 border-r border-white/[0.08] bg-[#101413] flex-col fixed h-full z-50">
         <div className="p-5 pb-3">
           <div className="flex items-center gap-3 cursor-pointer group">
             <Logo size="md" showText textClassName="text-lg" />
@@ -46,13 +57,14 @@ const Sandbox = () => {
            <span className="text-[10px] font-mono font-bold text-zinc-500 uppercase tracking-wider mb-2 block">Explore</span>
         </div>
 
-        <nav className="flex-1 px-3 space-y-1">
+        <nav aria-label="Sandbox navigation" className="flex-1 px-3 space-y-1">
           {tabs.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
                <button
                   key={tab.id}
+                  aria-current={isActive ? 'page' : undefined}
                   onClick={() => setActiveTab(tab.id)}
                   className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-mono font-medium transition-all group relative overflow-hidden ${
                      isActive
@@ -87,26 +99,44 @@ const Sandbox = () => {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 ml-64 relative min-w-0 bg-transparent">
+      <main className="flex-1 w-full md:ml-64 relative min-w-0 bg-transparent">
          <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
-         <div className="p-4">
+         <header className="md:hidden border-b border-white/10 px-4 pt-4 pb-3">
+           <div className="flex flex-wrap items-center gap-3 mb-3">
+             <Logo size="sm" showText textClassName="text-base" />
+             <span className="text-xs font-mono text-accent">Sandbox</span>
+           </div>
+           <nav aria-label="Mobile sandbox navigation" className="grid grid-cols-2 gap-2">
+             {tabs.filter(tab => ['rewind', 'telemetry'].includes(tab.id)).map(tab => {
+               const Icon = tab.icon;
+               return (
+                 <button key={tab.id} type="button" aria-current={activeTab === tab.id ? 'page' : undefined}
+                   onClick={() => setActiveTab(tab.id)}
+                   className={`min-h-11 flex items-center justify-center gap-2 rounded border text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent ${activeTab === tab.id ? 'border-accent/30 bg-accent/10 text-accent' : 'border-white/10 text-zinc-400'}`}>
+                   <Icon size={18} aria-hidden="true" />{tab.label}
+                 </button>
+               );
+             })}
+           </nav>
+         </header>
+         <div className="p-3 sm:p-4">
            <div className="mb-4 p-4 border border-accent/25 rounded-xl bg-accent/5 flex flex-wrap items-center justify-between gap-3">
              <div><h1 className="text-sm font-semibold">Explore a simulated incident</h1><p className="text-xs text-text-muted mt-1">All events, connectors and scores here are sample data. Demo actions do not change your systems.</p></div>
-             <Link to={localStorage.getItem('authToken') ? SETUP_PATH : '/login?setup=github'} onClick={rememberSetupDestination} className="text-xs font-semibold px-4 py-2 rounded-lg bg-accent text-black focus-visible:outline focus-visible:outline-2">Start with your own data</Link>
+             <Link to={localStorage.getItem('authToken') ? SETUP_PATH : '/login?setup=github'} onClick={rememberSetupDestination} className="min-h-11 inline-flex items-center justify-center text-sm font-semibold px-4 py-2 rounded-lg bg-accent text-black focus-visible:outline focus-visible:outline-2">Start with your own data</Link>
            </div>
            {activeTab === 'telemetry' && (
             <SandboxTelemetry events={mockTimelineEvents} />
          )}
          
          {activeTab === 'rewind' && (
-            <div className="p-4 md:p-6 max-w-7xl mx-auto flex flex-col md:flex-row gap-6 h-full animate-fade-in">
+            <div className="py-4 md:p-6 max-w-7xl mx-auto flex flex-col xl:flex-row gap-6 animate-fade-in">
                {/* Timeline Section */}
-               <div className="w-full md:w-1/3 flex flex-col h-full">
+               <div className="w-full xl:w-1/3 min-w-0 flex flex-col">
                   <div className="mb-4">
                      <h2 className="text-xl font-bold text-white">Change timeline</h2>
                      <p className="text-sm text-text-muted mt-1">Select a change to inspect the sample analysis.</p>
                   </div>
-                  <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                  <div className="min-w-0 xl:pr-2">
                      <SandboxTimeline 
                        events={mockTimelineEvents} 
                        selectedEventId={selectedEventId}
@@ -116,7 +146,7 @@ const Sandbox = () => {
                </div>
 
                {/* AI Diagnosis Section */}
-               <div className="w-full md:w-2/3 flex flex-col h-[600px] md:h-auto md:min-h-[700px]">
+               <div className="w-full xl:w-2/3 min-w-0 flex flex-col">
                   <AiDiagnosisPanel 
                      incident={mockIncident} 
                      diagnosis={mockAiDiagnosis} 
