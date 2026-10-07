@@ -6,7 +6,7 @@ import { useEffect } from "react";
 export const useOrganization = () => {
   const { setOrg } = useOrgStore();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["organization"],
     queryFn: getOrganization,
     staleTime: 60 * 60 * 1000,
@@ -18,7 +18,7 @@ export const useOrganization = () => {
     if (data) {
       setOrg(data);
     }
-  }, [isLoading]);
+  }, [data, isLoading, setOrg]);
 
-  return { data, isLoading };
+  return { data, isLoading, error, refetch };
 };
