@@ -51,7 +51,8 @@ export const getIntegrationByProvider = async (provider) => {
         const response = await api.get(`/integrations/${provider}`);
         return response.data.data;
     } catch (err) {
-        return null;
+        if (err.response?.status === 404) return null;
+        throw err;
     }
 };
 
