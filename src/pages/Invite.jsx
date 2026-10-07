@@ -38,7 +38,7 @@ export default function Invite() {
             if ([404, 410].includes(err.response?.status)) setUnavailable(true);
         } finally { setSubmitting(false); }
     };
-    const badLink = unavailable || [404, 410].includes(loadError?.response?.status);
+    const badLink = unavailable || [400, 404, 410].includes(loadError?.response?.status);
     return (
         <div className="min-h-screen bg-[#0b100e] text-foreground">
             <header className="px-6 sm:px-10 py-5 border-b border-white/10"><Logo size="md" showText /></header>
@@ -61,4 +61,4 @@ export default function Invite() {
             </main>
         </div>
     );
-                      }
+                                    }
