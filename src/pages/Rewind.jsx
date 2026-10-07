@@ -1,8 +1,9 @@
 import { environmentLabel, eventEnvironmentLabel } from '../util/console';
 import React, { useState, useEffect, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search, Calendar, Clock, AlertCircle, History, Sparkles, SlidersHorizontal } from "lucide-react";
 import api from "../api";
+import useAsyncDiagnosis from "../hooks/useAsyncDiagnosis";
 import { Link, useLocation } from 'react-router-dom';
 import { eventRewindContext, readRewindContext, rewindRequestParams, rewindOptions } from '../util/rewind';
 import { RewindIncidentBrief } from "../components/Rewind/RewindIncidentBrief";
@@ -32,6 +33,7 @@ const useIsMobile = () => {
 
 const Rewind = () => {
   const isMobile = useIsMobile();
+  const queryClient = useQueryClient();
   const [showFilters, setShowFilters] = useState(false);
   const location = useLocation();
   const routeContext = useMemo(() => readRewindContext(location.search), [location.search]);
@@ -84,12 +86,22 @@ const Rewind = () => {
     isLoading,
     error,
     isFetched,
+    refetch: rerunIncident,
+    isFetching,
   } = useQuery({
     queryKey: ["rewind", queryParams],
     queryFn: fetchRewindEvents,
     enabled: !!queryParams,
     retry: false,
   });
+
+  const diagnosis = useAsyncDiagnosis(result);
+  const rerunDiagnosis = async () => {
+    // Expired jobs must not reuse a cached polling result.
+    await queryClient.cancelQueries({ queryKey: ['async-diagnosis'] });
+    queryClient.removeQueries({ queryKey: ['async-diagnosis'] });
+    await rerunIncident();
+  };
 
   useEffect(() => {
     setIncidentTime(routeContext.incidentTime);
@@ -252,7 +264,7 @@ const Rewind = () => {
 
         {isFetched && result && !hasNoResults && (
           <div className="space-y-6 animate-in fade-in duration-300">
-            <RewindIncidentBrief scoringResult={result} queryParams={queryParams} />
+            <RewindIncidentBrief scoringResult={diagnosis.result} queryParams={queryParams} diagnosisState={diagnosis.state} diagnosisStage={diagnosis.stage} onRerunDiagnosis={rerunDiagnosis} rerunning={isFetching} />
 
           </div>
         )}
