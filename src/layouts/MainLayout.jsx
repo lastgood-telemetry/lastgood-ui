@@ -59,10 +59,10 @@ const MainLayout = () => {
     { path: "/services", label: "Services", group: "Context", icon: Server },
     { path: "/topology", label: "Topology", group: "Context", icon: Network },
     { path: "/integrations", label: "Ingestion Channels", group: "Workspace", icon: Blocks },
-    { path: "/settings", label: "Settings", group: "Workspace", icon: UserCircle },
+    { path: "/settings", label: "Settings", group: "Workspace", icon: UserCircle, mobile: true },
   ];
 
-  // Phones get the investigate flow only (Events + Rewind); everything else is desktop.
+  // Keep invite management accessible on phones alongside investigation.
   const isMobilePath = navItems.some((n) => n.mobile && location.pathname.startsWith(n.path));
   useEffect(() => {
     if (!isMobilePath && window.matchMedia("(max-width: 767px)").matches) {
