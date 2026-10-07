@@ -2,7 +2,7 @@ import axios from "axios";
 import { API_BASE_URL } from "../constants/index.js";
 import { toast } from "../components/ui/Toast";
 const api = axios.create({
-  baseURL: API_BASE_URL + "/api",
+  baseURL: (API_BASE_URL || "").replace(/\/$/, "") + (import.meta.env.VITE_API_PREFIX || "/api"),
   headers: {
     "Content-Type": "application/json",
   },
@@ -11,7 +11,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("authToken");
-    if (token) {
+    if (token && !config.publicRequest) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
@@ -26,7 +26,7 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && !originalRequest?.publicRequest) {
       originalRequest._retryCount = originalRequest._retryCount || 0;
 
       if (originalRequest._retryCount < 3) {

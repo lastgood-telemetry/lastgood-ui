@@ -6,6 +6,7 @@ import Rewind from "./pages/Rewind";
 import EventDetail from "./pages/EventDetail";
 import Settings from "./pages/Settings";
 import Integrations from "./pages/Integrations";
+import Invite from "./pages/Invite";
 import Login from "./pages/Login";
 import VerifyEmail from "./pages/VerifyEmail";
 import OAuthCallback from "./pages/OAuthCallback";
@@ -26,6 +27,7 @@ const GlobalGuard = ({ children }) => {
 
   // Initialize analytics & track route change
   React.useEffect(() => {
+    if (location.pathname.startsWith("/invite/")) return;
     initGA();
     trackPageView(location.pathname + location.search);
   }, [location]);
@@ -56,6 +58,7 @@ function App() {
     <BrowserRouter>
       <GlobalGuard>
         <Routes>
+          <Route path="/invite/:token" element={<Invite />} />
           <Route path="/login" element={<Login />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/auth/callback/:provider" element={<OAuthCallback />} />
