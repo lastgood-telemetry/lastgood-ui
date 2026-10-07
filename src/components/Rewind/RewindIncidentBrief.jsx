@@ -35,7 +35,7 @@ const SignalRow = ({ item, index, primary, incidentTime }) => {
   </li>;
 };
 
-export const RewindIncidentBrief = ({ scoringResult, queryParams }) => {
+export const RewindIncidentBrief = ({ scoringResult, queryParams, diagnosisState, diagnosisStage, onRerunDiagnosis, rerunning = false }) => {
   if (!scoringResult) return null;
   const items = scoringResult.individual_scores || scoringResult.individualScores || [];
   const ai = scoringResult.ai_diagnosis || scoringResult.aiDiagnosis || {};
@@ -66,7 +66,16 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams }) => {
       <div className="space-y-2">
         <p className="text-xs font-mono text-text-muted uppercase tracking-wider">Suspected cause</p>
         <p className="text-base md:text-lg text-white font-medium break-words">{cause}</p>
-        <p className="text-xs text-text-secondary">{confidence} · Verify against incident evidence.</p>
+        <p className="text-xs text-text-secondary">{!Object.keys(ai).length || ai.stage === 'rules' ? 'Rule-based triage' : confidence} · Verify against incident evidence.</p>
+        {diagnosisState && <div role="status" aria-live="polite" className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-muted">
+          {diagnosisState === 'pending' && <span>{diagnosisStage === 'triage' ? 'AI triage ready. Deep diagnosis pending.' : 'Rule triage ready. AI diagnosis pending.'}</span>}
+          {diagnosisState === 'completed' && <span>AI diagnosis ready{diagnosisStage === 'deep' ? ' · Deep analysis' : ''}{ai.cached ? ' · Cached' : ''}</span>}
+          {diagnosisState === 'unavailable' && <span>AI diagnosis unavailable. Showing rule triage.</span>}
+          {diagnosisState === 'expired' && <>
+            <span>AI diagnosis expired. Showing rule triage.</span>
+            <button type="button" onClick={onRerunDiagnosis} disabled={rerunning} className="text-accent underline disabled:opacity-50">{rerunning ? 'Re-running...' : 'Re-run diagnosis'}</button>
+          </>}
+        </div>}
       </div>
       <div className="space-y-2">
         <div className="flex items-baseline justify-between gap-2">
