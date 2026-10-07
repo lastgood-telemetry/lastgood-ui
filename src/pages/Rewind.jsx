@@ -1,9 +1,11 @@
 import { environmentLabel, eventEnvironmentLabel } from '../util/console';
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Search, Calendar, Clock, AlertCircle, History, Sparkles, SlidersHorizontal } from "lucide-react";
 import api from "../api";
 import useAsyncDiagnosis from "../hooks/useAsyncDiagnosis";
+import useOrgStore from '../stores/useOrgStore';
+import useRewindSession, { sameRewindScope } from "../hooks/useRewindSession";
 import { Link, useLocation } from 'react-router-dom';
 import { eventRewindContext, readRewindContext, rewindRequestParams, rewindOptions } from '../util/rewind';
 import { RewindIncidentBrief } from "../components/Rewind/RewindIncidentBrief";
@@ -34,18 +36,31 @@ const useIsMobile = () => {
 const Rewind = () => {
   const isMobile = useIsMobile();
   const queryClient = useQueryClient();
+  const orgId = useOrgStore(state => state.org?.id);
   const [showFilters, setShowFilters] = useState(false);
   const location = useLocation();
   const routeContext = useMemo(() => readRewindContext(location.search), [location.search]);
-  const [incidentTime, setIncidentTime] = useState(routeContext.incidentTime);
-  const [windowMinutes, setWindowMinutes] = useState(30);
-  const [service, setService] = useState(routeContext.service);
-  const [environment, setEnvironment] = useState(routeContext.environment);
+  const [session, setSession] = useRewindSession({ ...routeContext, windowMinutes: 30 });
+  const { incidentTime, windowMinutes, service, environment } = session.selection;
+  const setSelection = (field, value) => setSession(current => ({
+    ...current, selection: { ...current.selection, [field]: value },
+  }));
+  const setIncidentTime = value => setSelection('incidentTime', value);
+  const setWindowMinutes = value => setSelection('windowMinutes', value);
+  const setService = value => setSelection('service', value);
+  const setEnvironment = value => setSelection('environment', value);
+  const [requested, setRequested] = useState(false);
+  const queryParams = session.submitted;
+  const setQueryParams = params => {
+    setSession(current => ({ ...current, submitted: params }));
+    setRequested(true);
+    if (sameRewindScope(params, queryParams)) rerunIncident();
+  };
 
   // The list endpoint is organization-scoped and sorted by occurred_at DESC.
   // Keep discovery bounded; manual event links retain values outside this list.
   const { data: discovery, isLoading: discovering, error: discoveryError, refetch: retryDiscovery } = useQuery({
-    queryKey: ['rewind-event-discovery'],
+    queryKey: ['rewind-event-discovery', orgId],
     queryFn: async () => {
       const response = await api.get('/change-events', { params: { limit: 1000, offset: 0 } });
       if (!response.data.success) throw new Error('Could not load ingested events');
@@ -56,7 +71,6 @@ const Rewind = () => {
   const latestEvent = events.find(event => eventRewindContext(event));
   const services = rewindOptions(events, 'service', service);
   const environments = rewindOptions(events, 'environment', environment);
-  const [queryParams, setQueryParams] = useState(null);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -83,19 +97,36 @@ const Rewind = () => {
 
   const {
     data: result,
-    isLoading,
     error,
-    isFetched,
     refetch: rerunIncident,
     isFetching,
   } = useQuery({
-    queryKey: ["rewind", queryParams],
+    queryKey: ["rewind", orgId, queryParams],
     queryFn: fetchRewindEvents,
-    enabled: !!queryParams,
+    enabled: requested && !!queryParams,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     retry: false,
   });
 
-  const diagnosis = useAsyncDiagnosis(result);
+  const savedResult = sameRewindScope(queryParams, session.snapshot?.params) ? session.snapshot?.result : null;
+  const sameJob = savedResult?.ai_diagnosis?.job_id === result?.ai_diagnosis?.job_id;
+  const savedCompleted = savedResult?.ai_diagnosis?.status === 'completed';
+  const currentResult = sameJob && savedCompleted && result?.ai_diagnosis?.status === 'pending'
+    ? savedResult : result || savedResult;
+  const diagnosis = useAsyncDiagnosis(currentResult);
+  // Save the rendered diagnosis too: completed polling jobs have gcTime=0.
+  // Without this snapshot, returning via the sidebar reverts to pending rules.
+  useEffect(() => {
+    if (!diagnosis.result) return;
+    setSession(current => ({ ...current, snapshot: {
+      params: queryParams, result: diagnosis.result,
+      state: diagnosis.state, stage: diagnosis.stage,
+    } }));
+  }, [result, diagnosis.state, diagnosis.stage, diagnosis.result?.ai_diagnosis?.executive_summary, queryParams, setSession]);
+  const displayed = currentResult ? { ...diagnosis, params: queryParams } : session.snapshot;
+  const selectionChanged = displayed && !sameRewindScope(session.selection, displayed.params);
   const rerunDiagnosis = async () => {
     // Expired jobs must not reuse a cached polling result.
     await queryClient.cancelQueries({ queryKey: ['async-diagnosis'] });
@@ -103,12 +134,15 @@ const Rewind = () => {
     await rerunIncident();
   };
 
+  const previousSearch = useRef(null);
   useEffect(() => {
-    setIncidentTime(routeContext.incidentTime);
-    setService(routeContext.service);
-    setEnvironment(routeContext.environment);
-    setQueryParams(null);
-  }, [routeContext]);
+    // An event deep link changes the draft scope, never discards a brief.
+    // Plain sidebar navigation restores the saved controls as well.
+    if (location.search && previousSearch.current !== location.search) {
+      setSession(current => ({ ...current, selection: { ...current.selection, ...routeContext } }));
+    }
+    previousSearch.current = location.search;
+  }, [location.search, routeContext, setSession]);
 
   const analyzeLatest = () => {
     const context = eventRewindContext(latestEvent);
@@ -118,7 +152,9 @@ const Rewind = () => {
     setEnvironment(context.environment);
     setQueryParams({ ...context, windowMinutes });
   };
-  const hasNoResults = result && !(result.individual_scores || result.individualScores || []).length;
+  const displayedResult = displayed?.result;
+  const displayedParams = displayed?.params;
+  const hasNoResults = displayedResult && !(displayedResult.individual_scores || displayedResult.individualScores || []).length;
 
 
   return (
@@ -144,7 +180,7 @@ const Rewind = () => {
             ) : <p>No events ingested yet. Connect a source, confirm an event in Events, then run your first diagnosis.</p>}
           </div>
           {latestEvent ? (
-            <button type="button" onClick={analyzeLatest} disabled={isLoading} className="w-full md:w-auto justify-center bg-[#b6edce] hover:bg-[#d5f7e4] disabled:opacity-50 text-[#101413] px-4 py-2.5 md:py-2 rounded-lg text-xs font-semibold flex items-center gap-2">
+            <button type="button" onClick={analyzeLatest} disabled={isFetching} className="w-full md:w-auto justify-center bg-[#b6edce] hover:bg-[#d5f7e4] disabled:opacity-50 text-[#101413] px-4 py-2.5 md:py-2 rounded-lg text-xs font-semibold flex items-center gap-2">
               <Sparkles size={14} /> Analyze latest event
             </button>
           ) : !discovering && !discoveryError && <Link to="/integrations" className="text-xs text-indigo-300 underline">Connect a source</Link>}
@@ -236,7 +272,14 @@ const Rewind = () => {
 
       {/* Main Results Container */}
       <div className="space-y-6">
-        {isLoading && <LoadingState message="Ranking changes around the incident..." />}
+        {selectionChanged && (
+          <div role="status" className="border border-amber-300/30 bg-amber-300/5 rounded p-4 text-xs text-amber-200 space-y-1">
+            <p className="font-semibold">Showing the previous analysis</p>
+            <p className="break-words">{displayedParams.service || 'All services'} / {displayedParams.environment ? environmentLabel(displayedParams.environment) : 'All environments'} · {displayedParams.windowMinutes}-minute window ending {dayjs.utc(displayedParams.incidentTime).format('MMM D, YYYY HH:mm:ss [UTC]')}</p>
+            <p>Selection changed. Choose "Analyze changes" to update the summary.</p>
+          </div>
+        )}
+        {isFetching && <LoadingState message="Ranking changes around the incident..." />}
 
         {error && (
           <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-4 rounded-xl flex items-center gap-3 text-xs font-mono">
@@ -249,12 +292,12 @@ const Rewind = () => {
           <div className="border border-dashed border-white/10 rounded-xl p-8 text-center space-y-4 bg-[#101413]">
             <Clock size={24} className="text-zinc-400 mx-auto" />
             <h3 className="text-sm font-semibold text-white">No changes in this window</h3>
-            <p className="text-xs text-zinc-400">No matching events in the {queryParams.windowMinutes}-minute window ending {dayjs.utc(queryParams.incidentTime).format('MMM D, YYYY HH:mm:ss [UTC]')}. Try a wider window or another service/environment.</p>
+            <p className="text-xs text-zinc-400">No matching events in the {displayedParams.windowMinutes}-minute window ending {dayjs.utc(displayedParams.incidentTime).format('MMM D, YYYY HH:mm:ss [UTC]')}. Try a wider window or another service/environment.</p>
             <div className="flex flex-wrap justify-center items-center gap-4 text-xs">
-              {queryParams.windowMinutes < 1440 && <button type="button" onClick={() => {
-                const widerWindow = [60, 120, 360, 1440].find(value => value > queryParams.windowMinutes);
+              {displayedParams.windowMinutes < 1440 && <button type="button" onClick={() => {
+                const widerWindow = [60, 120, 360, 1440].find(value => value > displayedParams.windowMinutes);
                 setWindowMinutes(widerWindow);
-                setQueryParams({ ...queryParams, windowMinutes: widerWindow });
+                setQueryParams({ ...session.selection, windowMinutes: widerWindow });
               }} className="text-indigo-300 underline">Try a wider window</button>}
               {latestEvent && <button type="button" onClick={analyzeLatest} className="text-indigo-300 underline">Analyze latest event</button>}
               <Link to="/events" className="text-indigo-300 underline">Browse Events</Link>
@@ -262,14 +305,14 @@ const Rewind = () => {
           </div>
         )}
 
-        {isFetched && result && !hasNoResults && (
+        {displayedResult && !hasNoResults && (
           <div className="space-y-6 animate-in fade-in duration-300">
-            <RewindIncidentBrief scoringResult={diagnosis.result} queryParams={queryParams} diagnosisState={diagnosis.state} diagnosisStage={diagnosis.stage} onRerunDiagnosis={rerunDiagnosis} rerunning={isFetching} />
+            <RewindIncidentBrief scoringResult={displayedResult} queryParams={displayedParams} diagnosisState={displayed.state} diagnosisStage={displayed.stage} onRerunDiagnosis={rerunDiagnosis} rerunning={isFetching} />
 
           </div>
         )}
 
-        {!queryParams && (
+        {!displayedResult && !isFetching && !error && (
           <div className="border border-dashed border-white/10 rounded-xl p-8 text-center space-y-3 bg-[#101413]">
             <Sparkles size={24} className="text-zinc-400 mx-auto" />
             <h3 className="text-sm font-semibold text-white">Choose where to start</h3>
@@ -283,4 +326,9 @@ const Rewind = () => {
   );
 };
 
-export default Rewind;
+// Remount private state when the workspace changes, before rendering its brief.
+export default function RewindPage() {
+  const orgId = useOrgStore(state => state.org?.id);
+  if (!orgId) return <LoadingState message="Loading workspace..." />;
+  return <Rewind key={orgId} />;
+}
