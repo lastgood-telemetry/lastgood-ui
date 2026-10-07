@@ -16,7 +16,7 @@ const SandboxIntegrations = () => {
   const channels = [
     {
       id: "github",
-      title: "GitHub Webhooks",
+      title: "GitHub App",
       description: "Ingest code changes, pull requests, releases, and workflow pipeline runs automatically.",
       icon: Github,
       status: "Recommended",
@@ -36,7 +36,7 @@ const SandboxIntegrations = () => {
     <section className="p-8 max-w-3xl mx-auto space-y-4">
       <button onClick={() => setSelectedChannel(null)} className="text-accent text-xs underline">Back to demo ingestion channels</button>
       <h2 className="text-xl font-bold">GitHub setup is available in your workspace</h2>
-      <p className="text-sm text-text-secondary">This sandbox uses simulated webhooks. Sign in or create an account to get your organization's webhook URL and the real three-step GitHub setup guide.</p>
+      <p className="text-sm text-text-secondary">This sandbox uses simulated change events. Sign in or create an account to connect the GitHub App and choose repositories for your workspace.</p>
       <Link onClick={rememberSetupDestination} to={localStorage.getItem('authToken') ? SETUP_PATH : '/login?setup=github'} className="inline-block px-4 py-2 rounded-lg bg-accent text-black text-sm font-semibold">Open real GitHub setup</Link>
     </section>
   );
@@ -58,7 +58,7 @@ const SandboxIntegrations = () => {
                 {copiedStates['curl'] ? <CheckCircle2 size={16} className="text-status-success" /> : <Copy size={16} />}
              </button>
              <pre className="text-[11px] text-emerald-400/90 font-mono leading-relaxed overflow-x-auto">
-{`curl -X POST https://api.lastgood.space/change-events \\
+{`curl -X POST https://api.lastgood.space/api/change-events \\
   -H "Authorization: Bearer lg_live_mock_apikey_123" \\
   -H "Content-Type: application/json" \\
   -d '{
