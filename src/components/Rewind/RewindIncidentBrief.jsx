@@ -59,8 +59,8 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, diagnosisState
   const action = recommendations[0] || `Check ${event.service || 'the affected service'} logs and metrics against this change before choosing a mitigation.`;
   const cause = suspectedWording(ai.primary_cause_headline || event.summary || event.type || 'Change to investigate');
   return <section className="w-full border border-white/10 rounded bg-[#151b18] overflow-hidden" aria-label="Incident brief">
-    <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.35fr),minmax(0,1fr)]">
-      <div className="min-w-0">
+    <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.35fr),minmax(0,1fr)] lg:h-[max(20rem,calc(100dvh-25rem))] lg:overflow-hidden">
+      <div className="min-w-0 lg:min-h-0 lg:overflow-y-auto overscroll-y-contain">
         <div className="p-4 md:p-6 space-y-6">
           <div className="space-y-1">
             <p className="text-xs font-mono text-text-muted uppercase tracking-wider">Investigating</p>
