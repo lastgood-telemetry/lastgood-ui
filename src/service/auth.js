@@ -21,13 +21,13 @@ export const verifyEmail = async (token) => {
     return response.data.data;
 }
 
-export const googleOAuthCallback = async (code) => {
-    const response = await api.post('/auth/google/callback', { code });
+export const googleOAuthCallback = async (code, state, error) => {
+    const response = await api.post('/auth/google/callback', { ...(code ? { code } : {}), ...(state ? { state } : {}), ...(error ? { error } : {}) }, { withCredentials: true, skipToast: true, publicRequest: true });
     return response.data;
 }
 
-export const githubOAuthCallback = async (code) => {
-    const response = await api.post('/auth/github/callback', { code });
+export const githubOAuthCallback = async (code, state, error) => {
+    const response = await api.post('/auth/github/callback', { ...(code ? { code } : {}), ...(state ? { state } : {}), ...(error ? { error } : {}) }, { withCredentials: true, skipToast: true, publicRequest: true });
     return response.data;
 }
 

@@ -1,20 +1,28 @@
 import { consumeLoginDestination } from '../util/console';
-import React, { useEffect, useRef } from 'react';
-import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { Loader2, Activity } from 'lucide-react';
 import Logo from '../components/Logo';
 import { googleOAuthCallback, githubOAuthCallback } from '../service/auth';
+import { useQueryClient } from '@tanstack/react-query';
+import useOrgStore from '../stores/useOrgStore';
+import { inviteErrorDestination } from '../util/invites';
 import { toast } from '../components/ui/Toast';
 
 const OAuthCallback = () => {
     const { provider } = useParams();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const [callbackError, setCallbackError] = useState('');
     const hasCalled = useRef(false);
+    const queryClient = useQueryClient();
 
     useEffect(() => {
         const code = searchParams.get('code');
-        if (!code) {
+        const state = searchParams.get('state');
+        const providerError = searchParams.get('error');
+        if (!code && !providerError) {
+            if (state) { setCallbackError('Your sign-in session could not be verified. Open your invite link and try again.'); return; }
             toast.error('No authorization code found in callback URL');
             navigate('/login', { replace: true });
             return;
@@ -28,16 +36,19 @@ const OAuthCallback = () => {
             try {
                 let response;
                 if (provider === 'google') {
-                    response = await googleOAuthCallback(code);
+                    response = await googleOAuthCallback(code, state, providerError);
                 } else if (provider === 'github') {
-                    response = await githubOAuthCallback(code);
+                    response = await githubOAuthCallback(code, state, providerError);
                 } else {
                     throw new Error(`Unsupported OAuth provider: ${provider}`);
                 }
 
+                if (state && !response.exists) { setCallbackError('We could not finish joining your workspace. Open your invite link and try again.'); return; }
                 if (response.exists) {
                     // User already exists, login successful
                     localStorage.setItem('authToken', response.data.token);
+                    queryClient.clear();
+                    useOrgStore.getState().setOrg(null);
                     toast.success('Logged in successfully!');
                     navigate(consumeLoginDestination(), { replace: true });
                 } else {
@@ -53,6 +64,9 @@ const OAuthCallback = () => {
                     });
                 }
             } catch (err) {
+                const inviteReturn = inviteErrorDestination(err.response?.data?.redirect_url, window.location.origin);
+                if (inviteReturn) { navigate(inviteReturn, { replace: true }); return; }
+                if (state || err.response?.data?.code === 'invalid_oauth_state') { setCallbackError('Your sign-in session could not be verified. Open your invite link and try again.'); return; }
                 const errMsg = err.response?.data?.message || err.response?.data?.error || err.message || 'Failed to authenticate';
                 toast.error(errMsg);
                 navigate('/login', { replace: true });
@@ -60,7 +74,7 @@ const OAuthCallback = () => {
         };
 
         exchangeCode();
-    }, [provider, searchParams, navigate]);
+    }, [provider, searchParams, navigate, queryClient]);
 
     return (
         <div className="min-h-screen bg-bg-primary text-text-primary flex flex-col justify-center items-center font-sans">
@@ -73,13 +87,13 @@ const OAuthCallback = () => {
                 </div>
                 
                 <div className="space-y-2">
-                    <h2 className="text-lg font-semibold text-white tracking-tight">Authenticating with {provider ? provider.charAt(0).toUpperCase() + provider.slice(1) : ''}</h2>
+                    <h2 className="text-lg font-semibold text-white tracking-tight">{callbackError ? 'Could not complete sign-in' : `Authenticating with ${provider ? provider.charAt(0).toUpperCase() + provider.slice(1) : ''}`}</h2>
                     <p className="text-xs text-text-muted leading-relaxed">
-                        Exchanging tokens and establishing your secure telemetry session. Please do not close this window.
+                        {callbackError || 'Finishing your sign-in. Please keep this window open.'}
                     </p>
                 </div>
 
-                <Loader2 className="animate-spin text-accent mt-2" size={20} />
+                {callbackError ? <Link to="/login" className="min-h-[44px] content-center text-accent underline">Back to sign in</Link> : <Loader2 className="animate-spin text-accent mt-2" size={20} />}
             </div>
         </div>
     );
