@@ -117,3 +117,19 @@ export function postmortemDraft(report, owners = {}, reviewed = false) {
     }),
   ].join('\n');
 }
+
+// Keep commit bodies out of scan views; the full value remains in details/tooltips.
+export function eventTitle(value, fallback = 'Change', maxLength = 100) {
+  const text = String(value || '').trim();
+  const firstLine = text.split(/\r?\n/)[0].trim() || fallback;
+  const chars = Array.from(firstLine);
+  return chars.length > maxLength ? chars.slice(0, maxLength - 1).join('').trimEnd() + '…' : firstLine;
+}
+
+export function githubAppState(integration, { loading = false, error = false } = {}) {
+  if (loading) return 'Checking';
+  if (error) return 'Status unavailable';
+  if (integration?.status === 'active' && integration?.credentials?.installation_id) return 'Connected';
+  if (integration?.status === 'error') return 'Needs attention';
+  return 'Not connected';
+}

@@ -174,11 +174,11 @@ export default function Topology() {
           <div className="bg-[#0b0f0d]/40 border border-white/10 rounded-2xl p-8 backdrop-blur-xl shadow-xl text-center space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-semibold">
               <Eye size={14} />
-              <span>Topology Preview Mode (No Ingested Services Found)</span>
+              <span>No services ingested yet</span>
             </div>
 
             <div className="max-w-xl mx-auto space-y-2">
-              <h2 className="text-xl font-bold text-white">How Service Topology Workflows Function</h2>
+              <h2 className="text-xl font-bold text-white">Map your service dependencies</h2>
               <p className="text-xs text-text-secondary leading-relaxed">
                 Connect your ingested services to map dependency chains. During an incident, LastGood traces failure propagation across upstream and downstream nodes.
               </p>
@@ -186,7 +186,7 @@ export default function Topology() {
 
             {/* Blueprint Flow Preview Graphic */}
             <div className="p-6 rounded-2xl bg-[#0b0f0d]/60 border border-dashed border-white/15 max-w-3xl mx-auto space-y-4">
-              <div className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Example Blueprint Topology Workflow Flow</div>
+              <div className="text-[10px] font-mono text-text-muted uppercase tracking-wider">Example dependency map</div>
               <div className="flex flex-col md:flex-row items-center justify-center gap-4">
                 <div className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-1 w-48 text-left">
                   <div className="flex items-center gap-1.5 text-accent text-xs font-bold">
@@ -321,8 +321,8 @@ export default function Topology() {
             <div className="bg-[#0b0f0d]/40 border border-white/10 rounded-2xl p-6 backdrop-blur-xl shadow-xl space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-sm font-bold text-white uppercase tracking-wider">Service Architecture Workflow Canvas</h2>
-                  <p className="text-xs text-text-muted mt-0.5">Visual representation of dependency connections & failure propagation flow.</p>
+                  <h2 className="text-sm font-bold text-white uppercase tracking-wider">Service dependencies</h2>
+                  <p className="text-xs text-text-muted mt-0.5">Upstream dependencies and downstream services.</p>
                 </div>
                 <span className="text-[10px] font-mono px-2 py-1 rounded bg-accent/10 border border-accent/20 text-accent">
                   {realServiceNames.length} Active Nodes
@@ -342,13 +342,13 @@ export default function Topology() {
                         className="p-5 rounded-2xl bg-white/5 border border-white/10 hover:border-accent/40 transition-all space-y-4 relative group"
                       >
                         {/* Node Header */}
-                        <div className="flex items-center justify-between border-b border-white/10 pb-3">
-                          <div className="flex items-center gap-2.5">
-                            <div className="p-2 rounded-xl bg-accent/10 text-accent border border-accent/20">
+                        <div className="flex flex-wrap gap-3 items-center justify-between border-b border-white/10 pb-3">
+                          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                            <div className="p-2 shrink-0 rounded-xl bg-accent/10 text-accent border border-accent/20">
                               <Server size={18} />
                             </div>
-                            <div>
-                              <h3 className="font-bold text-white text-sm">{svcName}</h3>
+                            <div className="min-w-0">
+                              <h3 title={svcName} className="font-bold text-white text-sm break-all">{svcName}</h3>
                               <span className="text-[10px] text-text-muted font-mono">
                                 Ingested Service
                               </span>
@@ -368,7 +368,7 @@ export default function Topology() {
                         {/* Upstream Dependencies Workflow Section */}
                         <div className="space-y-2">
                           <div className="flex items-center justify-between text-[11px] font-semibold text-text-muted uppercase tracking-wider">
-                            <span>Depends On (Upstream Services)</span>
+                            <span>Depends on</span>
                             <span className="font-mono text-accent">{data.upstream.length}</span>
                           </div>
 
@@ -383,9 +383,9 @@ export default function Topology() {
                                   key={dep.id}
                                   className="p-2.5 rounded-xl bg-[#0b0f0d]/40 border border-white/10 flex items-center justify-between text-xs group/item"
                                 >
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-2 min-w-0">
                                     <ArrowRight size={14} className="text-accent" />
-                                    <span className="font-mono font-semibold text-white">{dep.depends_on_service}</span>
+                                    <span title={dep.depends_on_service} className="min-w-0 truncate font-mono font-semibold text-white">{dep.depends_on_service}</span>
                                     <span
                                       className={`text-[9px] px-1.5 py-0.5 rounded font-mono uppercase ${
                                         dep.dependency_type === "hard"
@@ -399,7 +399,7 @@ export default function Topology() {
 
                                   <button
                                     onClick={() => handleDeleteDependency(dep.service, dep.depends_on_service)}
-                                    className="text-text-muted hover:text-red-400 opacity-0 group-hover/item:opacity-100 transition-opacity p-1"
+                                    className="text-text-muted hover:text-red-400 focus-visible:text-red-400 shrink-0 transition-opacity p-1"
                                     title="Delete Dependency Edge"
                                   >
                                     <Trash2 size={13} />
@@ -414,7 +414,7 @@ export default function Topology() {
                         {data.downstream.length > 0 && (
                           <div className="pt-2 border-t border-white/5 space-y-1.5">
                             <div className="text-[10px] font-semibold text-text-muted uppercase">
-                              Downstream Impact Flow:
+                              Used by:
                             </div>
                             <div className="flex flex-wrap gap-1.5">
                               {data.downstream.map((down) => (
@@ -423,7 +423,7 @@ export default function Topology() {
                                   className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-text-secondary flex items-center gap-1"
                                 >
                                   <ArrowDownRight size={10} className="text-accent" />
-                                  <span>{down.service}</span>
+                                  <span className="break-all">{down.service}</span>
                                 </span>
                               ))}
                             </div>
@@ -522,4 +522,4 @@ export default function Topology() {
       )}
     </PageContainer>
   );
-      }
+}

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Activity, Loader2, ArrowUpRight } from 'lucide-react';
 import { useEvents } from '../hooks/useEvents';
-import { groupDeploymentEvents, eventEnvironmentLabel, utcTimestamp } from '../util/console';
+import { groupDeploymentEvents, eventEnvironmentLabel, utcTimestamp, eventTitle } from '../util/console';
 import { eventRewindContext } from '../util/rewind';
 import { DateRangeFilter } from '../components/EventFilters/DateRangeFilter';
 import { SearchBar } from '../components/EventFilters/FilterComponents';
@@ -53,13 +53,13 @@ const Events = () => {
         const context = eventRewindContext(event);
         return <article key={event.id} className="border-b last:border-b-0 border-white/10 px-4 py-4 hover:bg-white/[0.02]">
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,0.9fr)_90px] gap-2 lg:gap-4 lg:items-start">
-            <div className="min-w-0"><Link to={`/events/${encodeURIComponent(event.id)}`} className="text-sm font-medium text-white hover:text-accent break-words">{event.summary || event.type || 'Change'}</Link><p className="text-[10px] mt-1 text-text-muted font-mono uppercase">{event.type || 'Unknown type'}</p></div>
+            <div className="min-w-0"><Link to={`/events/${encodeURIComponent(event.id)}`} title={event.summary || event.type} className="block truncate text-sm font-medium text-white hover:text-accent">{eventTitle(event.summary, event.type || 'Change')}</Link><p className="text-[10px] mt-1 text-text-muted font-mono uppercase">{event.type || 'Unknown type'}</p></div>
             <div className="text-xs min-w-0 break-words"><p className="text-text-secondary font-medium">{event.service || 'Service unspecified'}</p><span className={eventEnvironmentLabel(event) === 'Production' ? 'text-accent' : 'text-text-muted'}>{eventEnvironmentLabel(event)}</span></div>
             <time dateTime={event.occurred_at} className="text-xs text-text-secondary font-mono break-words" title={utcTimestamp(event.occurred_at)}>{utcTimestamp(event.occurred_at)}</time>
-            <p className="text-xs text-text-muted break-words">{event.meta?.author || 'Author unavailable'}</p>
+            <p title={event.meta?.author} className="min-w-0 truncate text-xs text-text-muted">{event.meta?.author || 'Author unavailable'}</p>
             {context ? <button className="inline-flex items-center gap-1 text-xs text-accent hover:underline justify-self-start" onClick={() => navigate(`/rewind?${new URLSearchParams(context).toString()}`)}>Rewind <ArrowUpRight size={12} /></button> : <span className="text-xs text-text-muted">Time unavailable</span>}
           </div>
-          {event.lifecycleEvents?.length > 1 && <details className="mt-3 text-xs"><summary className="text-text-muted cursor-pointer">{event.lifecycleEvents.length} related events</summary><ul className="mt-2 space-y-2">{event.lifecycleEvents.map(child => <li key={child.id}><Link to={`/events/${encodeURIComponent(child.id)}`} className="text-accent underline break-words">{child.type}: {child.summary}</Link><p className="text-text-muted">{utcTimestamp(child.occurred_at)}</p></li>)}</ul></details>}
+          {event.lifecycleEvents?.length > 1 && <details className="mt-3 text-xs"><summary className="text-text-muted cursor-pointer">{event.lifecycleEvents.length} related events</summary><ul className="mt-2 space-y-2">{event.lifecycleEvents.map(child => <li key={child.id}><Link to={`/events/${encodeURIComponent(child.id)}`} title={child.summary} className="block truncate text-accent underline">{child.type}: {eventTitle(child.summary)}</Link><p className="text-text-muted">{utcTimestamp(child.occurred_at)}</p></li>)}</ul></details>}
         </article>;
       })}
     </div>

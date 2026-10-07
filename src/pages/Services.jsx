@@ -268,7 +268,7 @@ const Services = () => {
                     }`}
                 >
                     <Layers size={14} className={activeTab === 'stacker' ? 'text-accent' : ''} />
-                    <span>Criticality Matrix (Stacker)</span>
+                    <span>Service tiers</span>
                     <span className="text-[10px] bg-accent/20 text-accent font-mono px-1.5 py-0.5 rounded">
                         {services.length}
                     </span>
@@ -343,14 +343,14 @@ const Services = () => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4 gap-4">
                             {TIERS.map(tier => {
                                 const tierServices = services.filter(s => (s.criticality_tier || 'tier-3') === tier.id);
                                 return (
                                     <div key={tier.id} className="flex flex-col space-y-3">
                                         {/* Column Header */}
                                         <div className={`border rounded-xl p-3.5 ${tier.headerBorder}`}>
-                                            <div className="flex justify-between items-center">
+                                            <div className="flex flex-wrap justify-between items-center gap-2">
                                                 <span className={`text-xs font-bold ${tier.iconColor}`}>
                                                     {tier.name}
                                                 </span>
@@ -376,13 +376,13 @@ const Services = () => {
                                                         className="bg-[#101413]/80 border border-white/10 hover:border-white/20 p-3 rounded-lg space-y-2.5 transition-all shadow-sm"
                                                     >
                                                         <div className="flex items-center justify-between">
-                                                            <div className="flex items-center gap-2">
-                                                                <Server size={14} className="text-text-muted" />
-                                                                <span className="text-xs font-semibold text-white truncate max-w-[120px]">
+                                                            <div className="flex items-center gap-2 min-w-0">
+                                                                <Server size={14} className="text-text-muted shrink-0" />
+                                                                <span title={service.name} className="text-xs font-semibold text-white truncate">
                                                                     {service.name}
                                                                 </span>
                                                             </div>
-                                                            <div className="flex items-center gap-1.5">
+                                                            <div className="flex items-center gap-1.5 shrink-0">
                                                                 <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${
                                                                     service.status === 'active' 
                                                                         ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
@@ -401,7 +401,7 @@ const Services = () => {
                                                         </div>
 
                                                         {/* Inline Tier Selector */}
-                                                        <div className="pt-1 border-t border-white/5 flex items-center justify-between text-[10px]">
+                                                        <div className="pt-1 border-t border-white/5 flex flex-wrap gap-2 items-center justify-between text-[10px]">
                                                             <span className="text-text-muted">Set Tier:</span>
                                                             <select
                                                                 value={service.criticality_tier || 'tier-3'}
@@ -409,7 +409,7 @@ const Services = () => {
                                                                     serviceId: service.service_id || service.name,
                                                                     tier: e.target.value
                                                                 })}
-                                                                className="bg-[#0b0f0d]/60 border border-white/10 rounded px-2 py-1 text-[10px] text-white focus:outline-none focus:border-accent"
+                                                                className="max-w-full bg-[#0b0f0d]/60 border border-white/10 rounded px-2 py-1 text-[10px] text-white focus:outline-none focus:border-accent"
                                                             >
                                                                 {TIERS.map(t => (
                                                                     <option key={t.id} value={t.id}>
@@ -457,7 +457,7 @@ const Services = () => {
                             >
                                 <div className="space-y-4">
                                     {/* Service Name & Status Badge */}
-                                    <div className="flex justify-between items-center">
+                                    <div className="flex flex-wrap justify-between items-center gap-2">
                                         <div className="flex items-center gap-2">
                                             <span className="w-2.5 h-2.5 rounded-lg bg-accent/20 flex items-center justify-center shrink-0">
                                                 <div className="w-1.5 h-1.5 rounded-full bg-accent" />

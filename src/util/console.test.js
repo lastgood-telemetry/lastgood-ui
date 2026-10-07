@@ -54,3 +54,21 @@ it('resolves saved report source links only from a unique exact tuple', () => {
   expect(resolveReportEvidence([row],[source,{...source,id:'duplicate'}])[0].event_id).toBeUndefined();
   expect(resolveReportEvidence([row],[{...source,service:'other'}])[0].event_id).toBeUndefined();
 });
+
+import { eventTitle, githubAppState } from './console';
+describe('scan-view polish', () => {
+  it('uses only the commit subject and caps long Unicode titles', () => {
+    expect(eventTitle('  Fix deploy\r\n\r\nLong body')).toBe('Fix deploy');
+    expect(eventTitle('x'.repeat(101))).toHaveLength(100);
+    expect(eventTitle('🙂'.repeat(101))).toBe('🙂'.repeat(99) + '…');
+    expect(eventTitle(null, 'Deployment')).toBe('Deployment');
+  });
+  it('requires a saved App installation for Connected', () => {
+    expect(githubAppState({status:'active',credentials:{installation_id:123}})).toBe('Connected');
+    expect(githubAppState({status:'active'})).toBe('Not connected');
+    expect(githubAppState({status:'disconnected',credentials:{installation_id:123}})).toBe('Not connected');
+    expect(githubAppState(null,{loading:true})).toBe('Checking');
+    expect(githubAppState(null,{error:true})).toBe('Status unavailable');
+    expect(githubAppState({status:'error'})).toBe('Needs attention');
+  });
+});
