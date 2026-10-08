@@ -156,7 +156,11 @@ const Integrations = () => {
           <div className="p-6">
             <div className="prose prose-invert max-w-none text-text-secondary text-sm mb-4 leading-relaxed">
               <p>
-                To push deployment notifications or feature-flag changes from other tools, send a POST request to our Changes ingestion API.
+                To push deployment notifications or feature-flag changes from other tools, send a POST request to our Changes ingestion API.{" "}
+                <a href="https://github.com/lastgood-telemetry/lastgood-ui/blob/main/docs/integrations.md" target="_blank" rel="noopener noreferrer" className="text-accent underline">
+                  Read the full guide
+                </a>{" "}
+                for GitHub Actions, feature flag, and Terraform examples.
               </p>
             </div>
 
