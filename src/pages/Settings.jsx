@@ -4,11 +4,26 @@ import { useOrganization } from "../hooks/useOrganization";
 import { PageHeader } from "../components/ui/PageHeader";
 import { PageContainer } from "../components/ui/PageContainer";
 import TeamSettings from "../components/Team/TeamSettings";
+import { useQuery } from "@tanstack/react-query";
+import { listInvites } from "../service/invites";
+import { sessionClaims } from "../util/invites";
 
 const Settings = () => {
 
   // Use global store
   const { data: organization, isLoading, error } = useOrganization();
+
+  // Claims only decide what to show; the invites API enforces admin access.
+  const isAdmin = sessionClaims(localStorage.getItem("authToken") || "").role === "admin";
+  // Same query key as TeamSettings, so this shares one request.
+  const { data: team } = useQuery({
+    queryKey: ["team-invites", organization?.id],
+    queryFn: listInvites,
+    enabled: isAdmin && !!organization,
+    retry: false,
+    staleTime: 0,
+  });
+  const memberCount = team?.seats?.occupied;
 
   return (
     <PageContainer>
@@ -57,6 +72,14 @@ const Settings = () => {
                 {organization.id}
               </div>
             </div>
+            {isAdmin && typeof memberCount === "number" && (
+              <div>
+                <label className="block text-[10px] text-zinc-500 font-mono uppercase tracking-wider mb-1">
+                  Members
+                </label>
+                <div className="text-white text-sm font-semibold">{memberCount}</div>
+              </div>
+            )}
           </div>
         )}
       </div>
