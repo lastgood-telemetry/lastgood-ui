@@ -1,8 +1,14 @@
-# Sending change events to LastGood (REST API)
+# Send changes to LastGood from any tool
 
-LastGood correlates "what changed" with "what broke". Anything that changes production can be reported with one HTTP request: a deploy, a feature flag flip, an infrastructure run, a config change.
+LastGood answers "what changed before this broke?". It can only answer if it hears about changes. Any tool that can send an HTTP request can tell it: a deploy, a feature flag flip, a Terraform apply, a config edit.
 
-This guide covers the ingestion endpoint that exists today. Native integrations (GitHub App) are set up from the console's Integrations page. Everything else goes through this API.
+## How it works
+
+1. **Create an API key.** In the console, open Ingestion Channels and create a key. Store it as a secret in the tool you are connecting.
+2. **Send one POST request** to `https://api.lastgood.space/api/change-events` whenever something changes.
+3. **See it in LastGood.** The event appears in Events and is used when ranking likely causes during an incident.
+
+If your tool can run a command or script, use a recipe below directly. If it can only send its own fixed webhook (LaunchDarkly, HCP Terraform), add a small relay that reshapes the webhook into the format below. The LaunchDarkly recipe walks through this step by step.
 
 ## The endpoint
 
@@ -97,9 +103,20 @@ Add the key as a repository secret named `LASTGOOD_API_KEY`, then add a step aft
 
 Change `service` and `environment` to match your setup. `jq` is preinstalled on GitHub-hosted runners.
 
-## Recipe 2: Feature flag webhooks (LaunchDarkly-style)
+## Recipe 2: LaunchDarkly flag changes (step by step)
 
-Flag tools send their own fixed JSON body, and they cannot be told to produce LastGood's schema. Put a small relay between the tool and LastGood: a serverless function, or a Zapier / n8n step. The relay maps three things: summary, who, when.
+LaunchDarkly can call a URL when a flag changes, but it sends its own JSON body and cannot be changed to LastGood's format. So the flow is:
+
+```
+LaunchDarkly flag change -> your relay (small function) -> LastGood
+```
+
+1. Deploy the relay below anywhere that gives you a public URL (Vercel or Netlify function, Cloudflare Worker, AWS Lambda). Set `LASTGOOD_API_KEY` as its environment variable.
+2. In LaunchDarkly, go to Integrations, add a Webhook, and set the URL to your relay. Choose the flag events you care about (flag updated, targeting changed, flag turned on or off). Add a secret or header if you want to restrict who can call the relay.
+3. Flip a test flag. Within a few seconds a `feature_flag` event should appear in LastGood Events.
+4. If the event is missing or wrong, look at the delivery in LaunchDarkly's webhook log and adjust the field mapping in the relay.
+
+Flag tools send their own fixed JSON body, so the relay maps it. Use this as a starting point:
 
 Node relay (works as an HTTP handler on any serverless platform):
 
