@@ -1,0 +1,47 @@
+name: Sync lockfile
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync-lockfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Regenerate pnpm-lock.yaml
+        run: pnpm install --lockfile-only
+
+      - name: Commit lockfile and open PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          if git diff --quiet -- pnpm-lock.yaml; then
+            echo "pnpm-lock.yaml already in sync; nothing to do."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git push origin --delete lockfile-sync 2>/dev/null || true
+          git checkout -B lockfile-sync
+          git add pnpm-lock.yaml
+          git commit -m "chore: sync lockfile for posthog-js"
+          git push -u origin lockfile-sync
+          gh pr create --base main --head lockfile-sync \
+            --title "chore: sync lockfile for posthog-js" \
+            --body "The posthog-js analytics merge updated package.json without regenerating pnpm-lock.yaml, so Vercel production builds fail with an outdated-lockfile error. This PR contains the regenerated lockfile. Merge it to restore green deploys." \
+          || gh pr view lockfile-sync --json url --jq '."A PR from lockfile-sync already exists: " + .url'
