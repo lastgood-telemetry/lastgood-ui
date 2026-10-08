@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   Terminal,
@@ -157,9 +157,9 @@ const Integrations = () => {
             <div className="prose prose-invert max-w-none text-text-secondary text-sm mb-4 leading-relaxed">
               <p>
                 To push deployment notifications or feature-flag changes from other tools, send a POST request to our Changes ingestion API.{" "}
-                <a href="https://github.com/lastgood-telemetry/lastgood-ui/blob/main/docs/integrations.md" target="_blank" rel="noopener noreferrer" className="text-accent underline">
-                  Read the full guide
-                </a>{" "}
+                <Link to="/integrations/guide" className="text-accent underline">
+                  Read the step-by-step guide
+                </Link>{" "}
                 for GitHub Actions, feature flag, and Terraform examples.
               </p>
             </div>
