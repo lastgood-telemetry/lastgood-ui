@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   Terminal,
@@ -13,7 +13,6 @@ import {
   ArrowLeft,
   HelpCircle,
   Cloud,
-  Hash,
   Layers
 } from "lucide-react";
 import { API_BASE_URL } from "../constants";
@@ -23,12 +22,11 @@ import { getIntegrationByProvider } from "../service/auth";
 import { contactCS } from "../util";
 import PageContainer from "../components/ui/PageContainer";
 import { PageHeader } from "../components/ui/PageHeader";
-import SlackPanel from "../components/Integrations/SlackPanel";
 
 const Integrations = () => {
   const { org } = useOrgStore();
   const [searchParams] = useSearchParams();
-  const [selectedChannel, setSelectedChannel] = useState(() => searchParams.get("slack") ? "slack" : ["github", "api", "slack"].includes(searchParams.get("channel")) ? searchParams.get("channel") : null);
+  const [selectedChannel, setSelectedChannel] = useState(() => ["github", "api"].includes(searchParams.get("channel")) ? searchParams.get("channel") : null);
   const [copiedStates, setCopiedStates] = useState({});
 
 
@@ -72,15 +70,6 @@ const Integrations = () => {
       category: "Developer Tools",
     },
     {
-      id: "slack",
-      title: "Slack",
-      description: "Post one card per incident with the top suspected change and a deep link into Rewind.",
-      icon: Hash,
-      status: "Active",
-      active: true,
-      category: "Notifications",
-    },
-    {
       id: "datadog",
       title: "Datadog Monitors",
       description: "Correlate infrastructure health metrics, alerts, and monitor state changes directly.",
@@ -117,10 +106,6 @@ const Integrations = () => {
       category: "Infrastructure",
     },
   ];
-
-  if (selectedChannel === "slack") {
-    return <SlackPanel orgId={org?.id} returnState={searchParams.get("slack")} onBack={() => setSelectedChannel(null)} />;
-  }
 
   if (selectedChannel === "github") {
     return <PageContainer>
@@ -274,7 +259,7 @@ const Integrations = () => {
 
               {channel.active ? (
                 <button type="button" onClick={() => setSelectedChannel(channel.id)} className="flex items-center gap-1.5 text-xs font-mono font-semibold text-white hover:text-sky-400 pt-2 border-t border-white/5 focus-visible:outline focus-visible:outline-2">
-                  <span>{channel.id === 'github' ? (isGithubActive ? 'Manage GitHub App' : 'Set up GitHub App') : channel.id === 'slack' ? 'Set up Slack' : 'View API setup'}</span>
+                  <span>{channel.id === 'github' ? (isGithubActive ? 'Manage GitHub App' : 'Set up GitHub App') : 'View API setup'}</span>
                   <ChevronRight size={14} className="text-zinc-500" />
                 </button>
               ) : (
@@ -305,4 +290,13 @@ const Integrations = () => {
   );
 };
 
-export default Integrations;
+// The Slack OAuth callback redirects to /integrations?slack=<state>. Slack is a notification
+// destination, not an ingestion channel, so forward that return to its own page.
+const IntegrationsRoute = () => {
+  const [searchParams] = useSearchParams();
+  const slack = searchParams.get("slack");
+  if (slack) return <Navigate to={`/notifications?slack=${encodeURIComponent(slack)}`} replace />;
+  return <Integrations />;
+};
+
+export default IntegrationsRoute;
