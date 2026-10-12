@@ -21,23 +21,23 @@ const leadTime = (change, incidentTime) => {
 };
 
 // Risk scores rank investigation candidates. They are never causal confidence.
-const SignalRow = ({ item, index, primary, incidentTime }) => {
+const SignalRow = ({ item, index, primary, incidentTime, highlighted = false }) => {
   const change = item.event || item;
   const score = itemScore(item);
   const lead = leadTime(change, incidentTime);
   const meta = [change.meta?.author, change.meta?.commit && String(change.meta.commit).slice(0, 7), change.meta?.version].filter(Boolean).join(' · ');
-  return <li className={`grid grid-cols-[auto,1fr,auto] gap-x-3 gap-y-1 items-start p-3 ${item === primary ? 'bg-accent/5' : ''}`}>
+  return <li data-highlighted={highlighted || undefined} className={`grid grid-cols-[auto,1fr,auto] gap-x-3 gap-y-1 items-start p-3 ${item === primary ? 'bg-accent/5' : ''} ${highlighted ? 'ring-1 ring-inset ring-accent bg-accent/10' : ''}`}>
     <span className="text-xs font-mono text-text-muted pt-0.5">#{index + 1}</span>
     <div className="min-w-0 space-y-1">
       <p className="text-sm text-white font-medium break-words">{change.summary || change.type || 'Change'}{item === primary && <span className="ml-2 text-[11px] font-mono uppercase text-accent border border-accent/40 rounded-[4px] px-1.5 py-0.5 align-middle">Suspected contributor</span>}</p>
-      <p className="text-xs text-text-secondary break-words">{change.service || 'Unspecified'} / {eventEnvironmentLabel(change)}{lead && <> · <span className="text-white">{lead}</span></>}</p>
+      <p className="text-xs text-text-secondary break-words">{highlighted && <span className="mr-2 text-[11px] font-mono uppercase text-accent border border-accent/40 rounded-[4px] px-1.5 py-0.5">Linked from alert</span>}{change.service || 'Unspecified'} / {eventEnvironmentLabel(change)}{lead && <> · <span className="text-white">{lead}</span></>}</p>
       <p className="text-xs text-text-muted break-words">{utcTimestamp(change.occurred_at)} · {meta || 'Author unavailable'}</p>
     </div>
     <div className="text-right"><p className="text-sm font-mono font-semibold text-white">{score ?? '-'}<span className="text-text-muted text-xs">/100</span></p><p className="text-[10px] uppercase tracking-wider text-text-muted">risk</p></div>
   </li>;
 };
 
-export const RewindIncidentBrief = ({ scoringResult, queryParams, diagnosisState, diagnosisStage, onRerunDiagnosis, rerunning = false }) => {
+export const RewindIncidentBrief = ({ scoringResult, queryParams, diagnosisState, diagnosisStage, onRerunDiagnosis, rerunning = false, highlightId = '' }) => {
   if (!scoringResult) return null;
   const items = scoringResult.individual_scores || scoringResult.individualScores || [];
   const ai = scoringResult.ai_diagnosis || scoringResult.aiDiagnosis || {};
@@ -78,10 +78,10 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, diagnosisState
               <p className="text-xs font-mono text-text-muted uppercase tracking-wider">Ranked changes in window ({items.length})</p>
               <p className="text-[11px] text-text-muted">Risk ranks investigation order, not causation</p>
             </div>
-            <ol className="border border-white/10 rounded-[4px] divide-y divide-white/10">{items.slice(0, 3).map((item, i) => <SignalRow key={(item.event || item).id || i} item={item} index={i} primary={primary} incidentTime={queryParams?.incidentTime} />)}</ol>
-            {items.length > 3 && <details className="text-sm">
+            <ol className="border border-white/10 rounded-[4px] divide-y divide-white/10">{items.slice(0, 3).map((item, i) => <SignalRow key={(item.event || item).id || i} item={item} index={i} primary={primary} incidentTime={queryParams?.incidentTime} highlighted={!!highlightId && (item.event || item).id === highlightId} />)}</ol>
+            {items.length > 3 && <details className="text-sm" open={items.slice(3).some(item => highlightId && (item.event || item).id === highlightId) || undefined}>
               <summary className="cursor-pointer text-text-secondary hover:text-accent">Show {items.length - 3} more</summary>
-              <ol className="mt-2 border border-white/10 rounded-[4px] divide-y divide-white/10">{items.slice(3).map((item, i) => <SignalRow key={(item.event || item).id || i + 3} item={item} index={i + 3} primary={primary} incidentTime={queryParams?.incidentTime} />)}</ol>
+              <ol className="mt-2 border border-white/10 rounded-[4px] divide-y divide-white/10">{items.slice(3).map((item, i) => <SignalRow key={(item.event || item).id || i + 3} item={item} index={i + 3} primary={primary} incidentTime={queryParams?.incidentTime} highlighted={!!highlightId && (item.event || item).id === highlightId} />)}</ol>
             </details>}
           </div>
           <div className="border-l-2 border-accent pl-4 space-y-2">
