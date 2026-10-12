@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { eventRewindContext, eventRewindUrl, readRewindContext, rewindRequestParams, rewindOptions } from './rewind';
+import { eventRewindContext, eventRewindUrl, readRewindContext, rewindRequestParams, rewindOptions, readRewindDeepLink } from './rewind';
 
 const event = { occurred_at: '2026-08-29T14:22:32.123Z', service: 'user fe/&', environment: 'Production' };
 describe('Rewind event context', () => {
@@ -24,4 +24,22 @@ describe('Rewind event context', () => {
         expect(rewindOptions([{ service: 'b' }, { service: 'a' }, { service: 'b' }, {}], 'service', 'old')).toEqual(['a', 'b', 'old']);
         expect(rewindOptions([], 'environment')).toEqual([]);
     });
+});
+
+
+describe('readRewindDeepLink', () => {
+  it('reads window, highlight and run from an alert link', () => {
+    expect(readRewindDeepLink('?incidentTime=2026-10-12T18:02:17.000&window=60m&highlight=abc&run=1'))
+      .toEqual({ windowMinutes: 60, highlight: 'abc', autorun: true });
+  });
+  it('accepts hours and plain minutes, ignores unsupported windows', () => {
+    expect(readRewindDeepLink('?window=2h').windowMinutes).toBe(120);
+    expect(readRewindDeepLink('?windowMinutes=30').windowMinutes).toBe(30);
+    expect(readRewindDeepLink('?window=7m').windowMinutes).toBeNull();
+    expect(readRewindDeepLink('?window=abc').windowMinutes).toBeNull();
+  });
+  it('does not autorun without an incident time, and plain links keep old behaviour', () => {
+    expect(readRewindDeepLink('?run=1').autorun).toBe(false);
+    expect(readRewindDeepLink('?incidentTime=2026-10-12T18:02:17.000&service=api')).toEqual({ windowMinutes: null, highlight: '', autorun: false });
+  });
 });
