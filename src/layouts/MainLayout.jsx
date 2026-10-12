@@ -60,7 +60,7 @@ const MainLayout = () => {
     { path: "/services", label: "Services", group: "Context", icon: Server },
     { path: "/topology", label: "Topology", group: "Context", icon: Network },
     { path: "/integrations", label: "Ingestion Channels", group: "Workspace", icon: Blocks },
-    { path: "/notifications", label: "Integrations", group: "Workspace", icon: Plug },
+    { path: "/notifications", label: "Notifications", group: "Workspace", icon: Plug },
     { path: "/settings", label: "Settings", group: "Workspace", icon: UserCircle, mobile: true },
   ];
 
