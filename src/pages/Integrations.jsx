@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   Terminal,
@@ -290,4 +290,13 @@ const Integrations = () => {
   );
 };
 
-export default Integrations;
+// The Slack OAuth callback redirects to /integrations?slack=<state>. Slack is a notification
+// destination, not an ingestion channel, so forward that return to its own page.
+const IntegrationsRoute = () => {
+  const [searchParams] = useSearchParams();
+  const slack = searchParams.get("slack");
+  if (slack) return <Navigate to={`/notifications?slack=${encodeURIComponent(slack)}`} replace />;
+  return <Integrations />;
+};
+
+export default IntegrationsRoute;

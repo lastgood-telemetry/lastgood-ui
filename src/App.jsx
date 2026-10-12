@@ -7,6 +7,7 @@ import EventDetail from "./pages/EventDetail";
 import Settings from "./pages/Settings";
 import Integrations from "./pages/Integrations";
 import IntegrationsGuide from "./pages/IntegrationsGuide";
+import Notifications from "./pages/Notifications";
 import Invite from "./pages/Invite";
 import Login from "./pages/Login";
 import VerifyEmail from "./pages/VerifyEmail";
@@ -81,6 +82,7 @@ function App() {
             <Route path="events" element={<Events />} />
             <Route path="events/:id" element={<EventDetail />} />
             <Route path="integrations" element={<Integrations />} />
+            <Route path="notifications" element={<Notifications />} />
             <Route path="integrations/guide" element={<IntegrationsGuide />} />
             <Route path="services" element={<Services />} />
             <Route path="postmortems" element={<Postmortems />} />
