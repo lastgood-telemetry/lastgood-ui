@@ -38,3 +38,22 @@ export const rewindRequestParams = (context) => ({
 
 export const rewindOptions = (events, field, selected = '') =>
     [...new Set([...events.map(event => event[field]), selected].filter(Boolean))].sort();
+
+
+const WINDOW_OPTIONS = [15, 30, 60, 120, 360, 1440];
+
+// Optional deep-link state used by alert links (for example Slack incident cards):
+//   window=60m | windowMinutes=60   lookback window (must be one of the Rewind options)
+//   highlight=<change event id>     marks that change in the ranked list
+//   run=1                           analyze immediately (needs incidentTime)
+export const readRewindDeepLink = (search) => {
+    const params = new URLSearchParams(search);
+    const raw = (params.get('windowMinutes') || params.get('window') || '').trim();
+    const match = /^(\d+)\s*(m|h)?$/i.exec(raw);
+    const minutes = match ? Number(match[1]) * (match[2] && match[2].toLowerCase() === 'h' ? 60 : 1) : null;
+    return {
+        windowMinutes: WINDOW_OPTIONS.includes(minutes) ? minutes : null,
+        highlight: params.get('highlight') || '',
+        autorun: params.get('run') === '1' && !!params.get('incidentTime'),
+    };
+};
