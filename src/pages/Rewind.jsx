@@ -7,7 +7,7 @@ import useAsyncDiagnosis from "../hooks/useAsyncDiagnosis";
 import useOrgStore from '../stores/useOrgStore';
 import useRewindSession, { sameRewindScope } from "../hooks/useRewindSession";
 import { Link, useLocation } from 'react-router-dom';
-import { eventRewindContext, readRewindContext, rewindRequestParams, rewindOptions } from '../util/rewind';
+import { eventRewindContext, readRewindContext, readRewindDeepLink, rewindRequestParams, rewindOptions } from '../util/rewind';
 import { RewindIncidentBrief } from "../components/Rewind/RewindIncidentBrief";
 import { LoadingState } from "../components/LoadingState/LoadingState";
 import dayjs from "dayjs";
@@ -40,7 +40,9 @@ const Rewind = () => {
   const [showFilters, setShowFilters] = useState(false);
   const location = useLocation();
   const routeContext = useMemo(() => readRewindContext(location.search), [location.search]);
-  const [session, setSession] = useRewindSession({ ...routeContext, windowMinutes: 30 });
+  const deepLink = useMemo(() => readRewindDeepLink(location.search), [location.search]);
+  const [highlightId, setHighlightId] = useState(deepLink.highlight);
+  const [session, setSession] = useRewindSession({ ...routeContext, windowMinutes: deepLink.windowMinutes || 30 });
   const { incidentTime, windowMinutes, service, environment } = session.selection;
   const setSelection = (field, value) => setSession(current => ({
     ...current, selection: { ...current.selection, [field]: value },
@@ -139,10 +141,14 @@ const Rewind = () => {
     // An event deep link changes the draft scope, never discards a brief.
     // Plain sidebar navigation restores the saved controls as well.
     if (location.search && previousSearch.current !== location.search) {
-      setSession(current => ({ ...current, selection: { ...current.selection, ...routeContext } }));
+      const linkedWindow = deepLink.windowMinutes ? { windowMinutes: deepLink.windowMinutes } : {};
+      setSession(current => ({ ...current, selection: { ...current.selection, ...routeContext, ...linkedWindow } }));
+      setHighlightId(deepLink.highlight);
+      // Alert links (run=1) analyze straight away so the responder lands on the ranked list.
+      if (deepLink.autorun) setQueryParams({ ...routeContext, windowMinutes: deepLink.windowMinutes || windowMinutes });
     }
     previousSearch.current = location.search;
-  }, [location.search, routeContext, setSession]);
+  }, [location.search, routeContext, deepLink, setSession]);
 
   const analyzeLatest = () => {
     const context = eventRewindContext(latestEvent);
@@ -307,7 +313,7 @@ const Rewind = () => {
 
         {displayedResult && !hasNoResults && (
           <div className="space-y-6 animate-in fade-in duration-300">
-            <RewindIncidentBrief scoringResult={displayedResult} queryParams={displayedParams} diagnosisState={displayed.state} diagnosisStage={displayed.stage} onRerunDiagnosis={rerunDiagnosis} rerunning={isFetching} />
+            <RewindIncidentBrief scoringResult={displayedResult} queryParams={displayedParams} diagnosisState={displayed.state} diagnosisStage={displayed.stage} onRerunDiagnosis={rerunDiagnosis} rerunning={isFetching} highlightId={highlightId} />
 
           </div>
         )}
