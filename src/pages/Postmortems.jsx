@@ -119,7 +119,9 @@ export default function Postmortems() {
         service,
         incidentTitle: incidentTitle || `Production Outage: ${service}`,
         severity,
-        incidentTimestamp: new Date(incidentTimestamp).toISOString(),
+        // The picker value is a UTC wall-clock string ("YYYY-MM-DDTHH:mm", labelled UTC). Parse it as UTC;
+        // new Date(value) would read it as local time and shift the incident by the user's UTC offset.
+        incidentTimestamp: new Date(`${incidentTimestamp}:00Z`).toISOString(),
         window: timeWindow,
       });
 
@@ -130,6 +132,8 @@ export default function Postmortems() {
       }
     } catch (err) {
       console.error("Postmortem generation error:", err);
+      // The global interceptor hides 404s, and "no events in window" comes back as a 404.
+      if (err.response?.status === 404) toast.error(err.response?.data?.error || "No events found in that window. Widen the window or move the incident time.");
     } finally {
       setGenerating(false);
     }
