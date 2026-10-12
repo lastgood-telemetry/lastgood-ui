@@ -50,12 +50,9 @@ export default function Postmortems() {
   const [incidentTitle, setIncidentTitle] = useState("");
   const [severity, setSeverity] = useState("CRITICAL");
   const [timeWindow, setTimeWindow] = useState("30m");
-  // datetime-local expects LOCAL wall-clock time. Using the UTC ISO string here made new Date(value)
-  // read it as local, shifting the incident by the user's UTC offset (5.5h early in IST).
-  const [incidentTimestamp, setIncidentTimestamp] = useState(() => {
-    const d = new Date(Date.now() - 30 * 60 * 1000);
-    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().substring(0, 16);
-  });
+  const [incidentTimestamp, setIncidentTimestamp] = useState(
+    new Date(Date.now() - 30 * 60 * 1000).toISOString().substring(0, 16)
+  );
 
   useEffect(() => {
     fetchPostmortems();
@@ -122,7 +119,9 @@ export default function Postmortems() {
         service,
         incidentTitle: incidentTitle || `Production Outage: ${service}`,
         severity,
-        incidentTimestamp: new Date(incidentTimestamp).toISOString(),
+        // The picker value is a UTC wall-clock string ("YYYY-MM-DDTHH:mm", labelled UTC). Parse it as UTC;
+        // new Date(value) would read it as local time and shift the incident by the user's UTC offset.
+        incidentTimestamp: new Date(`${incidentTimestamp}:00Z`).toISOString(),
         window: timeWindow,
       });
 
