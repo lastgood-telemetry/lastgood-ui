@@ -7,6 +7,7 @@ import {
   Network,
   FileText,
   Blocks,
+  Plug,
   UserCircle,
   LogOut,
   Search,
@@ -59,6 +60,7 @@ const MainLayout = () => {
     { path: "/services", label: "Services", group: "Context", icon: Server },
     { path: "/topology", label: "Topology", group: "Context", icon: Network },
     { path: "/integrations", label: "Ingestion Channels", group: "Workspace", icon: Blocks },
+    { path: "/notifications", label: "Integrations", group: "Workspace", icon: Plug },
     { path: "/settings", label: "Settings", group: "Workspace", icon: UserCircle, mobile: true },
   ];
 
