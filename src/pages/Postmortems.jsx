@@ -50,9 +50,12 @@ export default function Postmortems() {
   const [incidentTitle, setIncidentTitle] = useState("");
   const [severity, setSeverity] = useState("CRITICAL");
   const [timeWindow, setTimeWindow] = useState("30m");
-  const [incidentTimestamp, setIncidentTimestamp] = useState(
-    new Date(Date.now() - 30 * 60 * 1000).toISOString().substring(0, 16)
-  );
+  // datetime-local expects LOCAL wall-clock time. Using the UTC ISO string here made new Date(value)
+  // read it as local, shifting the incident by the user's UTC offset (5.5h early in IST).
+  const [incidentTimestamp, setIncidentTimestamp] = useState(() => {
+    const d = new Date(Date.now() - 30 * 60 * 1000);
+    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().substring(0, 16);
+  });
 
   useEffect(() => {
     fetchPostmortems();
@@ -130,6 +133,8 @@ export default function Postmortems() {
       }
     } catch (err) {
       console.error("Postmortem generation error:", err);
+      // The global interceptor hides 404s, and "no events in window" comes back as a 404.
+      if (err.response?.status === 404) toast.error(err.response?.data?.error || "No events found in that window. Widen the window or move the incident time.");
     } finally {
       setGenerating(false);
     }
