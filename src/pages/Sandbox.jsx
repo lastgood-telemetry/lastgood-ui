@@ -2,17 +2,53 @@ import Logo from '../components/Logo';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SETUP_PATH, rememberSetupDestination } from '../util/console';
-import { List, Clock, Blocks, Server, Menu, X, ArrowRight } from 'lucide-react';
-import SandboxTimeline from '../components/sandbox/SandboxTimeline';
-import AiDiagnosisPanel from '../components/sandbox/AiDiagnosisPanel';
+import { List, Clock, Blocks, Server, Menu, X, ArrowRight, History } from 'lucide-react';
+import { RewindIncidentBrief } from '../components/Rewind/RewindIncidentBrief';
+import { PageContainer } from '../components/ui/PageContainer';
+import { PageHeader } from '../components/ui/PageHeader';
 import SandboxServices from '../components/sandbox/SandboxServices';
 import SandboxIntegrations from '../components/sandbox/SandboxIntegrations';
 import SandboxTelemetry from '../components/sandbox/SandboxTelemetry';
 import { mockIncident, mockTimelineEvents, mockAiDiagnosis, initialMockServices } from '../components/sandbox/MockData';
 
+// Feed the public sample through the real console brief. No API calls or actions.
+const sampleChanges = mockTimelineEvents.filter(event => event.type !== 'alert')
+  .sort((a, b) => b.riskScore - a.riskScore);
+const sampleScoring = {
+  individual_scores: sampleChanges.map((event, index) => ({
+    role: index === 0 ? 'primary' : 'candidate',
+    event: {
+      // No real event id: the demo must not link into private event routes.
+      summary: event.title,
+      type: event.type,
+      occurred_at: event.timestamp,
+      service: mockIncident.service,
+      environment: mockIncident.environment,
+      meta: { author: event.author },
+    },
+    risk_assessment: { score: event.riskScore, explanation: event.riskRationale },
+  })),
+  overall_assessment: {
+    explanation: 'Simulated investigation. Scores are illustrative, not calculated live results. Timing and service overlap rank changes for investigation, not confirmed causes.',
+    recommendations: mockAiDiagnosis.recommendations.map(item => item.command),
+  },
+  ai_diagnosis: {
+    stage: 'triage',
+    status: 'completed',
+    primary_cause_headline: sampleChanges[0].title,
+    executive_summary: mockAiDiagnosis.summary,
+    recommended_action: 'Verify the flag change against checkout latency, error rate and logs before choosing a mitigation. The sample suggests reviewing new-checkout-flow first.',
+  },
+};
+const sampleScope = {
+  incidentTime: mockIncident.startedAt.replace(/Z$/, ''),
+  windowMinutes: 120,
+  service: mockIncident.service,
+  environment: mockIncident.environment,
+};
+
 const Sandbox = () => {
   const [activeTab, setActiveTab] = useState('rewind');
-  const [selectedEventId, setSelectedEventId] = useState(mockTimelineEvents[2].id);
   const [mockServices, setMockServices] = useState(initialMockServices);
   const [isNavOpen, setIsNavOpen] = useState(false);
 
@@ -131,26 +167,38 @@ const Sandbox = () => {
           <span className="text-[#b6edce] font-medium">Simulated incident.</span> Events, connectors and scores are sample data. Nothing here touches your systems.
         </div>
 
-        <div className="flex-1 p-3 sm:p-4">
+        <div className={`flex-1 ${activeTab === 'rewind' ? '' : 'p-3 sm:p-4'}`}>
           {activeTab === 'telemetry' && (
             <SandboxTelemetry events={mockTimelineEvents} />
           )}
 
           {activeTab === 'rewind' && (
-            <div className="py-4 md:p-6 max-w-7xl mx-auto flex flex-col xl:flex-row gap-6 animate-fade-in">
-              <div className="w-full xl:w-1/3 min-w-0 flex flex-col">
-                <div className="mb-4">
-                  <h2 className="text-xl font-bold text-white">Change timeline</h2>
-                  <p className="text-sm text-slate-400 mt-1">Select a change to inspect the sample analysis.</p>
+            <PageContainer>
+              <PageHeader icon={History} title="Rewind" description="What changed before the incident? Explore the same analysis and AI summary as the console, with sample data." />
+              <div className="bg-[#101413] border border-white/10 rounded-xl p-3 md:p-4 shadow-sm mb-6">
+                <div className="text-xs text-zinc-400 mb-4 pb-4 border-b border-white/10">
+                  <p className="text-zinc-200">{mockIncident.title}</p>
+                  <p className="mt-1">Pre-loaded sample analysis. No live diagnosis or system changes.</p>
                 </div>
-                <div className="min-w-0 xl:pr-2">
-                  <SandboxTimeline events={mockTimelineEvents} selectedEventId={selectedEventId} onSelectEvent={setSelectedEventId} />
-                </div>
+                <dl className="grid grid-cols-2 lg:grid-cols-[minmax(0,1fr),160px,160px,144px] gap-4 text-xs">
+                  {[
+                    ['Incident time (UTC)', new Date(mockIncident.startedAt).toISOString().replace('T', ' ').replace(/\.\d+Z$/, ' UTC')],
+                    ['Lookback window', '2 Hours'],
+                    ['Service', mockIncident.service],
+                    ['Environment', mockIncident.environment],
+                  ].map(([label, value]) => <div key={label} className="min-w-0">
+                    <dt className="text-[11px] font-mono font-semibold text-zinc-400 mb-1.5 uppercase">{label}</dt>
+                    <dd className="bg-[#101413] border border-white/10 rounded-lg px-3 py-2 font-mono text-white break-words">{value}</dd>
+                  </div>)}
+                </dl>
               </div>
-              <div className="w-full xl:w-2/3 min-w-0 flex flex-col">
-                <AiDiagnosisPanel incident={mockIncident} diagnosis={mockAiDiagnosis} />
+              <div onClickCapture={event => {
+                const link = event.target.closest('a[href="/events"]');
+                if (link) { event.preventDefault(); event.stopPropagation(); selectTab('telemetry'); }
+              }}>
+                <RewindIncidentBrief scoringResult={sampleScoring} queryParams={sampleScope} diagnosisState="completed" diagnosisStage="triage" />
               </div>
-            </div>
+            </PageContainer>
           )}
 
           {activeTab === 'ingestions' && <SandboxIntegrations />}
