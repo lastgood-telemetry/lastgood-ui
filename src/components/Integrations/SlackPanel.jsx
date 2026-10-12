@@ -66,7 +66,7 @@ const SlackPanel = ({ orgId, returnState }) => {
 
   return (
     <PageContainer>
-      <PageHeader icon={Plug} title="Integrations" description="Send incident alerts to where your team already works." />
+      <PageHeader icon={Plug} title="Notifications" description="Send incident alerts to where your team already works." />
 
       {banner && <div role="status" className={`max-w-2xl mb-4 border rounded px-4 py-3 text-sm ${bannerTone[banner.tone]}`}>{banner.text}</div>}
 
