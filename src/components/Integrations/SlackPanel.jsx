@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, ArrowRight, Hash, Lock, Trash2, Loader2 } from "lucide-react";
+import { ArrowRight, Hash, Plug, Lock, Trash2, Loader2 } from "lucide-react";
 import PageContainer from "../ui/PageContainer";
 import { PageHeader } from "../ui/PageHeader";
 import { toast } from "../ui/Toast";
@@ -14,7 +14,7 @@ const bannerTone = {
   error: "border-red-500/30 bg-red-500/10 text-red-300",
 };
 
-const SlackPanel = ({ orgId, returnState, onBack }) => {
+const SlackPanel = ({ orgId, returnState }) => {
   const queryClient = useQueryClient();
   const banner = slackReturnState(returnState);
   const [channelId, setChannelId] = useState("");
@@ -66,14 +66,13 @@ const SlackPanel = ({ orgId, returnState, onBack }) => {
 
   return (
     <PageContainer>
-      <button onClick={onBack} className="mb-6 inline-flex items-center gap-2 text-sm text-text-muted hover:text-white"><ArrowLeft size={16} />Back to Ingestion Channels</button>
-      <PageHeader icon={Hash} title="Slack" description="Get one card per incident in the channel you choose, with the top suspected change and a link into Rewind." />
+      <PageHeader icon={Plug} title="Integrations" description="Send incident alerts to where your team already works." />
 
       {banner && <div role="status" className={`max-w-2xl mb-4 border rounded px-4 py-3 text-sm ${bannerTone[banner.tone]}`}>{banner.text}</div>}
 
       <section className="border border-white/10 rounded bg-[#151b18] p-6 max-w-2xl space-y-5">
         <div className="flex items-center justify-between gap-4">
-          <h2 className="text-base font-semibold text-white">Incident notifications</h2>
+          <h2 className="text-base font-semibold text-white inline-flex items-center gap-2"><Hash size={16} className="text-accent" />Slack incident notifications</h2>
           <span role="status" className={`text-xs shrink-0 ${connected ? "text-accent" : "text-text-muted"}`}>{pill}</span>
         </div>
 
@@ -83,7 +82,7 @@ const SlackPanel = ({ orgId, returnState, onBack }) => {
           <p className="text-sm text-text-muted inline-flex items-center gap-2"><Loader2 size={14} className="animate-spin" />Checking Slack connection</p>
         ) : !connected ? (
           <>
-            <p className="text-sm text-text-secondary leading-relaxed">Install the LastGood app in your Slack workspace. It only posts incident cards to channels you choose. An organization admin must connect it.</p>
+            <p className="text-sm text-text-secondary leading-relaxed">One card per incident, with the top suspected change and a link into Rewind. Install the LastGood app in your Slack workspace. It only posts incident cards to channels you choose. An organization admin must connect it.</p>
             <button onClick={() => install.mutate()} disabled={install.isPending} className="inline-flex items-center gap-2 bg-accent text-[#101413] px-4 py-2 rounded text-sm font-semibold disabled:opacity-60">
               {install.isPending ? <Loader2 size={16} className="animate-spin" /> : <Hash size={16} />}Connect Slack<ArrowRight size={14} />
             </button>
