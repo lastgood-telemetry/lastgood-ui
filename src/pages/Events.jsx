@@ -30,14 +30,14 @@ const Events = () => {
   useEffect(() => { if (loaded.length > 0) captureOnce('first_events_viewed', { count: loaded.length }); }, [loaded.length]);
   const active = search || fromDate || toDate || service || scope !== 'all';
   return <PageContainer>
-    <PageHeader icon={Activity} title="Change log" description="What changed before the incident? Newest first. Times in UTC." actions={<Link to="/rewind" className="bg-accent text-[#101413] px-3 py-2 rounded text-xs font-semibold">Open Rewind</Link>} />
+    <PageHeader icon={Activity} title="Change log" description="What changed before the incident? Newest first. Times in UTC." actions={<Link to="/rewind" className="bg-accent text-paper px-3 py-2 rounded text-xs font-semibold">Open Rewind</Link>} />
     <div className="space-y-3 mb-5">
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex border border-white/10 rounded p-1 gap-1" aria-label="Environment scope">
-          {[['all', 'All environments'], ['production', 'Production only']].map(([value, label]) => <button key={value} aria-pressed={scope === value} onClick={() => setScope(value)} className={`px-3 py-1.5 rounded text-xs ${scope === value ? 'bg-accent text-[#101413] font-semibold' : 'text-text-secondary hover:text-white'}`}>{label}</button>)}
+          {[['all', 'All environments'], ['production', 'Production only']].map(([value, label]) => <button key={value} aria-pressed={scope === value} onClick={() => setScope(value)} className={`px-3 py-1.5 rounded text-xs ${scope === value ? 'bg-accent text-paper font-semibold' : 'text-text-secondary hover:text-white'}`}>{label}</button>)}
         </div>
         <label className="text-xs text-text-muted flex items-center gap-2">Service
-          <select aria-label="Filter service" value={service} onChange={e => setService(e.target.value)} className="bg-[#151b18] border border-white/10 rounded px-2 py-2 text-white max-w-[190px]">
+          <select aria-label="Filter service" value={service} onChange={e => setService(e.target.value)} className="bg-surface border border-white/10 rounded px-2 py-2 text-white max-w-[190px]">
             <option value="">All services</option>{services.map(value => <option key={value}>{value}</option>)}
           </select>
         </label>
@@ -48,7 +48,7 @@ const Events = () => {
         <DateRangeFilter fromDate={fromDate} toDate={toDate} onFromDateChange={setFromDate} onToDateChange={setToDate} onClear={() => { setFromDate(''); setToDate(''); }} />
       </div>
     </div>
-    <div className="border border-white/10 rounded bg-[#151b18] overflow-hidden">
+    <div className="border border-white/10 rounded bg-surface overflow-hidden">
       <div className="px-4 py-3 border-b border-white/10 text-xs text-text-muted">{events.length} changes shown from {loaded.length} loaded events{scope === 'production' ? ' · Production only' : ''}. Related deployment events are grouped.</div>
       <div className="hidden lg:grid grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,1.2fr)_minmax(0,0.9fr)_90px] gap-4 px-4 py-2 border-b border-white/10 text-[10px] uppercase font-mono text-text-muted"><span>What changed</span><span>Service / env</span><span>When (UTC)</span><span>Who</span><span>Investigate</span></div>
       {isLoading ? <p role="status" className="p-6 text-sm text-text-muted">Loading changes...</p> : error ? <div role="alert" className="p-6 text-sm text-rose-300">Could not load changes. {error.message} <button onClick={() => refetch()} className="text-accent underline">Retry</button></div> : events.length === 0 ? <p className="p-6 text-sm text-text-muted">No changes in the loaded events match these filters.{hasNextPage ? ' Load older events to search further.' : ' Try a wider window or clear filters.'}</p> : events.map(event => {
