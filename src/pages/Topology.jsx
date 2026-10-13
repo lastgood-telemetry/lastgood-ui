@@ -149,7 +149,7 @@ export default function Topology() {
             ].map(({ label, value, color }) => (
               <div
                 key={label}
-                className="p-4 rounded-xl bg-deep/40 border border-white/8 backdrop-blur-sm"
+                className="p-4 rounded-xl bg-deep/40 border border-white/10 backdrop-blur-sm"
               >
                 <span className="text-[10px] text-text-muted block mb-1">{label}</span>
                 <span className={`text-2xl font-bold ${color}`}>{value}</span>
