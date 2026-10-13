@@ -12,7 +12,7 @@ const IntegrationsGuide = () => (
     <Link to="/integrations" className="inline-flex items-center gap-2 text-sm text-zinc-400 hover:text-white mb-4">
       <ArrowLeft size={14} /> Back to Ingestion Channels
     </Link>
-    <div className="bg-[#101413] border border-white/10 rounded-xl p-5 sm:p-8 max-w-4xl">
+    <div className="bg-paper border border-white/10 rounded-xl p-5 sm:p-8 max-w-4xl">
       <Markdown source={guide} />
     </div>
   </PageContainer>
