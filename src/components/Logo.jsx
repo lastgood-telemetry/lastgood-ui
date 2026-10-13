@@ -10,11 +10,11 @@ const Logo = ({ size = 'md', className = '', showText = false, textClassName = '
       <span
         role="img"
         aria-label="LastGood logo"
-        className="block shrink-0 bg-[#b6edce]"
+        className="block shrink-0 bg-mint"
         style={{ width: px, height: px, WebkitMask: mask, mask }}
       />
       {showText && (
-        <span className={`font-semibold tracking-[-0.06em] text-[#f1f2ef] ${textClassName || 'text-base'}`}>
+        <span className={`font-semibold tracking-[-0.06em] text-snow ${textClassName || 'text-base'}`}>
           LastGood
         </span>
       )}
