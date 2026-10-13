@@ -1,3 +1,4 @@
+import { capture, captureOnce } from '../util/posthog';
 import { environmentLabel, eventEnvironmentLabel, eventTitle } from '../util/console';
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -92,7 +93,11 @@ const Rewind = () => {
     const response = await api.get("/scoring/incident", { params });
 
     if (response.data.success) {
-      return response.data.data;
+      const data = response.data.data;
+      const props = { service: queryParams.service || 'all', environment: queryParams.environment || 'all', window_minutes: queryParams.windowMinutes, has_results: !!(data?.individual_scores || data?.individualScores || []).length };
+      capture('rewind_run', props);
+      captureOnce('first_rewind_run', props);
+      return data;
     }
     throw new Error("Failed to fetch scoring data");
   };
