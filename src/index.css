@@ -219,3 +219,22 @@
 :root[data-theme="light"] .text-red-200 { color: #be123c; }
 :root[data-theme="light"] .text-amber-200\/80 { color: #b45309; }
 :root[data-theme="light"] .text-blue-300 { color: #0369a1; }
+
+
+
+/* Topology graph: colours that need different values per theme (contrast on light surfaces). */
+:root, [data-theme="dark"] {
+  --tg-amber: #fbbf24; --tg-red: #f87171; --tg-shadow: rgb(0 0 0 / 0.45);
+  --tg-crit-critical: #fb7185; --tg-crit-high: #fb923c; --tg-crit-medium: #94a3b8; --tg-crit-low: #34d399;
+}
+[data-theme="light"] {
+  --tg-amber: #b45309; --tg-red: #b91c1c; --tg-shadow: rgb(15 23 42 / 0.14);
+  --tg-crit-critical: #be123c; --tg-crit-high: #c2410c; --tg-crit-medium: #475569; --tg-crit-low: #047857;
+}
+
+/* React Flow chrome follows the console theme. */
+.react-flow__controls-button { background: rgb(var(--deep)); color: rgb(var(--ink)); border-bottom: 1px solid rgb(var(--ink) / 0.1); }
+.react-flow__controls-button:hover { background: rgb(var(--ink) / 0.08); }
+.react-flow__controls-button svg { fill: currentColor; }
+.react-flow__attribution { background: transparent !important; }
+.react-flow__attribution a { color: rgb(var(--t-muted)); }
