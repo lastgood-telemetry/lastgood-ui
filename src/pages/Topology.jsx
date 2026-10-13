@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 import { getServices } from "../service/auth";
-import { Network, Server, ArrowRight, Eye } from "lucide-react";
+import { Network, Server, ArrowRight, Eye, FileCode2 } from "lucide-react";
 import { PageHeader } from "../components/ui/PageHeader";
 import { PageContainer } from "../components/ui/PageContainer";
 import TopologyGraph from "../components/Topology/TopologyGraph";
+import YamlPanel from "../components/Topology/YamlPanel";
 
 export default function Topology() {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ export default function Topology() {
   const [servicesLoading, setServicesLoading] = useState(true);
   const [servicesError, setServicesError] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showYaml, setShowYaml] = useState(false);
+  const [graphKey, setGraphKey] = useState(0);
 
   useEffect(() => {
     fetchTopology();
@@ -136,8 +139,30 @@ export default function Topology() {
         </div>
       ) : (
         <div className="space-y-5">
-          {/* Interactive React Flow graph */}
-          <TopologyGraph onChanged={fetchTopology} />
+          <div className="flex justify-end">
+            <button
+              onClick={() => setShowYaml((v) => !v)}
+              aria-pressed={showYaml}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
+                showYaml ? "border-accent/40 bg-accent/10 text-accent" : "border-white/10 bg-white/5 text-white hover:bg-white/10"
+              }`}
+            >
+              <FileCode2 size={13} /> {showYaml ? "Hide YAML" : "View as YAML"}
+            </button>
+          </div>
+
+          <div className={showYaml ? "grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_380px] gap-4 items-start" : ""}>
+            {/* Interactive React Flow graph */}
+            <div className="min-w-0">
+              <TopologyGraph key={`${graphKey}-${showYaml}`} onChanged={fetchTopology} />
+            </div>
+            {showYaml && (
+              <YamlPanel
+                onClose={() => setShowYaml(false)}
+                onApplied={() => { fetchTopology(); setGraphKey((k) => k + 1); }}
+              />
+            )}
+          </div>
 
           {/* Stats row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
