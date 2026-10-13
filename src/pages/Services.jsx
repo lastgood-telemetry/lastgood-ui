@@ -213,7 +213,7 @@ const Services = () => {
                         <button
                             onClick={() => refetch()}
                             disabled={isLoading || isFetching}
-                            className="p-2 border border-white/10 rounded-lg bg-[#101413] hover:bg-white/5 text-zinc-300 transition-colors cursor-pointer"
+                            className="p-2 border border-white/10 rounded-lg bg-paper hover:bg-white/5 text-zinc-300 transition-colors cursor-pointer"
                             title="Refresh"
                         >
                             <RefreshCw size={14} className={isFetching ? 'animate-spin' : ''} />
@@ -242,7 +242,7 @@ const Services = () => {
                                         window.location.href = `${API_BASE_URL}/api/integrations/github-app/install?orgId=${org.id}`;
                                     }
                                 }}
-                                className="flex items-center gap-2 bg-[#151b18] hover:bg-zinc-800 px-3.5 py-2 rounded-lg text-xs font-mono font-semibold transition-all text-white border border-white/10 cursor-pointer"
+                                className="flex items-center gap-2 bg-surface hover:bg-zinc-800 px-3.5 py-2 rounded-lg text-xs font-mono font-semibold transition-all text-white border border-white/10 cursor-pointer"
                             >
                                 <Github size={14} />
                                 Connect GitHub
@@ -253,7 +253,7 @@ const Services = () => {
                             className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg text-xs font-mono font-bold transition-all text-white shadow-sm cursor-pointer"
                         >
                             <Plus size={14} />
-                            Connect Service
+                            Connect service
                         </button>
                     </div>
                 }
@@ -323,7 +323,7 @@ const Services = () => {
                             onClick={() => setIsCreateOpen(true)}
                             className="bg-white/5 border border-white/10 hover:border-white/20 px-4 py-2 rounded-lg text-xs font-semibold hover:bg-white/10 transition-all text-white"
                         >
-                            Create Dedicated API Key
+                            Create API key
                         </button>
                     </div>
                 ) : activeTab === 'stacker' ? (
@@ -366,7 +366,7 @@ const Services = () => {
                                         </div>
 
                                         {/* Service Cards in Tier */}
-                                        <div className="space-y-2 min-h-[160px] bg-[#0b0f0d]/20 border border-white/5 p-2 rounded-xl">
+                                        <div className="space-y-2 min-h-[160px] bg-deep/20 border border-white/5 p-2 rounded-xl">
                                             {tierServices.length === 0 ? (
                                                 <div className="h-full flex items-center justify-center py-8 text-[11px] text-text-muted italic border border-dashed border-white/5 rounded-lg">
                                                     No services in tier
@@ -375,7 +375,7 @@ const Services = () => {
                                                 tierServices.map(service => (
                                                     <div
                                                         key={service.service_id || service.name}
-                                                        className="bg-[#101413]/80 border border-white/10 hover:border-white/20 p-3 rounded-lg space-y-2.5 transition-all shadow-sm"
+                                                        className="bg-paper/80 border border-white/10 hover:border-white/20 p-3 rounded-lg space-y-2.5 transition-all shadow-sm"
                                                     >
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex items-center gap-2 min-w-0">
@@ -411,7 +411,7 @@ const Services = () => {
                                                                     serviceId: service.service_id || service.name,
                                                                     tier: e.target.value
                                                                 })}
-                                                                className="max-w-full bg-[#0b0f0d]/60 border border-white/10 rounded px-2 py-1 text-[10px] text-white focus:outline-none focus:border-accent"
+                                                                className="max-w-full bg-deep/60 border border-white/10 rounded px-2 py-1 text-[10px] text-white focus:outline-none focus:border-accent"
                                                             >
                                                                 {TIERS.map(t => (
                                                                     <option key={t.id} value={t.id}>
@@ -455,7 +455,7 @@ const Services = () => {
                         return (
                             <div
                                 key={idx}
-                                className="bg-[#101413]/30 border border-white/5 rounded-xl p-5 hover:border-white/10 transition-all relative group flex flex-col justify-between"
+                                className="bg-paper/30 border border-white/5 rounded-xl p-5 hover:border-white/10 transition-all relative group flex flex-col justify-between"
                             >
                                 <div className="space-y-4">
                                     {/* Service Name & Status Badge */}
@@ -526,7 +526,7 @@ const Services = () => {
                                                         : 'Never used'}
                                                 </span>
                                             </div>
-                                            <div className="flex items-center justify-between bg-[#0b0f0d]/40 border border-white/10 rounded-lg px-3 py-2 text-xs">
+                                            <div className="flex items-center justify-between bg-deep/40 border border-white/10 rounded-lg px-3 py-2 text-xs">
                                                 <span className="font-mono text-text-secondary select-all">
                                                     {service.apiKeyValue ? service.apiKeyValue.substring(0, 10) + '••••••••' : '••••••••••••••••'}
                                                 </span>
@@ -576,8 +576,8 @@ const Services = () => {
 
             {/* Create Service Dedicated Key Modal */}
             {isCreateOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0b0f0d]/80 backdrop-blur-sm p-4">
-                    <div className="bg-[#101413] border border-white/10 rounded-2xl max-w-md w-full p-6 space-y-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-150">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-deep/80 backdrop-blur-sm p-4">
+                    <div className="bg-paper border border-white/10 rounded-2xl max-w-md w-full p-6 space-y-6 shadow-2xl relative animate-in fade-in zoom-in-95 duration-150">
                         <button
                             onClick={handleCloseModal}
                             className="absolute top-4 right-4 text-text-muted hover:text-white transition-colors p-1"
@@ -588,7 +588,7 @@ const Services = () => {
                         <div className="space-y-1">
                             <h3 className="text-base font-bold text-white flex items-center gap-2">
                                 <Shield className="text-accent" size={18} />
-                                {generatedKey ? 'Dedicated API Key Created' : 'Create Dedicated API Key'}
+                                {generatedKey ? 'API key created' : 'Create API key'}
                             </h3>
                             <p className="text-xs text-text-muted leading-relaxed">
                                 {generatedKey
@@ -599,7 +599,7 @@ const Services = () => {
 
                         {generatedKey ? (
                             <div className="space-y-4">
-                                <div className="bg-[#0b0f0d]/60 border border-emerald-500/30 rounded-xl p-4 space-y-2">
+                                <div className="bg-deep/60 border border-emerald-500/30 rounded-xl p-4 space-y-2">
                                     <span className="text-[10px] text-emerald-400 font-mono font-semibold uppercase tracking-wider block">
                                         Your Dedicated API Key
                                     </span>
@@ -633,7 +633,7 @@ const Services = () => {
                                         value={newService.name}
                                         onChange={(e) => setNewService({ ...newService, name: e.target.value })}
                                         placeholder="e.g. user-fe or payment-backend"
-                                        className="w-full bg-[#0b0f0d]/40 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-text-muted focus:outline-none focus:border-accent/50"
+                                        className="w-full bg-deep/40 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-text-muted focus:outline-none focus:border-accent/50"
                                     />
                                 </div>
                                 <div className="space-y-1.5">
@@ -645,7 +645,7 @@ const Services = () => {
                                         value={newService.keyName}
                                         onChange={(e) => setNewService({ ...newService, keyName: e.target.value })}
                                         placeholder="e.g. Production Ingest Key"
-                                        className="w-full bg-[#0b0f0d]/40 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-text-muted focus:outline-none focus:border-accent/50"
+                                        className="w-full bg-deep/40 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-text-muted focus:outline-none focus:border-accent/50"
                                     />
                                 </div>
                                 <div className="flex items-center justify-end gap-3 pt-2">
@@ -659,10 +659,10 @@ const Services = () => {
                                     <button
                                         type="submit"
                                         disabled={creating}
-                                            className="flex items-center gap-2 bg-gradient-accent px-5 py-2.5 rounded-xl text-xs font-semibold text-[#101413] hover:opacity-90 transition-all disabled:opacity-50"
+                                            className="flex items-center gap-2 bg-gradient-accent px-5 py-2.5 rounded-xl text-xs font-semibold text-paper hover:opacity-90 transition-all disabled:opacity-50"
                                     >
                                         {creating && <Loader2 size={14} className="animate-spin" />}
-                                        Generate Key
+                                        Generate API key
                                     </button>
                                 </div>
                             </form>
@@ -673,8 +673,8 @@ const Services = () => {
 
             {/* Delete Service Confirmation Modal */}
             {serviceToDelete && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0b0f0d]/80 backdrop-blur-sm p-4 animate-in fade-in duration-150">
-                    <div className="bg-[#151b18] border border-rose-500/30 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl relative animate-in zoom-in-95 duration-150">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-deep/80 backdrop-blur-sm p-4 animate-in fade-in duration-150">
+                    <div className="bg-surface border border-rose-500/30 rounded-2xl max-w-md w-full p-6 space-y-5 shadow-2xl relative animate-in zoom-in-95 duration-150">
                         <button
                             onClick={() => setServiceToDelete(null)}
                             className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors p-1 cursor-pointer"
@@ -696,7 +696,7 @@ const Services = () => {
                             </div>
                         </div>
 
-                        <p className="text-xs text-slate-300 leading-relaxed bg-[#0b0f0d]/40 border border-slate-800 p-3.5 rounded-xl font-sans">
+                        <p className="text-xs text-slate-300 leading-relaxed bg-deep/40 border border-slate-800 p-3.5 rounded-xl font-sans">
                             Deleting this service will permanently remove all associated change event streams, ingestion credentials, and incident risk scoring history for <strong className="text-white font-mono">{serviceToDelete.name}</strong>.
                         </p>
 

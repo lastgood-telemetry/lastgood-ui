@@ -177,7 +177,7 @@ const Rewind = () => {
       />
 
       {/* Search Controls Form */}
-      <div className="bg-[#101413] border border-white/10 rounded-xl p-3 md:p-4 shadow-sm mb-6">
+      <div className="bg-paper border border-white/10 rounded-xl p-3 md:p-4 shadow-sm mb-6">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-4 border-b border-white/10">
           <div className="text-xs text-zinc-400 space-y-1 min-w-0">
             {discovering ? <p>Loading ingested events...</p> : discoveryError ? (
@@ -191,7 +191,7 @@ const Rewind = () => {
             ) : <p>No events ingested yet. Connect a source, confirm an event in Events, then run your first diagnosis.</p>}
           </div>
           {latestEvent ? (
-            <button type="button" onClick={analyzeLatest} disabled={isFetching} className="w-full md:w-auto justify-center bg-[#b6edce] hover:bg-[#d5f7e4] disabled:opacity-50 text-[#101413] px-4 py-2.5 md:py-2 rounded-lg text-xs font-semibold flex items-center gap-2">
+            <button type="button" onClick={analyzeLatest} disabled={isFetching} className="w-full md:w-auto justify-center bg-mint hover:bg-mint-soft disabled:opacity-50 text-paper px-4 py-2.5 md:py-2 rounded-lg text-xs font-semibold flex items-center gap-2">
               <Sparkles size={14} /> Analyze latest event
             </button>
           ) : !discovering && !discoveryError && <Link to="/integrations" className="text-xs text-indigo-300 underline">Connect a source</Link>}
@@ -229,7 +229,7 @@ const Rewind = () => {
             <select
               value={windowMinutes}
               onChange={(e) => setWindowMinutes(Number(e.target.value))}
-              className="w-full bg-[#101413] border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-500 transition-all cursor-pointer"
+              className="w-full bg-paper border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-500 transition-all cursor-pointer"
             >
               <option value={15}>15 Minutes</option>
               <option value={30}>30 Minutes</option>
@@ -248,7 +248,7 @@ const Rewind = () => {
               id="rewind-service"
               value={service}
               onChange={(e) => setService(e.target.value)}
-              className="w-full bg-[#101413] border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-500"
+              className="w-full bg-paper border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-500"
             >
               <option value="">All services</option>
               {services.map(value => <option key={value} value={value}>{value}</option>)}
@@ -263,7 +263,7 @@ const Rewind = () => {
               id="rewind-environment"
               value={environment}
               onChange={(e) => setEnvironment(e.target.value)}
-              className="w-full bg-[#101413] border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-500"
+              className="w-full bg-paper border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-xs font-mono text-white focus:outline-none focus:border-sky-500"
             >
               <option value="">All environments</option>
               {environments.map(value => <option key={value} value={value}>{environmentLabel(value)} ({value})</option>)}
@@ -273,7 +273,7 @@ const Rewind = () => {
 
           <button
             type="submit"
-            className="w-full md:w-auto justify-center bg-[#b6edce] hover:bg-[#d5f7e4] text-[#101413] font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition-all h-[40px] md:h-[36px] text-xs shadow-sm shadow-indigo-600/20 cursor-pointer"
+            className="w-full md:w-auto justify-center bg-mint hover:bg-mint-soft text-paper font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition-all h-[40px] md:h-[36px] text-xs shadow-sm shadow-indigo-600/20 cursor-pointer"
           >
             <Search size={14} />
             Analyze changes
@@ -300,7 +300,7 @@ const Rewind = () => {
         )}
 
         {hasNoResults && (
-          <div className="border border-dashed border-white/10 rounded-xl p-8 text-center space-y-4 bg-[#101413]">
+          <div className="border border-dashed border-white/10 rounded-xl p-8 text-center space-y-4 bg-paper">
             <Clock size={24} className="text-zinc-400 mx-auto" />
             <h3 className="text-sm font-semibold text-white">No changes in this window</h3>
             <p className="text-xs text-zinc-400">No matching events in the {displayedParams.windowMinutes}-minute window ending {dayjs.utc(displayedParams.incidentTime).format('MMM D, YYYY HH:mm:ss [UTC]')}. Try a wider window or another service/environment.</p>
@@ -324,7 +324,7 @@ const Rewind = () => {
         )}
 
         {!displayedResult && !isFetching && !error && (
-          <div className="border border-dashed border-white/10 rounded-xl p-8 text-center space-y-3 bg-[#101413]">
+          <div className="border border-dashed border-white/10 rounded-xl p-8 text-center space-y-3 bg-paper">
             <Sparkles size={24} className="text-zinc-400 mx-auto" />
             <h3 className="text-sm font-semibold text-white">Choose where to start</h3>
             <p className="text-xs text-zinc-400 max-w-sm mx-auto leading-relaxed">

@@ -20,11 +20,11 @@ export const PageHeader = ({
           )}
           <div className="flex items-center gap-2.5">
             {Icon && (
-              <div className="p-1.5 rounded-lg bg-[#151b18] border border-slate-800 text-indigo-400 shrink-0">
+              <div className="p-1.5 rounded-lg bg-surface border border-slate-800 text-indigo-400 shrink-0">
                 <Icon size={18} />
               </div>
             )}
-            <h1 className="text-2xl md:text-[28px] md:leading-[1.2] font-normal tracking-[-0.045em] text-[#f1f2ef] flex items-center gap-2 font-sans">
+            <h1 className="text-2xl md:text-[28px] md:leading-[1.2] font-normal tracking-[-0.045em] text-snow flex items-center gap-2 font-sans">
               {title}
             </h1>
           </div>

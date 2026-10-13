@@ -113,14 +113,14 @@ const Integrations = () => {
     return <PageContainer>
       <button onClick={() => setSelectedChannel(null)} className="mb-6 inline-flex items-center gap-2 text-sm text-text-muted hover:text-white"><ArrowLeft size={16} />Back to Ingestion Channels</button>
       <PageHeader icon={Github} title="GitHub App" description="Connect repositories through the LastGood GitHub App. No manual webhook or API key setup." />
-      <section className="border border-white/10 rounded bg-[#151b18] p-6 max-w-2xl space-y-5">
+      <section className="border border-white/10 rounded bg-surface p-6 max-w-2xl space-y-5">
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-base font-semibold text-white">Repository ingestion</h2>
           <span role="status" className={`text-xs shrink-0 ${isGithubActive ? 'text-accent' : 'text-text-muted'}`}>{githubStatus}</span>
         </div>
         <p className="text-sm text-text-secondary leading-relaxed">{isGithubActive ? 'The GitHub App is connected to this workspace. Manage the repositories it can access on GitHub.' : 'Install the App and choose which repositories LastGood can access. GitHub manages delivery of supported change events.'}</p>
         {isGithubActive && <p className="text-xs font-mono text-text-muted">Installation {githubIntegration.credentials.installation_id}</p>}
-        {githubError ? <button onClick={() => retryGithub()} className="text-accent text-sm underline">Retry connection status</button> : installUrl && githubStatus !== 'Checking' ? <a href={installUrl} className="inline-flex items-center gap-2 bg-accent text-[#101413] px-4 py-2 rounded text-sm font-semibold"><Github size={16} />{isGithubActive ? 'Manage GitHub App' : 'Connect GitHub App'}<ArrowRight size={14} /></a> : null}
+        {githubError ? <button onClick={() => retryGithub()} className="text-accent text-sm underline">Retry connection status</button> : installUrl && githubStatus !== 'Checking' ? <a href={installUrl} className="inline-flex items-center gap-2 bg-accent text-paper px-4 py-2 rounded text-sm font-semibold"><Github size={16} />{isGithubActive ? 'Manage GitHub App' : 'Connect GitHub App'}<ArrowRight size={14} /></a> : null}
         <p className="text-xs text-text-muted border-t border-white/10 pt-4">Pushes, deployments and workflow runs arrive automatically from the repositories you select.</p>
       </section>
     </PageContainer>;
@@ -149,8 +149,8 @@ const Integrations = () => {
           </div>
         </div>
 
-        <section className="bg-[#0b0f0d]/30 border border-white/5 rounded-3xl overflow-hidden shadow-xl min-w-0">
-          <div className="px-6 py-4 border-b border-white/5 bg-[#0b0f0d]/40">
+        <section className="bg-deep/30 border border-white/5 rounded-3xl overflow-hidden shadow-xl min-w-0">
+          <div className="px-6 py-4 border-b border-white/5 bg-deep/40">
             <h2 className="text-lg font-bold text-white flex items-center gap-2">
               REST API Integration Payload
             </h2>
@@ -166,8 +166,8 @@ const Integrations = () => {
               </p>
             </div>
 
-            <div className="bg-[#101413] border border-white/10 rounded-xl overflow-hidden shadow-inner">
-              <div className="bg-[#0b0f0d]/40 px-4 py-3 border-b border-white/10 flex items-center justify-between">
+            <div className="bg-paper border border-white/10 rounded-xl overflow-hidden shadow-inner">
+              <div className="bg-deep/40 px-4 py-3 border-b border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="flex gap-1.5 mr-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-white/20"></div>
@@ -235,8 +235,8 @@ const Integrations = () => {
           return (
             <div
               key={channel.id}
-              className={`bg-[#101413] border rounded p-5 transition-all duration-200 flex flex-col justify-between ${channel.active
-                ? "border-white/10 hover:border-white/20 cursor-pointer hover:bg-[#101413]"
+              className={`bg-paper border rounded p-5 transition-all duration-200 flex flex-col justify-between ${channel.active
+                ? "border-white/10 hover:border-white/20 cursor-pointer hover:bg-paper"
                 : "border-white/5 opacity-50 grayscale cursor-not-allowed"
                 }`}
             >
@@ -285,7 +285,7 @@ const Integrations = () => {
           <p className="text-xs text-text-muted leading-relaxed">Reach out to our engineering team for custom connectors or onboarding configurations.</p>
         </div>
         <button onClick={contactCS} className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs font-semibold text-white transition-colors shrink-0">
-          Contact Engineering Support
+          Chat with us
         </button>
       </div>
     </PageContainer>

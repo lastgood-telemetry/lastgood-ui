@@ -1,4 +1,5 @@
 import Logo from '../components/Logo';
+import ThemeToggle from '../components/ThemeToggle/ThemeToggle'
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SETUP_PATH, rememberSetupDestination } from '../util/console';
@@ -82,20 +83,21 @@ const Sandbox = () => {
   }, [isNavOpen]);
 
   return (
-    <div className="flex min-h-screen font-sans bg-[#101413] text-slate-100">
+    <div className="flex min-h-screen font-sans bg-paper text-slate-100">
       {isNavOpen && (
-        <div className="md:hidden fixed inset-0 z-40 bg-[#0b0f0d]/70" onClick={() => setIsNavOpen(false)} aria-hidden="true" />
+        <div className="md:hidden fixed inset-0 z-40 bg-deep/70" onClick={() => setIsNavOpen(false)} aria-hidden="true" />
       )}
 
       <aside
         id="sandbox-sidebar"
-        className={`w-56 max-w-[85vw] border-r border-slate-800/60 bg-[#101413] flex flex-col fixed h-full z-50 transition-transform duration-200 md:translate-x-0 ${isNavOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`w-56 max-w-[85vw] border-r border-slate-800/60 bg-paper flex flex-col fixed h-full z-50 transition-transform duration-200 md:translate-x-0 ${isNavOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="h-14 px-4 border-b border-slate-800/60 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <Logo size="md" showText textClassName="text-lg" />
           </div>
-          <span className="hidden md:inline text-[9px] font-mono tracking-[0.1em] text-[#b6edce] border border-[#3a5546] px-1.5 py-0.5">SANDBOX</span>
+          <ThemeToggle className="mx-1" />
+          <span className="hidden md:inline text-[9px] font-mono tracking-[0.1em] text-mint border border-mint/40 px-1.5 py-0.5">SANDBOX</span>
           <button type="button" onClick={() => setIsNavOpen(false)} className="md:hidden p-2 -mr-2 text-slate-400 hover:text-slate-200 cursor-pointer" aria-label="Close navigation">
             <X size={18} />
           </button>
@@ -116,7 +118,7 @@ const Sandbox = () => {
                       aria-current={isActive ? 'page' : undefined}
                       onClick={() => selectTab(tab.id)}
                       className={`${tab.mobile ? 'flex' : 'hidden md:flex'} w-full text-left items-center gap-2.5 px-2.5 py-2 rounded text-sm transition-colors border cursor-pointer ${isActive
-                        ? 'bg-[#b6edce]/10 text-[#b6edce] font-semibold border-[#b6edce]/25'
+                        ? 'bg-mint/10 text-mint font-semibold border-mint/25'
                         : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'}`}
                     >
                       <Icon size={15} className="shrink-0" />
@@ -129,9 +131,9 @@ const Sandbox = () => {
           ))}
         </nav>
 
-        <div className="p-3 border-t border-slate-800/60 bg-[#101413]">
-          <div className="flex items-center gap-2.5 p-2 rounded-lg bg-[#101413] border border-slate-800/70">
-            <div className="w-6 h-6 rounded-md bg-[#17241d] border border-[#b6edce]/30 flex items-center justify-center font-mono font-bold text-[#b6edce] text-[11px] shrink-0">D</div>
+        <div className="p-3 border-t border-slate-800/60 bg-paper">
+          <div className="flex items-center gap-2.5 p-2 rounded-lg bg-paper border border-slate-800/70">
+            <div className="w-6 h-6 rounded-md bg-mint/15 border border-mint/30 flex items-center justify-center font-mono font-bold text-mint text-[11px] shrink-0">D</div>
             <div className="flex flex-col overflow-hidden">
               <span className="text-xs font-medium text-slate-200 truncate leading-tight">Demo Workspace</span>
               <span className="text-[10px] text-slate-500 font-mono leading-tight">Sample data</span>
@@ -140,8 +142,8 @@ const Sandbox = () => {
         </div>
       </aside>
 
-      <main className="flex-1 md:ml-56 relative min-w-0 bg-[#101413] min-h-screen flex flex-col">
-        <header className="h-14 sticky top-0 z-30 bg-[#101413]/80 backdrop-blur-md border-b border-slate-800/60 px-3 md:px-6 flex items-center justify-between gap-3 md:gap-4">
+      <main className="flex-1 md:ml-56 relative min-w-0 bg-paper min-h-screen flex flex-col">
+        <header className="h-14 sticky top-0 z-30 bg-paper/80 backdrop-blur-md border-b border-slate-800/60 px-3 md:px-6 flex items-center justify-between gap-3 md:gap-4">
           <button type="button" onClick={() => setIsNavOpen(true)} className="md:hidden p-2 -ml-1 text-slate-300 hover:text-white cursor-pointer" aria-label="Open navigation" aria-controls="sandbox-sidebar" aria-expanded={isNavOpen}>
             <Menu size={20} />
           </button>
@@ -154,8 +156,8 @@ const Sandbox = () => {
             <span className="text-slate-200 font-semibold truncate">{currentTab.label}</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="hidden md:inline-flex items-center px-2.5 py-1 rounded border border-slate-800 bg-[#151b18] text-xs text-slate-400" title="Everything here is sample data.">Sample incident data</span>
-            <Link to={ctaTo} onClick={rememberSetupDestination} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#b6edce] text-[#101413] text-xs font-semibold hover:bg-[#c8f2da] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#b6edce]">
+            <span className="hidden md:inline-flex items-center px-2.5 py-1 rounded border border-slate-800 bg-surface text-xs text-slate-400" title="Everything here is sample data.">Sample incident data</span>
+            <Link to={ctaTo} onClick={rememberSetupDestination} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-mint text-paper text-xs font-semibold hover:bg-mint-soft transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-mint">
               <span className="hidden sm:inline">Start with your own data</span>
               <span className="sm:hidden">Use your data</span>
               <ArrowRight size={13} aria-hidden="true" />
@@ -163,8 +165,8 @@ const Sandbox = () => {
           </div>
         </header>
 
-        <div className="border-b border-slate-800/60 bg-[#b6edce]/[0.04] px-3 md:px-6 py-2.5 text-xs text-slate-400">
-          <span className="text-[#b6edce] font-medium">Simulated incident.</span> Events, connectors and scores are sample data. Nothing here touches your systems.
+        <div className="border-b border-slate-800/60 bg-mint/[0.04] px-3 md:px-6 py-2.5 text-xs text-slate-400">
+          <span className="text-mint font-medium">Simulated incident.</span> Events, connectors and scores are sample data. Nothing here touches your systems.
         </div>
 
         <div className={`flex-1 ${activeTab === 'rewind' ? '' : 'p-3 sm:p-4'}`}>
@@ -175,7 +177,7 @@ const Sandbox = () => {
           {activeTab === 'rewind' && (
             <PageContainer>
               <PageHeader icon={History} title="Rewind" description="What changed before the incident? Explore the same analysis and AI summary as the console, with sample data." />
-              <div className="bg-[#101413] border border-white/10 rounded-xl p-3 md:p-4 shadow-sm mb-6">
+              <div className="bg-paper border border-white/10 rounded-xl p-3 md:p-4 shadow-sm mb-6">
                 <div className="text-xs text-zinc-400 mb-4 pb-4 border-b border-white/10">
                   <p className="text-zinc-200">{mockIncident.title}</p>
                   <p className="mt-1">Pre-loaded sample analysis. No live diagnosis or system changes.</p>
@@ -188,7 +190,7 @@ const Sandbox = () => {
                     ['Environment', mockIncident.environment],
                   ].map(([label, value]) => <div key={label} className="min-w-0">
                     <dt className="text-[11px] font-mono font-semibold text-zinc-400 mb-1.5 uppercase">{label}</dt>
-                    <dd className="bg-[#101413] border border-white/10 rounded-lg px-3 py-2 font-mono text-white break-words">{value}</dd>
+                    <dd className="bg-paper border border-white/10 rounded-lg px-3 py-2 font-mono text-white break-words">{value}</dd>
                   </div>)}
                 </dl>
               </div>
