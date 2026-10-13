@@ -44,28 +44,32 @@ import { toast } from "../ui/Toast";
 /* ─── Constants ────────────────────────────────────────────────── */
 const CRITICALITY_CONFIG = {
   critical: {
-    color: "#f43f5e",
+    color: "var(--tg-crit-critical)",
+    hex: "#f43f5e",
     bg: "rgba(244,63,94,0.12)",
     border: "rgba(244,63,94,0.4)",
     icon: AlertTriangle,
     label: "Critical",
   },
   high: {
-    color: "#fb923c",
+    color: "var(--tg-crit-high)",
+    hex: "#fb923c",
     bg: "rgba(251,146,60,0.12)",
     border: "rgba(251,146,60,0.4)",
     icon: Zap,
     label: "High",
   },
   medium: {
-    color: "#94a3b8",
-    bg: "rgba(148,163,184,0.08)",
-    border: "rgba(148,163,184,0.2)",
+    color: "var(--tg-crit-medium)",
+    hex: "#94a3b8",
+    bg: "rgb(var(--ink) / 0.12)",
+    border: "rgb(var(--ink) / 0.3)",
     icon: Activity,
     label: "Medium",
   },
   low: {
-    color: "#34d399",
+    color: "var(--tg-crit-low)",
+    hex: "#34d399",
     bg: "rgba(52,211,153,0.08)",
     border: "rgba(52,211,153,0.2)",
     icon: Shield,
@@ -84,13 +88,13 @@ function ServiceNode({ data, selected }) {
       style={{
         width: 220,
         background: selected
-          ? "rgba(21,27,24,0.98)"
-          : "rgba(21,27,24,0.92)",
+          ? "rgb(var(--deep) / 0.98)"
+          : "rgb(var(--deep) / 0.92)",
         border: `1.5px solid ${selected ? "hsl(var(--accent))" : cfg.border}`,
         borderRadius: 14,
         boxShadow: selected
-          ? `0 0 0 3px hsl(var(--accent)/0.2), 0 8px 32px rgba(0,0,0,0.5)`
-          : "0 4px 20px rgba(0,0,0,0.4)",
+          ? `0 0 0 3px hsl(var(--accent)/0.2), 0 8px 32px var(--tg-shadow)`
+          : "0 4px 20px var(--tg-shadow)",
         backdropFilter: "blur(12px)",
         overflow: "hidden",
         transition: "border-color 0.15s, box-shadow 0.15s",
@@ -161,7 +165,7 @@ function ServiceNode({ data, selected }) {
           {data.event_count > 0 && (
             <span
               className="text-[10px] font-mono"
-              style={{ color: "rgba(148,163,184,0.7)" }}
+              style={{ color: "rgb(var(--t-muted))" }}
             >
               {data.event_count} event{data.event_count !== 1 ? "s" : ""}
             </span>
@@ -175,7 +179,7 @@ function ServiceNode({ data, selected }) {
         position={Position.Left}
         style={{
           background: "hsl(var(--accent))",
-          border: "2px solid rgba(21,27,24,0.9)",
+          border: "2px solid rgb(var(--deep) / 0.9)",
           width: 10,
           height: 10,
           left: -5,
@@ -186,7 +190,7 @@ function ServiceNode({ data, selected }) {
         position={Position.Right}
         style={{
           background: "hsl(var(--accent))",
-          border: "2px solid rgba(21,27,24,0.9)",
+          border: "2px solid rgb(var(--deep) / 0.9)",
           width: 10,
           height: 10,
           right: -5,
@@ -223,12 +227,12 @@ function DependencyEdge({
   const isSuggested = data?.kind === "suggested";
 
   const edgeColor = isSuggested
-    ? "rgba(148,163,184,0.45)"
+    ? "rgb(var(--t-muted))"
     : selected
     ? "hsl(var(--accent))"
     : isSoft
-    ? "#fbbf24"
-    : "rgba(148,163,184,0.55)";
+    ? "var(--tg-amber)"
+    : "rgb(var(--t-muted))";
 
   return (
     <>
@@ -257,13 +261,13 @@ function DependencyEdge({
           <div
             className="flex items-center gap-1"
             style={{
-              background: "rgba(11,15,13,0.92)",
+              background: "rgb(var(--deep) / 0.92)",
               border: `1px solid ${
                 isSuggested
-                  ? "rgba(148,163,184,0.2)"
+                  ? "rgb(var(--ink) / 0.3)"
                   : isSoft
                   ? "rgba(251,191,36,0.3)"
-                  : "rgba(148,163,184,0.2)"
+                  : "rgb(var(--ink) / 0.3)"
               }`,
               borderRadius: 20,
               padding: "2px 7px",
@@ -278,10 +282,10 @@ function DependencyEdge({
               className="text-[9px] font-mono font-semibold"
               style={{
                 color: isSuggested
-                  ? "rgba(148,163,184,0.7)"
+                  ? "rgb(var(--t-muted))"
                   : isSoft
-                  ? "#fbbf24"
-                  : "rgba(148,163,184,0.8)",
+                  ? "var(--tg-amber)"
+                  : "rgb(var(--t-muted))",
               }}
             >
               {isSuggested ? "suggested" : isSoft ? "soft" : "hard"}
@@ -426,13 +430,13 @@ function AddDependencyPanel({ services, onAdd, onClose }) {
   return (
     <div
       style={{
-        background: "rgba(11,15,13,0.97)",
-        border: "1.5px solid rgba(148,163,184,0.15)",
+        background: "rgb(var(--deep) / 0.97)",
+        border: "1.5px solid rgb(var(--ink) / 0.22)",
         borderRadius: 16,
         padding: 20,
         width: 280,
         backdropFilter: "blur(20px)",
-        boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
+        boxShadow: "0 20px 60px var(--tg-shadow)",
       }}
     >
       <div className="flex items-center justify-between mb-4">
@@ -458,8 +462,8 @@ function AddDependencyPanel({ services, onAdd, onClose }) {
             onChange={(e) => setFrom(e.target.value)}
             className="w-full text-xs text-white rounded-lg px-3 py-2 focus:outline-none focus:border-accent appearance-none"
             style={{
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(148,163,184,0.15)",
+              background: "rgb(var(--ink) / 0.05)",
+              border: "1px solid rgb(var(--ink) / 0.22)",
             }}
           >
             {services.map((s) => (
@@ -473,7 +477,7 @@ function AddDependencyPanel({ services, onAdd, onClose }) {
         <div className="flex items-center justify-center">
           <div
             className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-mono"
-            style={{ background: "rgba(255,255,255,0.04)", color: "rgba(148,163,184,0.6)" }}
+            style={{ background: "rgb(var(--ink) / 0.04)", color: "rgb(var(--t-muted))" }}
           >
             <span>depends on</span>
             <ChevronDown size={10} />
@@ -489,8 +493,8 @@ function AddDependencyPanel({ services, onAdd, onClose }) {
             onChange={(e) => setTo(e.target.value)}
             className="w-full text-xs text-white rounded-lg px-3 py-2 focus:outline-none focus:border-accent appearance-none"
             style={{
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(148,163,184,0.15)",
+              background: "rgb(var(--ink) / 0.05)",
+              border: "1px solid rgb(var(--ink) / 0.22)",
             }}
           >
             {services.map((s) => (
@@ -518,20 +522,20 @@ function AddDependencyPanel({ services, onAdd, onClose }) {
                       ? t === "hard"
                         ? "rgba(244,63,94,0.2)"
                         : "rgba(251,191,36,0.2)"
-                      : "rgba(255,255,255,0.04)",
+                      : "rgb(var(--ink) / 0.04)",
                   border: `1px solid ${
                     type === t
                       ? t === "hard"
                         ? "rgba(244,63,94,0.4)"
                         : "rgba(251,191,36,0.4)"
-                      : "rgba(148,163,184,0.1)"
+                      : "rgb(var(--ink) / 0.15)"
                   }`,
                   color:
                     type === t
                       ? t === "hard"
-                        ? "#f87171"
-                        : "#fbbf24"
-                      : "rgba(148,163,184,0.6)",
+                        ? "var(--tg-red)"
+                        : "var(--tg-amber)"
+                      : "rgb(var(--t-muted))",
                 }}
               >
                 {t === "hard" ? "Hard" : "Soft"}
@@ -566,13 +570,13 @@ function NodeInspector({ node, onClose, onSetCriticality, onStartConnect, busy }
   return (
     <div
       style={{
-        background: "rgba(11,15,13,0.97)",
-        border: "1.5px solid rgba(148,163,184,0.15)",
+        background: "rgb(var(--deep) / 0.97)",
+        border: "1.5px solid rgb(var(--ink) / 0.22)",
         borderRadius: 16,
         padding: 20,
         width: 280,
         backdropFilter: "blur(20px)",
-        boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
+        boxShadow: "0 20px 60px var(--tg-shadow)",
       }}
     >
       <div className="flex items-center justify-between mb-4">
@@ -612,9 +616,9 @@ function NodeInspector({ node, onClose, onSetCriticality, onStartConnect, busy }
                   disabled={busy || node.data.criticality_source === "yaml"}
                   className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all disabled:opacity-50"
                   style={{
-                    background: active ? cc.bg : "rgba(255,255,255,0.03)",
-                    border: `1px solid ${active ? cc.border : "rgba(148,163,184,0.1)"}`,
-                    color: active ? cc.color : "rgba(148,163,184,0.5)",
+                    background: active ? cc.bg : "rgb(var(--ink) / 0.03)",
+                    border: `1px solid ${active ? cc.border : "rgb(var(--ink) / 0.15)"}`,
+                    color: active ? cc.color : "rgb(var(--t-muted))",
                   }}
                 >
                   <span
@@ -633,13 +637,13 @@ function NodeInspector({ node, onClose, onSetCriticality, onStartConnect, busy }
           )}
         </div>
 
-        <div className="pt-1 border-t border-white/8">
+        <div className="pt-1 border-t border-white/10">
           <button
             onClick={() => { onStartConnect(node.id); onClose(); }}
             className="w-full flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold text-white transition-all"
             style={{
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(148,163,184,0.15)",
+              background: "rgb(var(--ink) / 0.06)",
+              border: "1px solid rgb(var(--ink) / 0.22)",
             }}
           >
             <Link2 size={13} color="hsl(var(--accent))" />
@@ -763,10 +767,10 @@ function TopologyFlow({ rawData, onChanged, services }) {
           type: "arrowclosed",
           color:
             e.kind === "suggested"
-              ? "rgba(148,163,184,0.45)"
+              ? "rgb(var(--t-muted))"
               : e.dependency_type === "soft"
-              ? "#fbbf24"
-              : "rgba(148,163,184,0.6)",
+              ? "var(--tg-amber)"
+              : "rgb(var(--t-muted))",
           width: 16,
           height: 16,
         },
@@ -858,28 +862,29 @@ function TopologyFlow({ rawData, onChanged, services }) {
           variant="dots"
           gap={24}
           size={1}
-          color="rgba(148,163,184,0.08)"
+          color="rgb(var(--ink) / 0.12)"
         />
 
         {/* Minimap */}
         <MiniMap
           nodeColor={(node) => {
             const cfg = CRITICALITY_CONFIG[node.data?.criticality];
-            return cfg ? cfg.color + "88" : "#94a3b8";
+            return cfg ? cfg.hex + "88" : "#94a3b8";
           }}
           style={{
-            background: "rgba(11,15,13,0.9)",
-            border: "1px solid rgba(148,163,184,0.1)",
+            background: "rgb(var(--deep) / 0.9)",
+            border: "1px solid rgb(var(--ink) / 0.15)",
             borderRadius: 10,
           }}
-          maskColor="rgba(11,15,13,0.6)"
+          maskColor="rgb(var(--deep) / 0.6)"
         />
 
         {/* Built-in zoom controls */}
         <Controls
+          position="top-left"
           style={{
-            background: "rgba(11,15,13,0.9)",
-            border: "1px solid rgba(148,163,184,0.12)",
+            background: "rgb(var(--deep) / 0.9)",
+            border: "1px solid rgb(var(--ink) / 0.18)",
             borderRadius: 10,
             overflow: "hidden",
           }}
@@ -894,7 +899,7 @@ function TopologyFlow({ rawData, onChanged, services }) {
                 style={{
                   background: "rgba(251,191,36,0.1)",
                   border: "1px solid rgba(251,191,36,0.25)",
-                  color: "#fbbf24",
+                  color: "var(--tg-amber)",
                 }}
               >
                 <Activity size={11} />
@@ -957,8 +962,8 @@ function TopologyFlow({ rawData, onChanged, services }) {
           <div
             className="flex items-center gap-4 px-3 py-2 text-[10px] text-text-muted"
             style={{
-              background: "rgba(11,15,13,0.85)",
-              border: "1px solid rgba(148,163,184,0.1)",
+              background: "rgb(var(--deep) / 0.85)",
+              border: "1px solid rgb(var(--ink) / 0.15)",
               borderRadius: 10,
               backdropFilter: "blur(8px)",
             }}
@@ -976,7 +981,7 @@ function TopologyFlow({ rawData, onChanged, services }) {
                   display: "inline-block",
                   width: 18,
                   height: 1.5,
-                  background: "rgba(148,163,184,0.6)",
+                  background: "rgb(var(--t-muted))",
                   verticalAlign: "middle",
                 }}
               />
@@ -988,7 +993,7 @@ function TopologyFlow({ rawData, onChanged, services }) {
                   display: "inline-block",
                   width: 18,
                   height: 1.5,
-                  background: "#fbbf24",
+                  background: "var(--tg-amber)",
                   verticalAlign: "middle",
                 }}
               />
@@ -1045,7 +1050,7 @@ export default function TopologyGraph({ onChanged }) {
           height: 540,
           background: "rgb(var(--deep))",
           borderRadius: 16,
-          border: "1px solid rgba(148,163,184,0.1)",
+          border: "1px solid rgb(var(--ink) / 0.15)",
         }}
       >
         <RefreshCw size={15} className="animate-spin text-accent" />
@@ -1062,7 +1067,7 @@ export default function TopologyGraph({ onChanged }) {
           height: 540,
           background: "rgb(var(--deep))",
           borderRadius: 16,
-          border: "1px solid rgba(148,163,184,0.1)",
+          border: "1px solid rgb(var(--ink) / 0.15)",
         }}
       >
         Could not load graph.{" "}
@@ -1081,7 +1086,7 @@ export default function TopologyGraph({ onChanged }) {
           height: 300,
           background: "rgb(var(--deep))",
           borderRadius: 16,
-          border: "1px solid rgba(148,163,184,0.1)",
+          border: "1px solid rgb(var(--ink) / 0.15)",
         }}
       >
         No services yet — they appear as change events arrive or from lastgood.yml.
@@ -1096,4 +1101,4 @@ export default function TopologyGraph({ onChanged }) {
       </ReactFlowProvider>
     </div>
   );
-}
+              }
