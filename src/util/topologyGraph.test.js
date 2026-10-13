@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { layoutGraph, edgePath, buildViewModel, isEditable, sourceLabel, NODE_W, COL_GAP } from './topologyGraph';
+import { layoutGraph, edgePath, buildViewModel, isEditable, sourceLabel, NODE_W, NODE_H, COL_GAP } from './topologyGraph';
 
 const n = (...names) => names.map(service => ({ service }));
 const e = (service, depends_on_service, extra = {}) => ({ service, depends_on_service, dependency_type: 'hard', source: 'manual', ...extra });
@@ -41,7 +41,7 @@ describe('edgePath', () => {
     const { positions } = layoutGraph(n('a', 'b'), [e('a', 'b')]);
     const p = edgePath(positions, 'a', 'b');
     expect(p.d.startsWith(`M ${positions.a.x + NODE_W} `)).toBe(true);
-    expect(p.d.endsWith(`${positions.b.x} ${positions.b.y + 28}`)).toBe(true);
+    expect(p.d.endsWith(`${positions.b.x} ${positions.b.y + NODE_H / 2}`)).toBe(true);
   });
   it('returns null for unknown nodes and handles back edges', () => {
     const { positions } = layoutGraph(n('a', 'b'), [e('a', 'b')]);
