@@ -1,3 +1,4 @@
+import { trackAuthenticated } from '../util/posthog';
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
@@ -20,6 +21,7 @@ const VerifyEmail = () => {
             toast.success('Email verified successfully! Logging you in...');
             // Save token and redirect after a short delay for visual completion
             localStorage.setItem('authToken', data.token);
+            trackAuthenticated('signup_completed', { method: 'email' });
             setTimeout(() => {
                 navigate('/rewind');
             }, 2000);

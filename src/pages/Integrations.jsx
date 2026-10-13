@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { captureOnce } from "../util/posthog";
 import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -48,6 +49,7 @@ const Integrations = () => {
 
   const githubStatus = githubAppState(githubIntegration, { loading: !org?.id || checkingGithub, error: !!githubError });
   const isGithubActive = githubStatus === "Connected";
+  useEffect(() => { if (isGithubActive) captureOnce('github_app_connected'); }, [isGithubActive]);
   const installUrl = org?.id ? `${API_BASE_URL}/api/integrations/github-app/install?orgId=${encodeURIComponent(org.id)}` : null;
 
   const channels = [

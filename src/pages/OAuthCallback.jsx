@@ -1,3 +1,4 @@
+import { trackAuthenticated } from '../util/posthog';
 import { consumeLoginDestination } from '../util/console';
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useParams, useSearchParams, useNavigate } from 'react-router-dom';
@@ -47,6 +48,7 @@ const OAuthCallback = () => {
                 if (response.exists) {
                     // User already exists, login successful
                     localStorage.setItem('authToken', response.data.token);
+                    trackAuthenticated('login_succeeded', { method: provider });
                     queryClient.clear();
                     useOrgStore.getState().setOrg(null);
                     toast.success('Logged in successfully!');

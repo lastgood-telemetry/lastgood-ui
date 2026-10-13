@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { capture, captureOnce } from '../../util/posthog';
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowRight, Hash, Plug, Lock, Trash2, Loader2 } from "lucide-react";
 import PageContainer from "../ui/PageContainer";
@@ -27,6 +28,7 @@ const SlackPanel = ({ orgId, returnState }) => {
     enabled: !!orgId,
   });
   const connected = !!status?.connected;
+  useEffect(() => { if (connected) captureOnce('slack_connected'); }, [connected]);
 
   const { data: slackChannels, isLoading: loadingChannels, error: channelsError } = useQuery({
     queryKey: ["slack", "channels", orgId],
@@ -37,11 +39,11 @@ const SlackPanel = ({ orgId, returnState }) => {
 
   const install = useMutation({
     mutationFn: getSlackInstallUrl,
-    onSuccess: (url) => { window.location.href = url; },
+    onSuccess: (url) => { capture('slack_connect_clicked'); window.location.href = url; },
   });
   const save = useMutation({
     mutationFn: saveSlackChannel,
-    onSuccess: () => {
+    onSuccess: () => { capture('slack_channel_saved');
       toast.success("Channel saved. Incident cards will post there.");
       setChannelId("");
       queryClient.invalidateQueries({ queryKey: ["slack", "status"] });

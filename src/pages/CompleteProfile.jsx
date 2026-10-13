@@ -1,3 +1,4 @@
+import { trackAuthenticated } from '../util/posthog';
 import { consumeLoginDestination } from '../util/console';
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -40,6 +41,7 @@ export default function CompleteProfile() {
         mutationFn: () => oauthSignup({ ...form, name: form.name.trim(), org_name: form.org_name.trim() }),
         onSuccess: (res) => {
             localStorage.setItem('authToken', res.data.token);
+            trackAuthenticated('signup_completed', { method: provider || 'oauth' });
             toast.success('Registration completed successfully!');
             navigate(consumeLoginDestination(), { replace: true });
         },

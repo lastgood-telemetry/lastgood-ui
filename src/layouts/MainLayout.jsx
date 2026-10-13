@@ -1,3 +1,4 @@
+import { capture, resetAnalytics } from '../util/posthog';
 import React, { useEffect, useState } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
@@ -49,6 +50,8 @@ const MainLayout = () => {
   } = useOnCallStore();
 
   const handleLogout = () => {
+    capture("logout");
+    resetAnalytics();
     localStorage.removeItem("authToken");
     window.location.href = "/login";
   };

@@ -17,6 +17,7 @@ import {
     UserCog
 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
+import { trackAuthenticated, capture } from '../util/posthog';
 import { loginUser, resetPassword, signupUser } from '../service/auth';
 import { useOrganizationCount } from '../hooks/useOrganizationCount';
 import { trackEvent } from '../util/analytics';
@@ -126,6 +127,7 @@ const Login = () => {
     const { mutate: signup, isPending: signupLoading } = useMutation({
         mutationFn: () => signupUser(signupCreds),
         onSuccess: () => {
+            capture('signup_submitted', { method: 'email' });
             setStep('check-email');
         },
         onError: (err) => {
@@ -146,6 +148,7 @@ const Login = () => {
             }
 
             localStorage.setItem('authToken', data?.token)
+            trackAuthenticated('login_succeeded', { method: 'password' });
             navigate(consumeLoginDestination());
         },
         onError: (err) => {
