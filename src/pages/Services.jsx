@@ -1,3 +1,4 @@
+import { capture } from '../util/posthog';
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -115,6 +116,7 @@ const Services = () => {
         ),
         onSuccess: (data) => {
             setGeneratedKey(data.api_key);
+            capture('service_api_key_created');
             toast.success('Service API Key generated successfully!');
             queryClient.invalidateQueries(['services']);
         },
