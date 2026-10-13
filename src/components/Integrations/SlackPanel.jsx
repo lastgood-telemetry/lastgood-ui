@@ -8,7 +8,7 @@ import { toast } from "../ui/Toast";
 import { getSlackStatus, getSlackInstallUrl, getSlackChannels, saveSlackChannel, removeSlackChannel } from "../../service/slack";
 import { SEVERITY_OPTIONS, severityLabel, parseEnvironments, slackReturnState } from "../../util/slack";
 
-const fieldClass = "w-full bg-[#101413] border border-white/10 rounded px-3 py-2 text-sm text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
+const fieldClass = "w-full bg-paper border border-white/10 rounded px-3 py-2 text-sm text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent";
 const bannerTone = {
   success: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
   warn: "border-amber-500/30 bg-amber-500/10 text-amber-300",
@@ -72,7 +72,7 @@ const SlackPanel = ({ orgId, returnState }) => {
 
       {banner && <div role="status" className={`max-w-2xl mb-4 border rounded px-4 py-3 text-sm ${bannerTone[banner.tone]}`}>{banner.text}</div>}
 
-      <section className="border border-white/10 rounded bg-[#151b18] p-6 max-w-2xl space-y-5">
+      <section className="border border-white/10 rounded bg-surface p-6 max-w-2xl space-y-5">
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-base font-semibold text-white inline-flex items-center gap-2"><Hash size={16} className="text-accent" />Slack incident notifications</h2>
           <span role="status" className={`text-xs shrink-0 ${connected ? "text-accent" : "text-text-muted"}`}>{pill}</span>
@@ -85,7 +85,7 @@ const SlackPanel = ({ orgId, returnState }) => {
         ) : !connected ? (
           <>
             <p className="text-sm text-text-secondary leading-relaxed">One card per incident, with the top suspected change and a link into Rewind. Install the LastGood app in your Slack workspace. It only posts incident cards to channels you choose. An organization admin must connect it.</p>
-            <button onClick={() => install.mutate()} disabled={install.isPending} className="inline-flex items-center gap-2 bg-accent text-[#101413] px-4 py-2 rounded text-sm font-semibold disabled:opacity-60">
+            <button onClick={() => install.mutate()} disabled={install.isPending} className="inline-flex items-center gap-2 bg-accent text-paper px-4 py-2 rounded text-sm font-semibold disabled:opacity-60">
               {install.isPending ? <Loader2 size={16} className="animate-spin" /> : <Hash size={16} />}Connect Slack<ArrowRight size={14} />
             </button>
           </>
@@ -132,7 +132,7 @@ const SlackPanel = ({ orgId, returnState }) => {
                 </label>
               </div>
               <p className="text-xs text-text-muted flex items-start gap-1.5"><Lock size={12} className="mt-0.5 shrink-0" />For a private channel, run /invite @LastGood in Slack first, then reload this page.</p>
-              <button type="submit" disabled={!channelId || save.isPending} className="inline-flex items-center gap-2 bg-accent text-[#101413] px-4 py-2 rounded text-sm font-semibold disabled:opacity-50">
+              <button type="submit" disabled={!channelId || save.isPending} className="inline-flex items-center gap-2 bg-accent text-paper px-4 py-2 rounded text-sm font-semibold disabled:opacity-50">
                 {save.isPending && <Loader2 size={16} className="animate-spin" />}Save channel
               </button>
             </form>
