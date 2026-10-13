@@ -80,7 +80,7 @@ export default function Markdown({ source }) {
           return <Tag key={idx} className={`pl-5 space-y-1.5 ${b.ordered ? "list-decimal" : "list-disc"}`}>{b.items.map((it, j) => <li key={j}>{inline(it, `${idx}-${j}`)}</li>)}</Tag>;
         }
         if (b.type === "code") return (
-          <div key={idx} className="relative bg-[#101413] border border-white/10 rounded-xl">
+          <div key={idx} className="relative bg-paper border border-white/10 rounded-xl">
             <button onClick={() => copy(b.text, idx)} className="absolute top-2 right-2 px-2 py-1 text-[10px] font-mono uppercase text-zinc-400 hover:text-white bg-white/5 border border-white/10 rounded">{copied === idx ? "Copied" : "Copy"}</button>
             <pre className="p-4 pr-16 overflow-x-auto text-xs font-mono text-zinc-200"><code>{b.text}</code></pre>
           </div>
