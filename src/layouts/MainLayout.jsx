@@ -1,4 +1,5 @@
 import { capture, resetAnalytics } from '../util/posthog';
+import ThemeToggle from '../components/ThemeToggle/ThemeToggle'
 import React, { useEffect, useState } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
@@ -78,11 +79,11 @@ const MainLayout = () => {
   const currentNav = navItems.find((n) => location.pathname.startsWith(n.path)) || navItems[0];
 
   return (
-    <div className="flex min-h-screen font-sans bg-[#101413] text-slate-100">
+    <div className="flex min-h-screen font-sans bg-paper text-slate-100">
       {/* Mobile drawer backdrop */}
       {isNavOpen && (
         <div
-          className="md:hidden fixed inset-0 z-40 bg-[#0b0f0d]/70"
+          className="md:hidden fixed inset-0 z-40 bg-deep/70"
           onClick={() => setIsNavOpen(false)}
           aria-hidden="true"
         />
@@ -91,7 +92,7 @@ const MainLayout = () => {
       {/* Sidebar - Navigation (off-canvas drawer below md, fixed rail from md up) */}
       <aside
         id="main-sidebar"
-        className={`w-56 max-w-[85vw] border-r border-slate-800/60 bg-[#101413] flex flex-col fixed h-full z-50 transition-transform duration-200 md:translate-x-0 ${
+        className={`w-56 max-w-[85vw] border-r border-slate-800/60 bg-paper flex flex-col fixed h-full z-50 transition-transform duration-200 md:translate-x-0 ${
           isNavOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -103,7 +104,8 @@ const MainLayout = () => {
           >
             <Logo size="md" showText={true} textClassName="text-lg" />
           </div>
-          <span className="hidden md:inline text-[9px] font-mono tracking-[0.1em] text-[#b6edce] border border-[#3a5546] px-1.5 py-0.5">
+          <ThemeToggle className="mx-1" />
+          <span className="hidden md:inline text-[9px] font-mono tracking-[0.1em] text-mint border border-mint/40 px-1.5 py-0.5">
             BETA
           </span>
           <button
@@ -126,7 +128,7 @@ const MainLayout = () => {
                   return (
                     <NavLink key={item.path} to={item.path} className={({ isActive }) =>
                       `${item.mobile ? 'flex' : 'hidden md:flex'} items-center gap-2.5 px-2.5 py-2 rounded text-sm transition-colors border ${isActive
-                        ? 'bg-[#b6edce]/10 text-[#b6edce] font-semibold border-[#b6edce]/25'
+                        ? 'bg-mint/10 text-mint font-semibold border-mint/25'
                         : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/50'}`
                     }>
                       <Icon size={15} className="shrink-0" />
@@ -140,10 +142,10 @@ const MainLayout = () => {
         </nav>
 
         {/* User Profile & Org Footer */}
-        <div className="p-3 border-t border-slate-800/60 bg-[#101413]">
-          <div className="flex items-center justify-between p-2 rounded-lg bg-[#101413] border border-slate-800/70">
+        <div className="p-3 border-t border-slate-800/60 bg-paper">
+          <div className="flex items-center justify-between p-2 rounded-lg bg-paper border border-slate-800/70">
             <div className="flex items-center gap-2.5 overflow-hidden">
-              <div className="w-6 h-6 rounded-md bg-[#17241d] border border-[#b6edce]/30 flex items-center justify-center font-mono font-bold text-[#b6edce] text-[11px] shrink-0">
+              <div className="w-6 h-6 rounded-md bg-mint/15 border border-mint/30 flex items-center justify-center font-mono font-bold text-mint text-[11px] shrink-0">
                 {org?.name?.charAt(0) || "O"}
               </div>
               <div className="flex flex-col overflow-hidden">
@@ -168,9 +170,9 @@ const MainLayout = () => {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 md:ml-56 relative min-w-0 bg-[#101413] min-h-screen flex flex-col">
+      <main className="flex-1 md:ml-56 relative min-w-0 bg-paper min-h-screen flex flex-col">
         {/* Top Header Bar */}
-        <header className="h-14 sticky top-0 z-30 bg-[#101413]/80 backdrop-blur-md border-b border-slate-800/60 px-3 md:px-6 flex items-center justify-between gap-3 md:gap-4">
+        <header className="h-14 sticky top-0 z-30 bg-paper/80 backdrop-blur-md border-b border-slate-800/60 px-3 md:px-6 flex items-center justify-between gap-3 md:gap-4">
           <button
             type="button"
             onClick={() => setIsNavOpen(true)}
@@ -199,7 +201,7 @@ const MainLayout = () => {
               className={`hidden md:flex items-center gap-2 px-2.5 py-1 rounded border text-xs transition-all cursor-pointer ${
                 isIncidentMode
                   ? "bg-rose-950/60 border-rose-500/40 text-rose-400 hover:bg-rose-900/60"
-                  : "bg-[#151b18] border-slate-800 text-slate-400 hover:text-slate-200"
+                  : "bg-surface border-slate-800 text-slate-400 hover:text-slate-200"
               }`}
               title="Toggle a simulated incident. This is not live system health." aria-pressed={isIncidentMode}
             >
@@ -209,7 +211,7 @@ const MainLayout = () => {
             {/* Quick Search Button */}
             <button
               onClick={() => setCommandPaletteOpen(true)}
-              className="flex items-center gap-2 px-2.5 md:px-3 py-1.5 rounded-lg bg-[#151b18] border border-slate-800 hover:border-slate-700 text-xs text-slate-400 hover:text-slate-200 transition-all cursor-pointer"
+              className="flex items-center gap-2 px-2.5 md:px-3 py-1.5 rounded-lg bg-surface border border-slate-800 hover:border-slate-700 text-xs text-slate-400 hover:text-slate-200 transition-all cursor-pointer"
               aria-label="Open commands"
             >
               <Search size={13} className="text-slate-500" />
