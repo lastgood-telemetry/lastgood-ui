@@ -1,3 +1,4 @@
+import { captureOnce } from '../util/posthog';
 import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Activity, Loader2, ArrowUpRight } from 'lucide-react';
@@ -26,6 +27,7 @@ const Events = () => {
   // Production is a display-only filter over loaded rows: provider env wins over
   // historical defaults. Never claim this count covers unloaded pages.
   const events = groupDeploymentEvents(loaded).filter(event => scope !== 'production' || eventEnvironmentLabel(event) === 'Production').sort((a, b) => new Date(b.occurred_at) - new Date(a.occurred_at));
+  useEffect(() => { if (loaded.length > 0) captureOnce('first_events_viewed', { count: loaded.length }); }, [loaded.length]);
   const active = search || fromDate || toDate || service || scope !== 'all';
   return <PageContainer>
     <PageHeader icon={Activity} title="Change log" description="What changed before the incident? Newest first. Times in UTC." actions={<Link to="/rewind" className="bg-accent text-[#101413] px-3 py-2 rounded text-xs font-semibold">Open Rewind</Link>} />
