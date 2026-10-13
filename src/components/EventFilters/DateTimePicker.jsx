@@ -65,7 +65,7 @@ export const DateTimePicker = ({
                 className="w-full bg-paper border border-white/10 hover:border-white/20 rounded-lg px-3 py-2 text-xs font-mono text-white flex items-center justify-between transition-all cursor-pointer shadow-sm"
             >
                 <div className="flex items-center gap-2">
-                    <CalendarIcon size={14} className="text-sky-400" />
+                    <CalendarIcon size={14} className="text-slate-400" />
                     <span>{value ? dayjs(value).format('MMM D, YYYY - HH:mm [UTC]') : label}</span>
                 </div>
                 <Clock size={12} className="text-zinc-500" />
