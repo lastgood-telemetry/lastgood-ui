@@ -4,7 +4,7 @@ import { Users, Send, Loader2 } from 'lucide-react';
 import { createInvite, listInvites, resendInvite, revokeInvite } from '../../service/invites';
 import { inviteMessage, sessionClaims } from '../../util/invites';
 
-const field = 'w-full min-h-[44px] bg-[#0b100e] border border-white/15 rounded-md px-3 py-2 text-sm outline-none focus:border-accent focus:ring-1 focus:ring-accent disabled:opacity-50';
+const field = 'w-full min-h-[44px] bg-deep border border-white/15 rounded-md px-3 py-2 text-sm outline-none focus:border-accent focus:ring-1 focus:ring-accent disabled:opacity-50';
 export default function TeamSettings({ organization }) {
     const isAdmin = sessionClaims(localStorage.getItem('authToken') || '').role === 'admin';
     const [email, setEmail] = useState('');
@@ -32,7 +32,7 @@ export default function TeamSettings({ organization }) {
         if (!full && !busy) act('create', () => createInvite(email.trim().toLowerCase(), role), `Invitation sent to ${email.trim()}.`);
     };
     return (
-        <section className="mt-6 bg-[#101413] border border-white/10 rounded-xl p-5 sm:p-6" aria-labelledby="team-heading">
+        <section className="mt-6 bg-paper border border-white/10 rounded-xl p-5 sm:p-6" aria-labelledby="team-heading">
             <div className="flex items-start justify-between gap-3 mb-5"><div><h2 id="team-heading" className="flex items-center gap-2 text-lg font-semibold"><Users size={19} className="text-accent" /> Team</h2><p className="text-sm text-zinc-400 mt-1">Invite teammates to your workspace.</p></div><span className="shrink-0 px-2 py-1 bg-white/5 border border-white/10 rounded text-[10px] font-mono uppercase text-zinc-400">Admin only</span></div>
             {seats && <p className="text-xs text-zinc-300 mb-2">{seats.occupied} {seats.occupied === 1 ? 'member' : 'members'} · {seats.pending} pending · {seats.seat_limit} seats total</p>}
             {organization.plan === 'free' && <p className="text-xs text-zinc-400 mb-4">Free plan: 2 seats, including you. Pending invites reserve a seat.</p>}
@@ -40,7 +40,7 @@ export default function TeamSettings({ organization }) {
             {loadError ? <div role="alert" className="text-sm text-rose-300 mb-4">{inviteMessage(loadError)} <button onClick={() => refetch()} className="underline min-h-[44px] ml-2">Try again</button></div> : <form onSubmit={submit} className="grid sm:grid-cols-[minmax(0,1fr)_130px_auto] gap-3 items-end">
                 <div><label htmlFor="team-email" className="block text-xs text-zinc-400 mb-2">Email address</label><input id="team-email" type="email" autoComplete="email" placeholder="teammate@company.com" value={email} onChange={e => setEmail(e.target.value)} maxLength={320} required disabled={full || !!busy || isPending || !seats} className={field} /></div>
                 <div><label htmlFor="team-role" className="block text-xs text-zinc-400 mb-2">Role</label><select id="team-role" value={role} onChange={e => setRole(e.target.value)} disabled={full || !!busy || isPending || !seats} className={field}><option value="member">Member</option><option value="admin">Admin</option></select></div>
-                <button type="submit" disabled={full || !!busy || isPending || !seats} className="min-h-[44px] bg-accent text-[#0b100e] rounded-md px-4 py-2 font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">{busy === 'create' ? <Loader2 size={16} className="animate-spin" /> : <Send size={15} />} Send invite</button>
+                <button type="submit" disabled={full || !!busy || isPending || !seats} className="min-h-[44px] bg-accent text-deep rounded-md px-4 py-2 font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">{busy === 'create' ? <Loader2 size={16} className="animate-spin" /> : <Send size={15} />} Send invite</button>
             </form>}
             {!isPending && !loadError && !seats && <p role="status" className="mt-3 text-sm text-amber-200">Seat availability is not available yet. Refresh after the team API is deployed.</p>}
             {role === 'admin' && !full && <p className="mt-3 text-xs text-amber-200">Admins can manage invites and workspace settings. Only choose this for someone who needs that access.</p>}
