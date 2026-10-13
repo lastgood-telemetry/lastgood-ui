@@ -1,11 +1,11 @@
 // Pure helpers for the topology graph builder: layout, edge geometry and view-model.
 // No React, no network: everything here is unit-tested.
 
-export const NODE_W = 176;
-export const NODE_H = 56;
-export const COL_GAP = 132;
-export const ROW_GAP = 20;
-export const PAD = 24;
+export const NODE_W = 200;
+export const NODE_H = 60;
+export const COL_GAP = 140;
+export const ROW_GAP = 24;
+export const PAD = 28;
 
 export const CRITICALITY = ['critical', 'high', 'medium', 'low'];
 export const CRITICALITY_COLOR = { critical: '#f43f5e', high: '#fb923c', medium: '#94a3b8', low: '#34d399' };

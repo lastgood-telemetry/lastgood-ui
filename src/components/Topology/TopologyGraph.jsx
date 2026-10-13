@@ -1,48 +1,1027 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Lock, Link2, Trash2, Check, X, RefreshCw } from "lucide-react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  ReactFlow,
+  ReactFlowProvider,
+  Background,
+  Controls,
+  MiniMap,
+  addEdge,
+  useNodesState,
+  useEdgesState,
+  useReactFlow,
+  Panel,
+  Handle,
+  Position,
+  getBezierPath,
+  EdgeLabelRenderer,
+  BaseEdge,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import {
+  Server,
+  Link2,
+  Trash2,
+  Check,
+  X,
+  RefreshCw,
+  Plus,
+  Lock,
+  ChevronDown,
+  Activity,
+  AlertTriangle,
+  Shield,
+  Zap,
+} from "lucide-react";
 import api from "../../api";
 import { toast } from "../ui/Toast";
-import {
-  NODE_W, NODE_H, CRITICALITY, CRITICALITY_COLOR,
-  buildViewModel, layoutGraph, edgePath, isEditable, sourceLabel,
-} from "../../util/topologyGraph";
 
-const edgeId = (e) => `${e.service}>${e.depends_on_service}`;
+/* ─── Constants ────────────────────────────────────────────────── */
+const CRITICALITY_CONFIG = {
+  critical: {
+    color: "#f43f5e",
+    bg: "rgba(244,63,94,0.12)",
+    border: "rgba(244,63,94,0.4)",
+    icon: AlertTriangle,
+    label: "Critical",
+  },
+  high: {
+    color: "#fb923c",
+    bg: "rgba(251,146,60,0.12)",
+    border: "rgba(251,146,60,0.4)",
+    icon: Zap,
+    label: "High",
+  },
+  medium: {
+    color: "#94a3b8",
+    bg: "rgba(148,163,184,0.08)",
+    border: "rgba(148,163,184,0.2)",
+    icon: Activity,
+    label: "Medium",
+  },
+  low: {
+    color: "#34d399",
+    bg: "rgba(52,211,153,0.08)",
+    border: "rgba(52,211,153,0.2)",
+    icon: Shield,
+    label: "Low",
+  },
+};
 
-function SourceBadge({ source }) {
-  const yaml = source === "yaml";
+/* ─── Custom Service Node ───────────────────────────────────────── */
+function ServiceNode({ data, selected }) {
+  const cfg = CRITICALITY_CONFIG[data.criticality] || CRITICALITY_CONFIG.medium;
+  const CritIcon = cfg.icon;
+
   return (
-    <span
-      className={`inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded border ${
-        yaml ? "border-accent/40 text-accent bg-accent/10" : "border-white/10 text-text-muted"
-      }`}
+    <div
+      className="relative group"
+      style={{
+        width: 220,
+        background: selected
+          ? "rgba(21,27,24,0.98)"
+          : "rgba(21,27,24,0.92)",
+        border: `1.5px solid ${selected ? "hsl(var(--accent))" : cfg.border}`,
+        borderRadius: 14,
+        boxShadow: selected
+          ? `0 0 0 3px hsl(var(--accent)/0.2), 0 8px 32px rgba(0,0,0,0.5)`
+          : "0 4px 20px rgba(0,0,0,0.4)",
+        backdropFilter: "blur(12px)",
+        overflow: "hidden",
+        transition: "border-color 0.15s, box-shadow 0.15s",
+        cursor: "pointer",
+      }}
     >
-      {yaml && <Lock size={9} />}
-      {sourceLabel(source)}
-    </span>
+      {/* criticality accent bar */}
+      <div
+        style={{
+          height: 3,
+          background: `linear-gradient(90deg, ${cfg.color}, transparent)`,
+          opacity: 0.9,
+        }}
+      />
+
+      <div style={{ padding: "12px 14px 14px" }}>
+        {/* header row */}
+        <div className="flex items-center justify-between gap-2 mb-2.5">
+          <div className="flex items-center gap-2 min-w-0">
+            <div
+              style={{
+                background: cfg.bg,
+                border: `1px solid ${cfg.border}`,
+                borderRadius: 8,
+                padding: "5px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+              }}
+            >
+              <Server size={13} color={cfg.color} />
+            </div>
+            <div className="min-w-0">
+              <div
+                className="font-mono font-bold text-white text-[12px] leading-tight truncate"
+                title={data.label}
+                style={{ maxWidth: 130 }}
+              >
+                {data.label}
+              </div>
+            </div>
+          </div>
+          {data.source === "yaml" && (
+            <Lock size={10} color="hsl(var(--accent))" />
+          )}
+        </div>
+
+        {/* criticality + event stats */}
+        <div className="flex items-center justify-between gap-2">
+          <div
+            className="flex items-center gap-1"
+            style={{
+              background: cfg.bg,
+              border: `1px solid ${cfg.border}`,
+              borderRadius: 6,
+              padding: "3px 7px",
+            }}
+          >
+            <CritIcon size={9} color={cfg.color} />
+            <span
+              className="text-[10px] font-semibold font-mono"
+              style={{ color: cfg.color }}
+            >
+              {cfg.label}
+            </span>
+          </div>
+          {data.event_count > 0 && (
+            <span
+              className="text-[10px] font-mono"
+              style={{ color: "rgba(148,163,184,0.7)" }}
+            >
+              {data.event_count} event{data.event_count !== 1 ? "s" : ""}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* connection handles */}
+      <Handle
+        type="target"
+        position={Position.Left}
+        style={{
+          background: "hsl(var(--accent))",
+          border: "2px solid rgba(21,27,24,0.9)",
+          width: 10,
+          height: 10,
+          left: -5,
+        }}
+      />
+      <Handle
+        type="source"
+        position={Position.Right}
+        style={{
+          background: "hsl(var(--accent))",
+          border: "2px solid rgba(21,27,24,0.9)",
+          width: 10,
+          height: 10,
+          right: -5,
+        }}
+      />
+    </div>
   );
 }
 
-/**
- * Topology graph builder. Nodes are services seen in change events; edges mean "A depends on B".
- * Dashed edges are suggestions (changes to B shortly before A alerted) until you confirm them.
- * Anything declared in lastgood.yml is read-only here.
- */
+/* ─── Custom Edge with delete button ───────────────────────────── */
+function DependencyEdge({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+  sourcePosition,
+  targetPosition,
+  data,
+  markerEnd,
+  selected,
+}) {
+  const [edgePath, labelX, labelY] = getBezierPath({
+    sourceX,
+    sourceY,
+    sourcePosition,
+    targetX,
+    targetY,
+    targetPosition,
+  });
+
+  const isSoft = data?.dependency_type === "soft";
+  const isYaml = data?.source === "yaml";
+  const isSuggested = data?.kind === "suggested";
+
+  const edgeColor = isSuggested
+    ? "rgba(148,163,184,0.45)"
+    : selected
+    ? "hsl(var(--accent))"
+    : isSoft
+    ? "#fbbf24"
+    : "rgba(148,163,184,0.55)";
+
+  return (
+    <>
+      <BaseEdge
+        path={edgePath}
+        markerEnd={markerEnd}
+        style={{
+          stroke: edgeColor,
+          strokeWidth: selected ? 2 : 1.5,
+          strokeDasharray: isSuggested ? "6 4" : isSoft ? "2 3" : undefined,
+          filter: selected
+            ? `drop-shadow(0 0 4px hsl(var(--accent)/0.5))`
+            : undefined,
+          transition: "stroke 0.15s, stroke-width 0.15s",
+        }}
+      />
+      <EdgeLabelRenderer>
+        <div
+          style={{
+            position: "absolute",
+            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+            pointerEvents: "all",
+          }}
+        >
+          {/* type badge always visible */}
+          <div
+            className="flex items-center gap-1"
+            style={{
+              background: "rgba(11,15,13,0.92)",
+              border: `1px solid ${
+                isSuggested
+                  ? "rgba(148,163,184,0.2)"
+                  : isSoft
+                  ? "rgba(251,191,36,0.3)"
+                  : "rgba(148,163,184,0.2)"
+              }`,
+              borderRadius: 20,
+              padding: "2px 7px",
+              backdropFilter: "blur(8px)",
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+            }}
+          >
+            {isYaml && <Lock size={8} color="hsl(var(--accent))" />}
+            <span
+              className="text-[9px] font-mono font-semibold"
+              style={{
+                color: isSuggested
+                  ? "rgba(148,163,184,0.7)"
+                  : isSoft
+                  ? "#fbbf24"
+                  : "rgba(148,163,184,0.8)",
+              }}
+            >
+              {isSuggested ? "suggested" : isSoft ? "soft" : "hard"}
+            </span>
+            {/* delete button on selected non-readonly edges */}
+            {selected && !isYaml && !isSuggested && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  data?.onDelete?.();
+                }}
+                className="ml-1 rounded-full bg-red-500/20 hover:bg-red-500/40 text-red-400 transition-colors"
+                style={{ padding: "1px 4px", lineHeight: 1 }}
+                title="Remove this dependency"
+              >
+                <Trash2 size={9} />
+              </button>
+            )}
+            {/* confirm/dismiss for suggested */}
+            {selected && isSuggested && (
+              <div className="flex gap-1 ml-1">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    data?.onConfirm?.();
+                  }}
+                  className="rounded-full bg-mint/20 hover:bg-mint/40 text-mint transition-colors"
+                  style={{ padding: "1px 4px", lineHeight: 1 }}
+                  title="Confirm suggestion"
+                >
+                  <Check size={9} />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    data?.onDismiss?.();
+                  }}
+                  className="rounded-full bg-white/10 hover:bg-white/20 text-text-muted transition-colors"
+                  style={{ padding: "1px 4px", lineHeight: 1 }}
+                  title="Dismiss suggestion"
+                >
+                  <X size={9} />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </EdgeLabelRenderer>
+    </>
+  );
+}
+
+/* ─── Node types / Edge types registry ─────────────────────────── */
+const nodeTypes = { service: ServiceNode };
+const edgeTypes = { dependency: DependencyEdge };
+
+/* ─── Layout helper: hierarchical left-to-right ────────────────── */
+function computeLayout(nodes, edges) {
+  if (!nodes.length) return {};
+  const names = nodes.map((n) => n.service);
+  const level = {};
+  names.forEach((n) => (level[n] = 0));
+  const valid = edges.filter(
+    (e) => names.includes(e.service) && names.includes(e.depends_on_service) && e.service !== e.depends_on_service
+  );
+  const connected = new Set();
+  valid.forEach((e) => {
+    connected.add(e.service);
+    connected.add(e.depends_on_service);
+  });
+  for (let i = 0; i < names.length; i++) {
+    let changed = false;
+    for (const e of valid) {
+      const next = level[e.service] + 1;
+      if (level[e.depends_on_service] < next && next < names.length) {
+        level[e.depends_on_service] = next;
+        changed = true;
+      }
+    }
+    if (!changed) break;
+  }
+  const NODE_W = 240;
+  const NODE_H = 90;
+  const COL_GAP = 100;
+  const ROW_GAP = 28;
+  const PAD_X = 60;
+  const PAD_Y = 60;
+
+  const cols = {};
+  const maxLevel = Math.max(0, ...names.filter((n) => connected.has(n)).map((n) => level[n]));
+  names.filter((n) => connected.has(n)).forEach((n) => {
+    const col = level[n];
+    if (!cols[col]) cols[col] = [];
+    cols[col].push(n);
+  });
+  const loose = names.filter((n) => !connected.has(n));
+  if (loose.length) {
+    const col = connected.size ? maxLevel + 1 : 0;
+    cols[col] = loose;
+  }
+  const positions = {};
+  Object.entries(cols).forEach(([ci, col]) => {
+    const colArr = [...col].sort((a, b) => a.localeCompare(b));
+    colArr.forEach((name, ri) => {
+      positions[name] = {
+        x: PAD_X + Number(ci) * (NODE_W + COL_GAP),
+        y: PAD_Y + ri * (NODE_H + ROW_GAP),
+      };
+    });
+  });
+  return positions;
+}
+
+/* ─── Add Dependency Panel ──────────────────────────────────────── */
+function AddDependencyPanel({ services, onAdd, onClose }) {
+  const [from, setFrom] = useState(services[0] || "");
+  const [to, setTo] = useState(services[1] || services[0] || "");
+  const [type, setType] = useState("hard");
+  const [adding, setAdding] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!from || !to) return toast.error("Select both services");
+    if (from === to) return toast.error("A service cannot depend on itself");
+    setAdding(true);
+    try {
+      await api.post("/v1/topology/dependencies", {
+        service: from,
+        dependsOnService: to,
+        type,
+      });
+      toast.success(`${from} → ${to} dependency added`);
+      onAdd();
+      onClose();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  return (
+    <div
+      style={{
+        background: "rgba(11,15,13,0.97)",
+        border: "1.5px solid rgba(148,163,184,0.15)",
+        borderRadius: 16,
+        padding: 20,
+        width: 280,
+        backdropFilter: "blur(20px)",
+        boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
+      }}
+    >
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Plus size={14} color="hsl(var(--accent))" />
+          <span className="text-sm font-semibold text-white">Add dependency</span>
+        </div>
+        <button
+          onClick={onClose}
+          className="text-text-muted hover:text-white transition-colors"
+        >
+          <X size={14} />
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <div>
+          <label className="text-[10px] font-semibold text-text-muted uppercase tracking-wider block mb-1.5">
+            Dependent service
+          </label>
+          <select
+            value={from}
+            onChange={(e) => setFrom(e.target.value)}
+            className="w-full text-xs text-white rounded-lg px-3 py-2 focus:outline-none focus:border-accent appearance-none"
+            style={{
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(148,163,184,0.15)",
+            }}
+          >
+            {services.map((s) => (
+              <option key={s} value={s} className="bg-zinc-950">
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex items-center justify-center">
+          <div
+            className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-mono"
+            style={{ background: "rgba(255,255,255,0.04)", color: "rgba(148,163,184,0.6)" }}
+          >
+            <span>depends on</span>
+            <ChevronDown size={10} />
+          </div>
+        </div>
+
+        <div>
+          <label className="text-[10px] font-semibold text-text-muted uppercase tracking-wider block mb-1.5">
+            Upstream service
+          </label>
+          <select
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+            className="w-full text-xs text-white rounded-lg px-3 py-2 focus:outline-none focus:border-accent appearance-none"
+            style={{
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(148,163,184,0.15)",
+            }}
+          >
+            {services.map((s) => (
+              <option key={s} value={s} className="bg-zinc-950">
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="text-[10px] font-semibold text-text-muted uppercase tracking-wider block mb-1.5">
+            Type
+          </label>
+          <div className="flex gap-2">
+            {["hard", "soft"].map((t) => (
+              <button
+                key={t}
+                type="button"
+                onClick={() => setType(t)}
+                className="flex-1 text-xs py-1.5 rounded-lg font-semibold transition-all"
+                style={{
+                  background:
+                    type === t
+                      ? t === "hard"
+                        ? "rgba(244,63,94,0.2)"
+                        : "rgba(251,191,36,0.2)"
+                      : "rgba(255,255,255,0.04)",
+                  border: `1px solid ${
+                    type === t
+                      ? t === "hard"
+                        ? "rgba(244,63,94,0.4)"
+                        : "rgba(251,191,36,0.4)"
+                      : "rgba(148,163,184,0.1)"
+                  }`,
+                  color:
+                    type === t
+                      ? t === "hard"
+                        ? "#f87171"
+                        : "#fbbf24"
+                      : "rgba(148,163,184,0.6)",
+                }}
+              >
+                {t === "hard" ? "Hard" : "Soft"}
+              </button>
+            ))}
+          </div>
+          <p className="text-[10px] text-text-muted mt-1.5">
+            {type === "hard"
+              ? "Outage cascades to dependents"
+              : "Service degrades but stays up"}
+          </p>
+        </div>
+
+        <button
+          type="submit"
+          disabled={adding || from === to}
+          className="w-full py-2 rounded-lg text-xs font-bold text-paper transition-all disabled:opacity-50"
+          style={{ background: "hsl(var(--accent))" }}
+        >
+          {adding ? "Adding…" : "Link services"}
+        </button>
+      </form>
+    </div>
+  );
+}
+
+/* ─── Node inspector panel ──────────────────────────────────────── */
+function NodeInspector({ node, onClose, onSetCriticality, onStartConnect, busy }) {
+  const cfg = CRITICALITY_CONFIG[node.data.criticality] || CRITICALITY_CONFIG.medium;
+  const CRITICALITY_KEYS = ["critical", "high", "medium", "low"];
+
+  return (
+    <div
+      style={{
+        background: "rgba(11,15,13,0.97)",
+        border: "1.5px solid rgba(148,163,184,0.15)",
+        borderRadius: 16,
+        padding: 20,
+        width: 280,
+        backdropFilter: "blur(20px)",
+        boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
+      }}
+    >
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2 min-w-0">
+          <div
+            className="w-2 h-2 rounded-full shrink-0"
+            style={{ background: cfg.color }}
+          />
+          <span
+            className="text-sm font-bold text-white font-mono truncate"
+            title={node.data.label}
+          >
+            {node.data.label}
+          </span>
+        </div>
+        <button
+          onClick={onClose}
+          className="text-text-muted hover:text-white transition-colors shrink-0"
+        >
+          <X size={14} />
+        </button>
+      </div>
+
+      <div className="space-y-3">
+        <div>
+          <label className="text-[10px] font-semibold text-text-muted uppercase tracking-wider block mb-2">
+            Criticality
+          </label>
+          <div className="grid grid-cols-2 gap-1.5">
+            {CRITICALITY_KEYS.map((c) => {
+              const cc = CRITICALITY_CONFIG[c];
+              const active = node.data.criticality === c;
+              return (
+                <button
+                  key={c}
+                  onClick={() => onSetCriticality(node, c)}
+                  disabled={busy || node.data.criticality_source === "yaml"}
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all disabled:opacity-50"
+                  style={{
+                    background: active ? cc.bg : "rgba(255,255,255,0.03)",
+                    border: `1px solid ${active ? cc.border : "rgba(148,163,184,0.1)"}`,
+                    color: active ? cc.color : "rgba(148,163,184,0.5)",
+                  }}
+                >
+                  <span
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ background: cc.color }}
+                  />
+                  {cc.label}
+                </button>
+              );
+            })}
+          </div>
+          {node.data.criticality_source === "yaml" && (
+            <p className="text-[10px] text-text-muted mt-1.5 flex items-center gap-1">
+              <Lock size={9} /> Set in lastgood.yml — change it there
+            </p>
+          )}
+        </div>
+
+        <div className="pt-1 border-t border-white/8">
+          <button
+            onClick={() => { onStartConnect(node.id); onClose(); }}
+            className="w-full flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold text-white transition-all"
+            style={{
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(148,163,184,0.15)",
+            }}
+          >
+            <Link2 size={13} color="hsl(var(--accent))" />
+            Add dependency from this service
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Inner flow component (needs ReactFlowProvider context) ────── */
+function TopologyFlow({ rawData, onChanged, services }) {
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [dismissed, setDismissed] = useState(new Set());
+  const [busy, setBusy] = useState(false);
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [showAddPanel, setShowAddPanel] = useState(false);
+  const [connectingFrom, setConnectingFrom] = useState(null);
+  const { fitView } = useReactFlow();
+  // Keep fitView in a ref so it never appears in effect deps
+  const fitViewRef = useRef(fitView);
+  useEffect(() => { fitViewRef.current = fitView; });
+
+  // ── Stable callbacks: accept data as args, NOT from `edges` closure ──
+  // This is critical to prevent the infinite update loop.
+  // If these depended on `edges`, the useEffect below would re-run every
+  // time edges changed (which it triggers), creating an infinite cycle.
+
+  const removeEdge = useCallback(async (service, dependsOn) => {
+    setBusy(true);
+    try {
+      await api.delete("/v1/topology/dependencies", {
+        data: { service, dependsOnService: dependsOn },
+      });
+      toast.success(`Removed ${service} → ${dependsOn}`);
+      onChanged();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setBusy(false);
+    }
+  }, [onChanged]); // ✓ stable — no `edges` dep
+
+  const confirmSuggested = useCallback(async (service, dependsOn) => {
+    setBusy(true);
+    try {
+      await api.post("/v1/topology/dependencies", {
+        service,
+        dependsOnService: dependsOn,
+        type: "hard",
+      });
+      toast.success(`Confirmed: ${service} → ${dependsOn}`);
+      onChanged();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setBusy(false);
+    }
+  }, [onChanged]); // ✓ stable — no `edges` dep
+
+  const dismissSuggested = useCallback((edgeId) => {
+    setDismissed((prev) => new Set([...prev, edgeId]));
+  }, []); // ✓ stable — uses functional setState, no deps
+
+  const setCriticality = useCallback(async (node, criticality) => {
+    setBusy(true);
+    try {
+      await api.put(`/v1/topology/services/${encodeURIComponent(node.data.service)}/criticality`, { criticality });
+      toast.success(`${node.data.service} → ${criticality}`);
+      onChanged();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setBusy(false);
+    }
+  }, [onChanged]);
+
+  // Rebuild nodes/edges whenever rawData or dismissed changes.
+  // Callbacks are intentionally NOT in deps — they are stable and
+  // were previously causing the infinite update loop.
+  useEffect(() => {
+    if (!rawData) return;
+
+    const { nodes: rawNodes, edges: rawEdges, suggested_edges } = rawData;
+    const allEdges = [
+      ...rawEdges.map((e) => ({ ...e, kind: "confirmed" })),
+      ...suggested_edges
+        .filter((s) => !dismissed.has(`${s.service}>${s.depends_on_service}`))
+        .map((s) => ({ ...s, kind: "suggested", dependency_type: "hard", source: "suggested" })),
+    ];
+
+    const positions = computeLayout(rawNodes, allEdges);
+
+    const newNodes = rawNodes.map((n) => ({
+      id: n.service,
+      type: "service",
+      position: positions[n.service] || { x: 0, y: 0 },
+      data: {
+        label: n.service,
+        service: n.service,
+        criticality: n.criticality || "medium",
+        criticality_source: n.criticality_source || "default",
+        event_count: n.event_count || 0,
+        source: n.criticality_source,
+      },
+    }));
+
+    const newEdges = allEdges.map((e) => {
+      const eid = `${e.service}>${e.depends_on_service}`;
+      const svc = e.service;
+      const dep = e.depends_on_service;
+      return {
+        id: eid,
+        source: svc,
+        target: dep,
+        type: "dependency",
+        animated: e.kind === "suggested",
+        markerEnd: {
+          type: "arrowclosed",
+          color:
+            e.kind === "suggested"
+              ? "rgba(148,163,184,0.45)"
+              : e.dependency_type === "soft"
+              ? "#fbbf24"
+              : "rgba(148,163,184,0.6)",
+          width: 16,
+          height: 16,
+        },
+        data: {
+          service: svc,
+          depends_on_service: dep,
+          dependency_type: e.dependency_type,
+          source: e.source,
+          kind: e.kind,
+          // Pass plain values; the edge component calls these with no extra lookup
+          onDelete: () => removeEdge(svc, dep),
+          onConfirm: () => confirmSuggested(svc, dep),
+          onDismiss: () => dismissSuggested(eid),
+        },
+      };
+    });
+
+    setNodes(newNodes);
+    setEdges(newEdges);
+
+    // Fit view after a tick so the new layout is painted first
+    setTimeout(() => fitViewRef.current?.({ padding: 0.15, duration: 400 }), 80);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawData, dismissed]); // ← callbacks intentionally omitted: they are stable
+
+  // Handle drag-to-connect (connecting from handle)
+  const onConnect = useCallback(
+    async (connection) => {
+      if (!connection.source || !connection.target || connection.source === connection.target) return;
+      setBusy(true);
+      try {
+        await api.post("/v1/topology/dependencies", {
+          service: connection.source,
+          dependsOnService: connection.target,
+          type: "hard",
+        });
+        toast.success(`${connection.source} → ${connection.target} linked`);
+        onChanged();
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setBusy(false);
+      }
+    },
+    [onChanged]
+  );
+
+  const onNodeClick = useCallback((_, node) => {
+    if (connectingFrom) {
+      if (connectingFrom !== node.id) {
+        onConnect({ source: connectingFrom, target: node.id });
+      }
+      setConnectingFrom(null);
+      return;
+    }
+    setSelectedNode((prev) => (prev?.id === node.id ? null : node));
+  }, [connectingFrom, onConnect]);
+
+  const onPaneClick = useCallback(() => {
+    setSelectedNode(null);
+    setConnectingFrom(null);
+  }, []);
+
+  const suggestedCount = edges.filter((e) => e.data?.kind === "suggested").length;
+
+  return (
+    <div className="relative" style={{ height: 540, borderRadius: 16, overflow: "hidden" }}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        onNodeClick={onNodeClick}
+        onPaneClick={onPaneClick}
+        nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        fitView
+        fitViewOptions={{ padding: 0.15 }}
+        minZoom={0.2}
+        maxZoom={3}
+        proOptions={{ hideAttribution: true }}
+        style={{
+          background: "rgb(var(--deep))",
+        }}
+      >
+        {/* Dot grid background */}
+        <Background
+          variant="dots"
+          gap={24}
+          size={1}
+          color="rgba(148,163,184,0.08)"
+        />
+
+        {/* Minimap */}
+        <MiniMap
+          nodeColor={(node) => {
+            const cfg = CRITICALITY_CONFIG[node.data?.criticality];
+            return cfg ? cfg.color + "88" : "#94a3b8";
+          }}
+          style={{
+            background: "rgba(11,15,13,0.9)",
+            border: "1px solid rgba(148,163,184,0.1)",
+            borderRadius: 10,
+          }}
+          maskColor="rgba(11,15,13,0.6)"
+        />
+
+        {/* Built-in zoom controls */}
+        <Controls
+          style={{
+            background: "rgba(11,15,13,0.9)",
+            border: "1px solid rgba(148,163,184,0.12)",
+            borderRadius: 10,
+            overflow: "hidden",
+          }}
+        />
+
+        {/* Top-right panel: Add button + badges */}
+        <Panel position="top-right">
+          <div className="flex items-center gap-2">
+            {suggestedCount > 0 && (
+              <div
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold font-mono"
+                style={{
+                  background: "rgba(251,191,36,0.1)",
+                  border: "1px solid rgba(251,191,36,0.25)",
+                  color: "#fbbf24",
+                }}
+              >
+                <Activity size={11} />
+                {suggestedCount} suggested
+              </div>
+            )}
+            {connectingFrom && (
+              <div
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-[11px] font-mono font-semibold"
+                style={{
+                  background: "rgba(182,237,206,0.1)",
+                  border: "1px solid rgba(182,237,206,0.2)",
+                  color: "hsl(var(--accent))",
+                }}
+              >
+                <Link2 size={11} />
+                Click target for <strong>{connectingFrom}</strong>
+                <button onClick={() => setConnectingFrom(null)} className="ml-1 opacity-60 hover:opacity-100">
+                  <X size={11} />
+                </button>
+              </div>
+            )}
+            <button
+              onClick={() => { setShowAddPanel((v) => !v); setSelectedNode(null); }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-paper transition-all"
+              style={{ background: "hsl(var(--accent))" }}
+            >
+              <Plus size={13} />
+              Add link
+            </button>
+          </div>
+        </Panel>
+
+        {/* Add dependency panel */}
+        {showAddPanel && services.length >= 1 && (
+          <Panel position="top-right" style={{ marginTop: 48 }}>
+            <AddDependencyPanel
+              services={services}
+              onAdd={onChanged}
+              onClose={() => setShowAddPanel(false)}
+            />
+          </Panel>
+        )}
+
+        {/* Node inspector panel */}
+        {selectedNode && !showAddPanel && (
+          <Panel position="top-right" style={{ marginTop: 48 }}>
+            <NodeInspector
+              node={selectedNode}
+              onClose={() => setSelectedNode(null)}
+              onSetCriticality={setCriticality}
+              onStartConnect={(id) => setConnectingFrom(id)}
+              busy={busy}
+            />
+          </Panel>
+        )}
+
+        {/* Bottom legend */}
+        <Panel position="bottom-left">
+          <div
+            className="flex items-center gap-4 px-3 py-2 text-[10px] text-text-muted"
+            style={{
+              background: "rgba(11,15,13,0.85)",
+              border: "1px solid rgba(148,163,184,0.1)",
+              borderRadius: 10,
+              backdropFilter: "blur(8px)",
+            }}
+          >
+            {Object.entries(CRITICALITY_CONFIG).map(([k, v]) => (
+              <span key={k} className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full" style={{ background: v.color }} />
+                {v.label}
+              </span>
+            ))}
+            <span className="w-px h-3 bg-white/10" />
+            <span className="flex items-center gap-1 text-text-muted">
+              <span
+                style={{
+                  display: "inline-block",
+                  width: 18,
+                  height: 1.5,
+                  background: "rgba(148,163,184,0.6)",
+                  verticalAlign: "middle",
+                }}
+              />
+              Hard
+            </span>
+            <span className="flex items-center gap-1 text-text-muted">
+              <span
+                style={{
+                  display: "inline-block",
+                  width: 18,
+                  height: 1.5,
+                  background: "#fbbf24",
+                  verticalAlign: "middle",
+                }}
+              />
+              Soft
+            </span>
+            <span className="text-text-muted italic">Drag handles to connect · Click edge to remove</span>
+          </div>
+        </Panel>
+      </ReactFlow>
+    </div>
+  );
+}
+
+/* ─── Main exported wrapper ──────────────────────────────────────── */
 export default function TopologyGraph({ onChanged }) {
-  const [raw, setRaw] = useState(null);
+  const [rawData, setRawData] = useState(null);
+  const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [failed, setFailed] = useState(false);
-  const [selected, setSelected] = useState(null); // { type: 'node'|'edge'|'suggested', id }
-  const [connectFrom, setConnectFrom] = useState(null);
-  const [dismissed, setDismissed] = useState([]);
-  const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     setFailed(false);
     try {
-      const res = await api.get("/v1/topology/graph", { skipToast: true });
-      setRaw(res.data?.data || { nodes: [], edges: [], suggested_edges: [] });
+      const [graphRes, depsRes] = await Promise.all([
+        api.get("/v1/topology/graph", { skipToast: true }),
+        api.get("/v1/topology/dependencies", { skipToast: true }).catch(() => ({ data: { data: [] } })),
+      ]);
+      setRawData(graphRes.data?.data || { nodes: [], edges: [], suggested_edges: [] });
+
+      // derive service names from graph nodes
+      const nodeNames = (graphRes.data?.data?.nodes || []).map((n) => n.service).filter(Boolean);
+      setServices([...new Set(nodeNames)].sort());
     } catch (err) {
       console.error("Failed to load topology graph:", err);
       setFailed(true);
@@ -53,248 +1032,68 @@ export default function TopologyGraph({ onChanged }) {
 
   useEffect(() => { load(); }, [load]);
 
-  const vm = useMemo(() => buildViewModel(raw), [raw]);
-  const suggested = vm.suggested.filter(s => !dismissed.includes(edgeId(s)));
-  const layout = useMemo(() => layoutGraph(vm.nodes, [...vm.edges, ...suggested]), [vm, suggested]);
-  const nodeByName = useMemo(() => Object.fromEntries(vm.nodes.map(n => [n.service, n])), [vm]);
+  const handleChanged = useCallback(async () => {
+    await load();
+    if (onChanged) onChanged();
+  }, [load, onChanged]);
 
-  const changed = async () => { await load(); if (onChanged) onChanged(); };
-
-  const addEdge = async (service, dependsOn, type = "hard") => {
-    setBusy(true);
-    try {
-      await api.post("/v1/topology/dependencies", { service, dependsOnService: dependsOn, type });
-      toast.success(`${service} now depends on ${dependsOn}`);
-      setSelected(null);
-      await changed();
-    } catch (err) {
-      console.error("Add edge failed:", err);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const removeEdge = async (e) => {
-    setBusy(true);
-    try {
-      await api.delete("/v1/topology/dependencies", { data: { service: e.service, dependsOnService: e.depends_on_service } });
-      toast.success(`Removed ${e.service} -> ${e.depends_on_service}`);
-      setSelected(null);
-      await changed();
-    } catch (err) {
-      console.error("Remove edge failed:", err);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const setCriticality = async (node, value) => {
-    setBusy(true);
-    try {
-      await api.put(`/v1/topology/services/${encodeURIComponent(node.service)}/criticality`, { criticality: value });
-      toast.success(`${node.service} criticality set to ${value}`);
-      await changed();
-    } catch (err) {
-      console.error("Set criticality failed:", err);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const onNodeClick = (name) => {
-    if (connectFrom && connectFrom !== name) {
-      const from = connectFrom;
-      setConnectFrom(null);
-      addEdge(from, name);
-      return;
-    }
-    setConnectFrom(null);
-    setSelected({ type: "node", id: name });
-  };
-
-  if (loading && !raw) return <div role="status" className="p-6 text-xs text-text-muted">Loading topology graph...</div>;
-  if (failed && !raw) {
+  if (loading && !rawData) {
     return (
-      <div role="alert" className="p-6 text-xs text-text-muted">
-        The topology graph could not be loaded.{" "}
-        <button className="text-accent underline" onClick={load}>Retry</button>
-      </div>
-    );
-  }
-  if (!vm.nodes.length) {
-    return (
-      <div className="rounded-xl border border-white/10 p-6 text-xs text-text-muted">
-        No services seen yet. Services appear here as soon as change events arrive, or when declared in lastgood.yml.
+      <div
+        className="flex items-center justify-center gap-3 text-xs text-text-muted"
+        style={{
+          height: 540,
+          background: "rgb(var(--deep))",
+          borderRadius: 16,
+          border: "1px solid rgba(148,163,184,0.1)",
+        }}
+      >
+        <RefreshCw size={15} className="animate-spin text-accent" />
+        Loading topology graph…
       </div>
     );
   }
 
-  const selNode = selected?.type === "node" ? nodeByName[selected.id] : null;
-  const selEdge = selected?.type === "edge" ? vm.edges.find(e => edgeId(e) === selected.id) : null;
-  const selSug = selected?.type === "suggested" ? suggested.find(e => edgeId(e) === selected.id) : null;
-  const drawEdge = (e) => {
-    const p = edgePath(layout.positions, e.service, e.depends_on_service);
-    return p ? { ...p, e } : null;
-  };
+  if (failed && !rawData) {
+    return (
+      <div
+        className="flex items-center justify-center gap-2 text-xs text-text-muted"
+        style={{
+          height: 540,
+          background: "rgb(var(--deep))",
+          borderRadius: 16,
+          border: "1px solid rgba(148,163,184,0.1)",
+        }}
+      >
+        Could not load graph.{" "}
+        <button className="text-accent underline" onClick={load}>
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!rawData?.nodes?.length) {
+    return (
+      <div
+        className="flex items-center justify-center text-xs text-text-muted"
+        style={{
+          height: 300,
+          background: "rgb(var(--deep))",
+          borderRadius: 16,
+          border: "1px solid rgba(148,163,184,0.1)",
+        }}
+      >
+        No services yet — they appear as change events arrive or from lastgood.yml.
+      </div>
+    );
+  }
 
   return (
-    <section aria-label="Topology graph" className="rounded-xl border border-white/10 bg-deep/40">
-      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-white/10">
-        <div className="text-xs text-text-secondary">
-          <span className="font-semibold text-text-primary">Dependency graph</span>
-          <span className="ml-2 text-text-muted">An arrow from A to B means A depends on B. Dashed arrows are suggestions.</span>
-        </div>
-        <div className="flex items-center gap-2">
-          {connectFrom && (
-            <span className="text-[11px] text-accent font-mono">
-              Click the service that {connectFrom} depends on
-              <button className="ml-2 underline" onClick={() => setConnectFrom(null)}>cancel</button>
-            </span>
-          )}
-          <button onClick={load} className="p-1.5 rounded-md text-text-muted hover:text-text-primary cursor-pointer" aria-label="Refresh graph" title="Refresh">
-            <RefreshCw size={13} className={loading ? "animate-spin" : ""} />
-          </button>
-        </div>
-      </div>
-
-      <div className="overflow-auto">
-        <svg
-          width="100%"
-          viewBox={`0 0 ${layout.width} ${layout.height}`}
-          role="img"
-          aria-label={`Service dependency graph with ${vm.nodes.length} services`}
-          style={{ minWidth: Math.min(layout.width, 760), maxWidth: layout.width, height: "auto", aspectRatio: `${layout.width} / ${layout.height}` }}
-        >
-          <defs>
-            <marker id="tg-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
-            </marker>
-          </defs>
-
-          {[...vm.edges, ...suggested].map(edge => {
-            const g = drawEdge(edge);
-            if (!g) return null;
-            const id = edgeId(edge);
-            const isSug = edge.kind === "suggested";
-            const isSel = selected && selected.id === id && selected.type !== "node";
-            const soft = edge.dependency_type === "soft";
-            return (
-              <g key={`${edge.kind}-${id}`} className={isSel ? "text-accent" : isSug ? "text-text-muted" : "text-text-secondary"} style={{ cursor: "pointer" }}
-                onClick={() => setSelected({ type: isSug ? "suggested" : "edge", id })}>
-                <path d={g.d} fill="none" stroke="transparent" strokeWidth="14" />
-                <path
-                  d={g.d}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={isSel ? 2.25 : 1.5}
-                  strokeDasharray={isSug ? "6 5" : soft ? "2 4" : undefined}
-                  markerEnd="url(#tg-arrow)"
-                  opacity={isSug ? 0.75 : 1}
-                />
-                {edge.source === "yaml" && (
-                  <g transform={`translate(${g.mid.x - 7}, ${g.mid.y - 7})`}>
-                    <circle cx="7" cy="7" r="8" className="fill-current text-deep" />
-                    <Lock x="2" y="2" size={10} className="text-accent" />
-                  </g>
-                )}
-              </g>
-            );
-          })}
-
-          {vm.nodes.map(n => {
-            const pos = layout.positions[n.service];
-            if (!pos) return null;
-            const color = CRITICALITY_COLOR[n.criticality] || CRITICALITY_COLOR.medium;
-            const isSel = selected?.type === "node" && selected.id === n.service;
-            const isFrom = connectFrom === n.service;
-            return (
-              <g key={n.service} transform={`translate(${pos.x}, ${pos.y})`} style={{ cursor: "pointer" }}
-                onClick={() => onNodeClick(n.service)} role="button" aria-label={`${n.service}, criticality ${n.criticality}`}>
-                <rect width={NODE_W} height={NODE_H} rx="10" className="fill-current text-deep"
-                  stroke={isSel || isFrom ? "hsl(var(--accent))" : "rgba(148,163,184,0.35)"} strokeWidth={isSel || isFrom ? 2 : 1} />
-                <rect width="5" height={NODE_H} rx="2.5" fill={color} />
-                <text x="16" y="23" fontSize="12.5" fontWeight="600" className="fill-current text-text-primary">
-                  {n.service.length > 21 ? n.service.slice(0, 20) + "…" : n.service}
-                </text>
-                <text x="16" y="41" fontSize="10.5" className="fill-current text-text-muted">
-                  {n.criticality}{n.criticality_source === "yaml" ? " (yaml)" : ""} · {n.event_count} event{n.event_count === 1 ? "" : "s"}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
-      </div>
-
-      <div className="border-t border-white/10 px-4 py-3 text-xs min-h-[64px]">
-        {!selected && (
-          <div className="text-text-muted">
-            Select a service to set its criticality or connect it. Select an edge to inspect or remove it.
-            {suggested.length > 0 && ` ${suggested.length} suggested edge${suggested.length === 1 ? "" : "s"} based on changes that landed shortly before alerts.`}
-          </div>
-        )}
-
-        {selNode && (
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="font-semibold text-text-primary font-mono">{selNode.service}</span>
-            <SourceBadge source={selNode.criticality_source || "default"} />
-            <label className="flex items-center gap-2 text-text-secondary">
-              Criticality
-              <select
-                value={selNode.criticality}
-                disabled={busy || !isEditable(selNode)}
-                onChange={(ev) => setCriticality(selNode, ev.target.value)}
-                className="bg-transparent border border-white/15 rounded-md px-2 py-1 text-text-primary disabled:opacity-60"
-                aria-label={`Criticality for ${selNode.service}`}
-              >
-                {CRITICALITY.map(c => <option key={c} value={c} className="text-black">{c}</option>)}
-              </select>
-            </label>
-            {!isEditable(selNode) && <span className="text-text-muted">Set in lastgood.yml. Change it there.</span>}
-            {selNode.criticality_source === "default" && <span className="text-text-muted">Not set yet: scored as medium.</span>}
-            <button
-              onClick={() => setConnectFrom(selNode.service)}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-white/15 text-text-primary hover:bg-white/5 cursor-pointer"
-            >
-              <Link2 size={12} /> Add dependency
-            </button>
-          </div>
-        )}
-
-        {selEdge && (
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="font-mono text-text-primary">{selEdge.service} → {selEdge.depends_on_service}</span>
-            <span className="text-text-muted">{selEdge.dependency_type}</span>
-            <SourceBadge source={selEdge.source} />
-            {selEdge.readOnly ? (
-              <span className="text-text-muted">Declared in lastgood.yml. Remove it there.</span>
-            ) : (
-              <button disabled={busy} onClick={() => removeEdge(selEdge)}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-white/15 text-text-primary hover:bg-white/5 cursor-pointer disabled:opacity-60">
-                <Trash2 size={12} /> Remove
-              </button>
-            )}
-          </div>
-        )}
-
-        {selSug && (
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="font-mono text-text-primary">{selSug.service} → {selSug.depends_on_service}</span>
-            <SourceBadge source="suggested" />
-            <span className="text-text-muted">
-              {selSug.reason || `${selSug.depends_on_service} changed shortly before ${selSug.service} alerted`}
-              {" "}({Math.round((selSug.confidence || 0) * 100)}% of {selSug.incidents_considered} incidents)
-            </span>
-            <button disabled={busy} onClick={() => addEdge(selSug.service, selSug.depends_on_service)}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-mint text-paper font-semibold cursor-pointer disabled:opacity-60">
-              <Check size={12} /> Confirm
-            </button>
-            <button onClick={() => { setDismissed(d => [...d, edgeId(selSug)]); setSelected(null); }}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-white/15 text-text-primary hover:bg-white/5 cursor-pointer">
-              <X size={12} /> Hide for now
-            </button>
-          </div>
-        )}
-      </div>
-    </section>
+    <div className="rounded-2xl overflow-hidden border border-white/10">
+      <ReactFlowProvider>
+        <TopologyFlow rawData={rawData} onChanged={handleChanged} services={services} />
+      </ReactFlowProvider>
+    </div>
   );
 }
