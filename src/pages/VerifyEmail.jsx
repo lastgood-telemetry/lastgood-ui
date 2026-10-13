@@ -49,7 +49,7 @@ const VerifyEmail = () => {
             <div className="absolute inset-0 bg-grid opacity-15 pointer-events-none" />
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-accent/10 rounded-full blur-[100px] pointer-events-none" />
 
-            <div className="w-full max-w-[400px] bg-[#0b0f0d]/40 border border-white/10 rounded-xl p-8 backdrop-blur-xl relative z-10 shadow-2xl text-center space-y-6">
+            <div className="w-full max-w-[400px] bg-deep/40 border border-white/10 rounded-xl p-8 backdrop-blur-xl relative z-10 shadow-2xl text-center space-y-6">
                 
                 {/* Logo */}
                 <div className="flex items-center justify-center mb-2">
@@ -108,7 +108,7 @@ const VerifyEmail = () => {
                             onClick={() => navigate('/login')}
                             className="w-full bg-white/5 border border-white/10 hover:border-white/20 py-2.5 rounded-lg text-xs font-semibold hover:bg-white/10 transition-all active:scale-[0.985] text-white font-sans"
                         >
-                            Back to Sign In
+                            Back to sign in
                         </button>
                     </div>
                 )}
