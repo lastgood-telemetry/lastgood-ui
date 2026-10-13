@@ -60,9 +60,9 @@ export default {
                 },
             },
             fontFamily: {
-                sans: ['Arial', 'Helvetica', 'sans-serif'],
-                serif: ['Arial', 'Helvetica', 'sans-serif'],
-                mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+                sans: ['Rubik', '-apple-system', 'system-ui', 'Segoe UI', 'sans-serif'],
+                serif: ['Rubik', '-apple-system', 'system-ui', 'Segoe UI', 'sans-serif'],
+                mono: ['Roboto Mono', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
             },
             borderRadius: {
                 DEFAULT: '4px', sm: '4px', md: '4px', lg: '4px', xl: '4px', '2xl': '4px', '3xl': '4px',

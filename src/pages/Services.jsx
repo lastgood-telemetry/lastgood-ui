@@ -250,7 +250,7 @@ const Services = () => {
                         )}
                         <button
                             onClick={() => setIsCreateOpen(true)}
-                            className="flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 px-4 py-2 rounded-lg text-xs font-mono font-bold transition-all text-white shadow-sm cursor-pointer"
+                            className="flex items-center gap-2 bg-mint hover:bg-mint-soft px-4 py-2 rounded-lg text-xs font-mono font-bold transition-all text-paper shadow-sm cursor-pointer"
                         >
                             <Plus size={14} />
                             Connect service
