@@ -6,6 +6,7 @@ import { Network, Plus, Trash2, Server, ArrowRight, Layers, GitFork, Sparkles, X
 import { toast } from "../components/ui/Toast";
 import { PageHeader } from "../components/ui/PageHeader";
 import { PageContainer } from "../components/ui/PageContainer";
+import TopologyGraph from "../components/Topology/TopologyGraph";
 
 export default function Topology() {
   const navigate = useNavigate();
@@ -166,6 +167,10 @@ export default function Topology() {
           )
         }
       />
+
+      <div className="mb-6">
+        <TopologyGraph onChanged={fetchTopology} />
+      </div>
 
       {/* Main Content */}
       {servicesLoading ? <div role="status" className="p-6 text-xs text-text-muted">Loading services...</div> : servicesError ? <div role="alert" className="p-6 text-xs text-text-muted">Services could not be loaded. <button className="text-accent underline" onClick={fetchUserServices}>Retry services</button></div> : realServiceNames.length === 0 ? (
@@ -397,6 +402,9 @@ export default function Topology() {
                                     </span>
                                   </div>
 
+                                  {dep.source === "yaml" ? (
+                                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded border border-accent/40 text-accent bg-accent/10 shrink-0" title="Declared in lastgood.yml. Remove it there.">from lastgood.yml</span>
+                                  ) : (
                                   <button
                                     onClick={() => handleDeleteDependency(dep.service, dep.depends_on_service)}
                                     className="text-text-muted hover:text-red-400 focus-visible:text-red-400 shrink-0 transition-opacity p-1"
@@ -404,6 +412,7 @@ export default function Topology() {
                                   >
                                     <Trash2 size={13} />
                                   </button>
+                                  )}
                                 </div>
                               ))}
                             </div>
