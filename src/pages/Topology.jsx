@@ -158,7 +158,7 @@ export default function Topology() {
           realServiceNames.length > 0 && (
             <button
               onClick={() => setIsModalOpen(true)}
-              className="py-2 px-3.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white font-mono font-bold text-xs flex items-center gap-2 transition-all shadow-sm cursor-pointer"
+              className="py-2 px-3.5 rounded-lg bg-mint hover:bg-mint-soft text-paper font-mono font-bold text-xs flex items-center gap-2 transition-all shadow-sm cursor-pointer"
             >
               <Plus size={14} />
               <span>Add dependency link</span>
