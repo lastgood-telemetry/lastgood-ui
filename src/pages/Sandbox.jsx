@@ -27,7 +27,7 @@ const sampleScoring = {
       environment: mockIncident.environment,
       meta: { author: event.author },
     },
-    risk_assessment: { score: event.riskScore, explanation: event.riskRationale },
+    risk_assessment: { score: event.riskScore, level: event.riskScore >= 80 ? 'critical' : event.riskScore >= 60 ? 'high' : 'medium', explanation: event.riskRationale },
   })),
   overall_assessment: {
     explanation: 'Simulated investigation. Scores are illustrative, not calculated live results. Timing and service overlap rank changes for investigation, not confirmed causes.',
