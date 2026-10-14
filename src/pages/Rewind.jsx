@@ -2,6 +2,7 @@ import { capture, captureOnce } from '../util/posthog';
 import { environmentLabel, eventEnvironmentLabel, eventTitle } from '../util/console';
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { STALE } from "../lib/queryConfig";
 import { Search, Calendar, Clock, AlertCircle, History, Sparkles, SlidersHorizontal } from "lucide-react";
 import api from "../api";
 import useAsyncDiagnosis from "../hooks/useAsyncDiagnosis";
@@ -69,6 +70,7 @@ const Rewind = () => {
       if (!response.data.success) throw new Error('Could not load ingested events');
       return response.data;
     },
+    staleTime: STALE.live,
   });
   const events = discovery?.data || [];
   const latestEvent = events.find(event => eventRewindContext(event));

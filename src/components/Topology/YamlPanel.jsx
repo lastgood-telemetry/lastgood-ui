@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Copy, Check, FileCode2, RefreshCw, X, Eye, Play } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { STALE, queryKeys } from "../../lib/queryConfig";
 import api from "../../api";
 import { toast } from "../ui/Toast";
 import { summarizePlan, planHasChanges, errorMessage } from "../../util/topologyYaml";
@@ -15,8 +17,6 @@ const TONE = {
 export default function YamlPanel({ onClose, onApplied }) {
   const [original, setOriginal] = useState("");
   const [text, setText] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState("");
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
   const [plan, setPlan] = useState(null);
@@ -24,25 +24,26 @@ export default function YamlPanel({ onClose, onApplied }) {
   const [error, setError] = useState("");
   const taRef = useRef(null);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setLoadError("");
-    try {
+  const queryClient = useQueryClient();
+  const { data: yamlData, isPending: loading, error: yamlError, refetch } = useQuery({
+    queryKey: queryKeys.topologyConfig,
+    queryFn: async () => {
       const res = await api.get("/v1/topology/config");
-      const y = res.data?.data?.yaml ?? "";
-      setOriginal(y);
-      setText(y);
-      setPlan(null);
-      setPreviewedText(null);
-      setError("");
-    } catch (err) {
-      setLoadError(errorMessage(err, "Could not load lastgood.yml"));
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      return res.data?.data?.yaml ?? "";
+    },
+    staleTime: STALE.reference,
+  });
+  const loadError = yamlError ? errorMessage(yamlError, "Could not load lastgood.yml") : "";
+  const load = () => refetch();
 
-  useEffect(() => { load(); }, [load]);
+  // Sync the editor from the cache, but never overwrite unsaved edits.
+  useEffect(() => {
+    if (yamlData === undefined) return;
+    setOriginal(yamlData);
+    setText((current) => (current === original ? yamlData : current));
+    if (text === original) { setPlan(null); setPreviewedText(null); setError(""); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [yamlData]);
 
   const dirty = text !== original;
   const previewFresh = plan !== null && previewedText === text;
@@ -83,7 +84,11 @@ export default function YamlPanel({ onClose, onApplied }) {
     try {
       await api.post("/v1/topology/config", { yaml: text });
       toast.success("lastgood.yml applied");
-      await load();
+      await queryClient.invalidateQueries({ queryKey: queryKeys.topologyConfig });
+      const fresh = queryClient.getQueryData(queryKeys.topologyConfig);
+      if (typeof fresh === "string") { setOriginal(fresh); setText(fresh); }
+      setPlan(null);
+      setPreviewedText(null);
       if (onApplied) onApplied();
     } catch (err) {
       setError(errorMessage(err, "Could not apply this config"));

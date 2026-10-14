@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { STALE, queryKeys, invalidateTopologyAndServices } from "../lib/queryConfig";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 import { getServices } from "../service/auth";
@@ -10,47 +12,27 @@ import YamlPanel from "../components/Topology/YamlPanel";
 
 export default function Topology() {
   const navigate = useNavigate();
-  const [dependencies, setDependencies] = useState([]);
-  const [userServices, setUserServices] = useState([]);
-  const [servicesLoading, setServicesLoading] = useState(true);
-  const [servicesError, setServicesError] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: servicesData, isLoading: servicesLoading, isError: servicesError, refetch: fetchUserServices } = useQuery({
+    queryKey: queryKeys.services,
+    queryFn: getServices,
+    staleTime: STALE.reference,
+  });
+  const userServices = Array.isArray(servicesData) ? servicesData : [];
+  const { data: depsData } = useQuery({
+    queryKey: queryKeys.topologyDeps,
+    queryFn: async () => {
+      const res = await api.get("/v1/topology/dependencies");
+      return res.data?.success ? res.data.data || [] : [];
+    },
+    staleTime: STALE.reference,
+  });
+  const dependencies = depsData || [];
   const [showYaml, setShowYaml] = useState(false);
   const [graphKey, setGraphKey] = useState(0);
 
-  useEffect(() => {
-    fetchTopology();
-    fetchUserServices();
-  }, []);
-
-  const fetchUserServices = async () => {
-    setServicesLoading(true);
-    setServicesError(false);
-    try {
-      const servicesData = await getServices();
-      const list = Array.isArray(servicesData) ? servicesData : [];
-      setUserServices(list);
-    } catch (err) {
-      setServicesError(true);
-      console.error("Failed to fetch user services:", err);
-    } finally {
-      setServicesLoading(false);
-    }
-  };
-
-  const fetchTopology = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get("/v1/topology/dependencies");
-      if (res.data?.success) {
-        setDependencies(res.data.data || []);
-      }
-    } catch (err) {
-      console.error("Failed to fetch topology:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Topology edits change the graph, dependency list, YAML and service tiers together.
+  const fetchTopology = () => invalidateTopologyAndServices(queryClient);
 
   // Derive ONLY real user ingested service names
   const realServiceNames = Array.from(
