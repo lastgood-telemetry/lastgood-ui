@@ -12,7 +12,7 @@ export function EvidenceValue({ value }) {
 
 export default function ScoreEvidence({ assessment = {}, eventId, label = 'Risk score rationale' }) {
   const factors = Array.isArray(assessment.factors) ? assessment.factors : [];
-  return <details className="p-3 rounded-lg border border-white/10 bg-white/[0.02] text-xs text-text-secondary">
+  return <details className="p-3 rounded-lg border border-white/10 bg-white/[0.02] text-sm text-text-secondary">
     <summary className="cursor-pointer text-accent font-semibold focus-visible:outline focus-visible:outline-2">{label}</summary>
     <div className="mt-3 space-y-3">
       <p>Risk ranks changes for investigation on a 0-100 scale. It is not incident severity or a probability that a change caused the incident. Confidence describes the strength of a correlation, not proof.</p>
