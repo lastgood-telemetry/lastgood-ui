@@ -5,6 +5,7 @@ import { PageHeader } from "../components/ui/PageHeader";
 import { PageContainer } from "../components/ui/PageContainer";
 import TeamSettings from "../components/Team/TeamSettings";
 import { useQuery } from "@tanstack/react-query";
+import { STALE } from "../lib/queryConfig";
 import { listInvites } from "../service/invites";
 import { sessionClaims } from "../util/invites";
 
@@ -21,7 +22,7 @@ const Settings = () => {
     queryFn: listInvites,
     enabled: isAdmin && !!organization,
     retry: false,
-    staleTime: 0,
+    staleTime: STALE.moderate,
   });
   const memberCount = team?.seats?.occupied;
 

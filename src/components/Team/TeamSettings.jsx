@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { STALE } from '../../lib/queryConfig';
 import { Users, Send, Loader2 } from 'lucide-react';
 import { createInvite, listInvites, resendInvite, revokeInvite } from '../../service/invites';
 import { inviteMessage, sessionClaims } from '../../util/invites';
@@ -15,7 +16,7 @@ export default function TeamSettings({ organization }) {
     const [seatBlocked, setSeatBlocked] = useState(false);
     const [confirmRevoke, setConfirmRevoke] = useState(null);
     const { data: result, isPending, error: loadError, refetch } = useQuery({
-        queryKey: ['team-invites', organization.id], queryFn: listInvites, enabled: isAdmin, retry: false, staleTime: 0,
+        queryKey: ['team-invites', organization.id], queryFn: listInvites, enabled: isAdmin, retry: false, staleTime: STALE.moderate,
     });
     if (!isAdmin) return null;
     const invites = result?.data || [];

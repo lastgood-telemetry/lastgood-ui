@@ -38,6 +38,8 @@ import {
   Shield,
   Zap,
 } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { STALE, queryKeys } from "../../lib/queryConfig";
 import api from "../../api";
 import { toast } from "../ui/Toast";
 
@@ -1009,38 +1011,26 @@ function TopologyFlow({ rawData, onChanged, services }) {
 
 /* ─── Main exported wrapper ──────────────────────────────────────── */
 export default function TopologyGraph({ onChanged }) {
-  const [rawData, setRawData] = useState(null);
-  const [services, setServices] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [failed, setFailed] = useState(false);
+  const queryClient = useQueryClient();
+  const { data: graphData, isPending: loading, isError: failed, refetch: load } = useQuery({
+    queryKey: queryKeys.topologyGraph,
+    queryFn: async () => {
+      const res = await api.get("/v1/topology/graph", { skipToast: true });
+      return res.data?.data || { nodes: [], edges: [], suggested_edges: [] };
+    },
+    staleTime: STALE.reference,
+  });
+  const rawData = graphData || null;
+  const services = useMemo(
+    () => [...new Set((rawData?.nodes || []).map((n) => n.service).filter(Boolean))].sort(),
+    [rawData]
+  );
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setFailed(false);
-    try {
-      const [graphRes, depsRes] = await Promise.all([
-        api.get("/v1/topology/graph", { skipToast: true }),
-        api.get("/v1/topology/dependencies", { skipToast: true }).catch(() => ({ data: { data: [] } })),
-      ]);
-      setRawData(graphRes.data?.data || { nodes: [], edges: [], suggested_edges: [] });
-
-      // derive service names from graph nodes
-      const nodeNames = (graphRes.data?.data?.nodes || []).map((n) => n.service).filter(Boolean);
-      setServices([...new Set(nodeNames)].sort());
-    } catch (err) {
-      console.error("Failed to load topology graph:", err);
-      setFailed(true);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => { load(); }, [load]);
-
+  // After an edit, refetch the graph (awaited so the canvas updates), then let the page refresh the rest.
   const handleChanged = useCallback(async () => {
-    await load();
+    await queryClient.invalidateQueries({ queryKey: queryKeys.topologyGraph });
     if (onChanged) onChanged();
-  }, [load, onChanged]);
+  }, [queryClient, onChanged]);
 
   if (loading && !rawData) {
     return (
@@ -1071,7 +1061,7 @@ export default function TopologyGraph({ onChanged }) {
         }}
       >
         Could not load graph.{" "}
-        <button className="text-accent underline" onClick={load}>
+        <button className="text-accent underline" onClick={() => load()}>
           Retry
         </button>
       </div>

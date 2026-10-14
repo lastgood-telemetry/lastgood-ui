@@ -2,6 +2,8 @@ import { suspectedWording, utcTimestamp, evidenceEventId, isSuggestedOwner, post
 import { Link } from 'react-router-dom';
 import { toast } from '../components/ui/Toast';
 import React, { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { STALE, queryKeys } from "../lib/queryConfig";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 import { getServices } from "../service/auth";
@@ -12,11 +14,23 @@ import { PageContainer } from "../components/ui/PageContainer";
 
 export default function Postmortems() {
   const navigate = useNavigate();
-  const [postmortems, setPostmortems] = useState([]);
-  const [userServices, setUserServices] = useState([]);
-  const [servicesLoading, setServicesLoading] = useState(true);
-  const [servicesError, setServicesError] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { data: postmortemsData, isLoading: loading } = useQuery({
+    queryKey: queryKeys.postmortems,
+    queryFn: async () => {
+      const res = await api.get("/v1/postmortem");
+      if (!res.data?.success) throw new Error("Failed to load postmortems");
+      return res.data.data || [];
+    },
+    staleTime: STALE.moderate,
+  });
+  const postmortems = postmortemsData || [];
+  const { data: servicesData, isLoading: servicesLoading, isError: servicesError, refetch: fetchUserServices } = useQuery({
+    queryKey: queryKeys.services,
+    queryFn: getServices,
+    staleTime: STALE.reference,
+  });
+  const userServices = Array.isArray(servicesData) ? servicesData : [];
   const [generating, setGenerating] = useState(false);
   const [selectedPostmortem, setSelectedPostmortem] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -54,51 +68,20 @@ export default function Postmortems() {
     new Date(Date.now() - 30 * 60 * 1000).toISOString().substring(0, 16)
   );
 
+  const fetchPostmortems = () => queryClient.invalidateQueries({ queryKey: queryKeys.postmortems });
+
+  // Select the newest postmortem once the list is available.
   useEffect(() => {
-    fetchPostmortems();
-    fetchUserServices();
-  }, []);
+    if (!selectedPostmortem && postmortems.length > 0) setSelectedPostmortem(postmortems[0]);
+  }, [postmortems, selectedPostmortem]);
 
-  const fetchUserServices = async () => {
-    setServicesLoading(true);
-    setServicesError(false);
-    try {
-      const servicesData = await getServices();
-      const list = Array.isArray(servicesData) ? servicesData : [];
-      setUserServices(list);
-
-      if (list.length > 0) {
-        const firstSvc = list[0].service_name || list[0].name || list[0].service || "";
-        setService(firstSvc);
-        setIncidentTitle(`Production Outage: ${firstSvc}`);
-      } else {
-        setService("");
-        setIncidentTitle("");
-      }
-    } catch (err) {
-      setServicesError(true);
-      console.error("Failed to fetch services:", err);
-    } finally {
-      setServicesLoading(false);
-    }
-  };
-
-  const fetchPostmortems = async () => {
-    try {
-      setLoading(true);
-      const res = await api.get("/v1/postmortem");
-      if (res.data?.success) {
-        setPostmortems(res.data.data || []);
-        if (res.data.data.length > 0 && !selectedPostmortem) {
-          setSelectedPostmortem(res.data.data[0]);
-        }
-      }
-    } catch (err) {
-      console.error("Failed to fetch postmortems:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Default the generate form to the first service once the list is available.
+  useEffect(() => {
+    if (service || userServices.length === 0) return;
+    const firstSvc = userServices[0].service_name || userServices[0].name || userServices[0].service || "";
+    setService(firstSvc);
+    setIncidentTitle(`Production Outage: ${firstSvc}`);
+  }, [userServices, service]);
 
   const handleServiceChange = (e) => {
     const selectedSvc = e.target.value;
@@ -144,6 +127,8 @@ export default function Postmortems() {
     try {
       await api.delete(`/v1/postmortem/${id}`);
       toast.success("Postmortem deleted");
+      // Drop it from the cache right away so the default-selection effect can't re-pick it.
+      queryClient.setQueryData(queryKeys.postmortems, (old) => (old || []).filter((p) => p.id !== id));
       fetchPostmortems();
       if (selectedPostmortem?.id === id) {
         setSelectedPostmortem(null);

@@ -2,6 +2,7 @@ import { initPostHog, identifyFromSession } from './util/posthog'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { STALE, MINUTE } from './lib/queryConfig'
 import App from './App.jsx'
 import './index.css'
 import dayjs from 'dayjs'
@@ -20,9 +21,10 @@ dayjs.extend(relativeTime)
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes cache stability
-      gcTime: 1000 * 60 * 30,    // 30 minutes garbage collection
+      staleTime: STALE.reference, // see src/lib/queryConfig.js for per-data overrides
+      gcTime: 30 * MINUTE,
       refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
       retry: 1,
     },
   },

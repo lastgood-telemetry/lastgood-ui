@@ -1,5 +1,6 @@
 import api from '../api';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { STALE } from '../lib/queryConfig';
 
 const fetchEvents = async ({ pageParam = 0, queryKey }) => {
     const [_key, filters] = queryKey;
@@ -48,6 +49,7 @@ export const useEvents = (filters = {}) => {
     return useInfiniteQuery({
         queryKey: ['events', filters],
         queryFn: fetchEvents,
+        staleTime: STALE.live,
         initialPageParam: 0,
         getNextPageParam: (lastPage) => {
             if (!lastPage.pagination) return undefined;

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { captureOnce } from "../util/posthog";
 import { Link, Navigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { STALE } from "../lib/queryConfig";
 import {
   Terminal,
   Github,
@@ -35,6 +36,7 @@ const Integrations = () => {
     queryKey: ["integration", "github", org?.id],
     queryFn: () => getIntegrationByProvider("github"),
     enabled: !!org?.id,
+    staleTime: STALE.reference,
   });
 
   const handleCopy = (id, text) => {

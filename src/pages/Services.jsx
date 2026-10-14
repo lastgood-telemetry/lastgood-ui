@@ -1,6 +1,7 @@
 import { capture } from '../util/posthog';
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { STALE, queryKeys, invalidateTopologyAndServices } from '../lib/queryConfig';
 import {
     Activity,
     Plus,
@@ -98,6 +99,7 @@ const Services = () => {
         queryKey: ['integration', 'github', org?.id],
         queryFn: () => getIntegrationByProvider('github'),
         enabled: !!org?.id,
+        staleTime: STALE.reference,
         refetchOnWindowFocus: false
     });
 
@@ -105,6 +107,7 @@ const Services = () => {
     const { data: services = [], isLoading, refetch, isFetching } = useQuery({
         queryKey: ['services'],
         queryFn: getServices,
+        staleTime: STALE.reference,
         refetchOnWindowFocus: false
     });
 
@@ -118,7 +121,7 @@ const Services = () => {
             setGeneratedKey(data.api_key);
             capture('service_api_key_created');
             toast.success('Service API Key generated successfully!');
-            queryClient.invalidateQueries(['services']);
+            queryClient.invalidateQueries({ queryKey: queryKeys.services });
         },
         onError: (err) => {
             const errMsg = err.response?.data?.message || err.response?.data?.error || err.message || 'Failed to generate key';
@@ -131,7 +134,7 @@ const Services = () => {
         mutationFn: ({ serviceId, tier }) => updateServiceCriticality(serviceId, tier),
         onSuccess: () => {
             toast.success('Service criticality tier updated!');
-            queryClient.invalidateQueries(['services']);
+            invalidateTopologyAndServices(queryClient);
         },
         onError: (err) => {
             const errMsg = err.response?.data?.message || err.response?.data?.error || err.message || 'Failed to update criticality';
@@ -144,7 +147,7 @@ const Services = () => {
         mutationFn: (serviceId) => deleteService(serviceId),
         onSuccess: () => {
             toast.success('Service and associated events deleted successfully!');
-            queryClient.invalidateQueries(['services']);
+            invalidateTopologyAndServices(queryClient);
             setServiceToDelete(null);
         },
         onError: (err) => {
@@ -189,7 +192,7 @@ const Services = () => {
         try {
             await sendTestEvent(integrationService.name);
             toast.success('Test event sent successfully!');
-            queryClient.invalidateQueries(['services']);
+            queryClient.invalidateQueries({ queryKey: queryKeys.services });
         } catch (error) {
             toast.error(error.response?.data?.message || 'Failed to send test event');
         } finally {

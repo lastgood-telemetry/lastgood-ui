@@ -1,6 +1,7 @@
 import { capture, captureOnce } from '../../util/posthog';
 import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { STALE } from "../../lib/queryConfig";
 import { ArrowRight, Hash, Plug, Lock, Trash2, Loader2 } from "lucide-react";
 import PageContainer from "../ui/PageContainer";
 import { PageHeader } from "../ui/PageHeader";
@@ -25,6 +26,7 @@ const SlackPanel = ({ orgId, returnState }) => {
   const { data: status, isLoading, error, refetch } = useQuery({
     queryKey: ["slack", "status", orgId],
     queryFn: getSlackStatus,
+    staleTime: STALE.reference,
     enabled: !!orgId,
   });
   const connected = !!status?.connected;
@@ -33,6 +35,7 @@ const SlackPanel = ({ orgId, returnState }) => {
   const { data: slackChannels, isLoading: loadingChannels, error: channelsError } = useQuery({
     queryKey: ["slack", "channels", orgId],
     queryFn: getSlackChannels,
+    staleTime: STALE.reference,
     enabled: !!orgId && connected,
     retry: false,
   });
