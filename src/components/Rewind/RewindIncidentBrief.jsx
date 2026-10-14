@@ -83,7 +83,7 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, diagnosisState
   const lead = leadTime(event, queryParams?.incidentTime);
   const score = itemScore(primary);
   const highlightBeyondTop = !!highlightId && items.findIndex(item => (item.event || item).id === highlightId) > 2;
-  const getSummary = () => buildCopySummary({ items, queryParams, correlations, envLabel: env, url: typeof window !== 'undefined' ? window.location.href : '' });
+  const getSummary = () => buildCopySummary({ items, queryParams, correlations, envLabel: env, url: typeof window !== 'undefined' ? window.location.href : '', executiveSummary: ai.executive_summary });
   const rowProps = (item, i) => ({ item, index: items.indexOf(item), incidentTime: queryParams?.incidentTime, highlighted: !!highlightId && (item.event || item).id === highlightId });
   return <section className="w-full space-y-6 text-base" aria-label="Incident brief">
     <div className="border border-white/10 rounded bg-surface p-4 md:p-6 space-y-5">

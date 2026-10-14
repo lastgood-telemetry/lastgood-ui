@@ -22,14 +22,21 @@ describe('rewindBrief', () => {
       items: [item('feat: add column', 'lastgood-be', 91, { content: { categories: { migration: 1 }, risky_files: ['m.sql'] } }), item('bump', 'lastgood-db', 80), item('x', 'ui', 50), item('y', 'ui', 40)],
       queryParams: { service: 'lastgood-ui', incidentTime: '2026-10-13T18:00:40.000', windowMinutes: 1440 },
       correlations: [{}, {}], envLabel: 'Production', url: 'https://console.lastgood.space/rewind',
+      executiveSummary: 'Recent schema change may have triggered elevated errors.',
     });
     expect(text).toContain('*Rewind: lastgood-ui / Production*');
     expect(text).toContain('*Primary suspect:* feat: add column');
     expect(text).toContain('Touches: migration files');
+    expect(text).toContain('*AI summary:*\nRecent schema change may have triggered elevated errors.');
     expect(text).toContain('2. bump (lastgood-db) - risk 80/100');
     expect(text).toContain('3. x (ui) - risk 50/100');
     expect(text).not.toContain('4. y');
     expect(text).toContain('Related changes: 2');
     expect(text).toContain('https://console.lastgood.space/rewind');
+    expect(text).not.toContain('weights');
+  });
+  it('omits the AI summary when it is missing or whitespace', () => {
+    const text = buildCopySummary({ items: [item('deploy', 'api', 70)], executiveSummary: '  ' });
+    expect(text).not.toContain('AI summary');
   });
 });

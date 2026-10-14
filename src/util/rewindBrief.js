@@ -42,7 +42,7 @@ export const contentFlags = (risk = {}) => {
 const clean = value => String(value ?? '').replace(/\s+/g, ' ').trim();
 
 // Slack-friendly plain text: *bold*, bullets, no tables.
-export const buildCopySummary = ({ items = [], queryParams = {}, correlations = [], envLabel = '', url = '' }) => {
+export const buildCopySummary = ({ items = [], queryParams = {}, correlations = [], envLabel = '', url = '', executiveSummary = '' }) => {
   const [primary, ...rest] = items;
   if (!primary) return '';
   const change = primary.event || primary;
@@ -58,6 +58,11 @@ export const buildCopySummary = ({ items = [], queryParams = {}, correlations = 
   const flags = contentFlags(risk);
   if (flags.length) lines.push(`Touches: ${flags.join(', ')}`);
   plainReasons(risk).forEach(reason => lines.push(`• ${clean(reason)}`));
+  if (typeof executiveSummary === 'string' && executiveSummary.trim()) {
+    lines.push('');
+    lines.push('*AI summary:*');
+    lines.push(clean(executiveSummary));
+  }
   if (rest.length) {
     lines.push('');
     lines.push('*Next suspects:*');
