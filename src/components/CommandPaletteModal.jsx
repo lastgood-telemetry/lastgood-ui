@@ -24,8 +24,7 @@ const CommandPaletteModal = () => {
   const {
     isCommandPaletteOpen,
     setCommandPaletteOpen,
-    isIncidentMode,
-    toggleIncidentMode,
+    setDeclareIncidentOpen,
     densityMode,
     setDensityMode
   } = useOnCallStore();
@@ -64,12 +63,12 @@ const CommandPaletteModal = () => {
     },
     {
       id: 'toggle-incident',
-      title: isIncidentMode ? 'Exit demo incident mode' : 'Enter demo incident mode',
-      subtitle: isIncidentMode ? 'Return to the standard view' : 'Show a simulated incident banner, not a real alert',
+      title: 'Declare incident',
+      subtitle: 'Record an incident and notify your Slack destination',
       icon: ShieldAlert,
-      color: isIncidentMode ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' : 'text-rose-400 bg-rose-500/10 border-rose-500/30',
+      color: 'text-rose-400 bg-rose-500/10 border-rose-500/30',
       action: () => {
-        toggleIncidentMode();
+        setDeclareIncidentOpen(true);
         setCommandPaletteOpen(false);
       },
     },
