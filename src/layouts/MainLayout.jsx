@@ -1,3 +1,4 @@
+import DeclareIncidentModal from '../components/DeclareIncidentModal';
 import { capture, resetAnalytics } from '../util/posthog';
 import ThemeToggle from '../components/ThemeToggle/ThemeToggle'
 import React, { useEffect, useState } from "react";
@@ -14,7 +15,6 @@ import {
   LogOut,
   Search,
   ShieldAlert,
-  ChevronRight,
   Menu,
   X,
 } from "lucide-react";
@@ -44,10 +44,9 @@ const MainLayout = () => {
   }, [isNavOpen]);
 
   const {
-    isIncidentMode,
-    toggleIncidentMode,
+    isDeclareIncidentOpen,
+    setDeclareIncidentOpen,
     setCommandPaletteOpen,
-    activeIncident
   } = useOnCallStore();
 
   const handleLogout = () => {
@@ -195,17 +194,8 @@ const MainLayout = () => {
 
           {/* Right Header Controls */}
           <div className="flex items-center gap-3">
-            {/* Demo-mode toggle is secondary: hidden on phones */}
-            <button
-              onClick={toggleIncidentMode}
-              className={`hidden md:flex items-center gap-2 px-2.5 py-1 rounded border text-xs transition-all cursor-pointer ${
-                isIncidentMode
-                  ? "bg-rose-950/60 border-rose-500/40 text-rose-400 hover:bg-rose-900/60"
-                  : "bg-surface border-slate-800 text-slate-400 hover:text-slate-200"
-              }`}
-              title="Toggle a simulated incident. This is not live system health." aria-pressed={isIncidentMode}
-            >
-              <span>{isIncidentMode ? "Demo incident mode on" : "Demo incident mode"}</span>
+            <button onClick={() => setDeclareIncidentOpen(true)} className="flex items-center gap-2 px-2.5 py-1.5 rounded border border-rose-400/30 text-xs text-rose-300 hover:bg-rose-500/10" aria-haspopup="dialog">
+              <ShieldAlert size={13} /><span>Declare incident</span>
             </button>
 
             {/* Quick Search Button */}
@@ -223,29 +213,13 @@ const MainLayout = () => {
           </div>
         </header>
 
-        {/* Incident Alert Bar (Compact & Sleek) */}
-        {isIncidentMode && (
-          <div className="bg-rose-950/80 border-b border-rose-500/30 px-3 md:px-6 py-2.5 flex items-center justify-between gap-3 md:gap-4 text-xs font-mono text-rose-300">
-            <div className="flex items-center gap-2">
-              <ShieldAlert size={15} className="text-rose-400" />
-              <span><strong>Simulated incident · {activeIncident.severity}:</strong> {activeIncident.title}</span>
-            </div>
-            <button
-              onClick={() => navigate('/rewind')}
-              className="text-[11px] bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-200 font-semibold px-2.5 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer"
-            >
-              <span>Open Rewind</span>
-              <ChevronRight size={12} />
-            </button>
-          </div>
-        )}
-
         {/* Content Outlet */}
         <div className="flex-1 flex flex-col">
           <Outlet />
         </div>
       </main>
 
+      {isDeclareIncidentOpen && <DeclareIncidentModal key={org?.id} onClose={() => setDeclareIncidentOpen(false)} />}
       <CommandPaletteModal />
       <LogoutConfirmationModal
         isOpen={isLogoutModalOpen}
