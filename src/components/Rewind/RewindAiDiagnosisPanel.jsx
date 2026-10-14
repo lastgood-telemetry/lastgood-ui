@@ -227,9 +227,6 @@ const RewindAiDiagnosisPanel = ({ scoringResult, selectedEventId, queryParams })
                                 {f.name}
                               </span>
                               <div className="flex items-center gap-2">
-                                {f.weight != null && (
-                                  <span className="text-[10px] text-text-muted">Weight: {f.weight}</span>
-                                )}
                                 <span className="font-mono text-xs font-bold text-accent bg-accent/10 px-1.5 py-0.5 rounded border border-accent/20">
                                   {pts}/100
                                 </span>

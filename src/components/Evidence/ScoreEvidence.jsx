@@ -18,7 +18,7 @@ export default function ScoreEvidence({ assessment = {}, eventId, label = 'Risk 
       <p>Risk ranks changes for investigation on a 0-100 scale. It is not incident severity or a probability that a change caused the incident. Confidence describes the strength of a correlation, not proof.</p>
       {assessment.explanation && <p>{assessment.explanation}</p>}
       {factors.length ? factors.map((factor, index) => <div key={index} className="border-t border-white/10 pt-2 space-y-1">
-        <p className="font-semibold text-white">{factor.name}: {factor.score ?? 'Not supplied'}/100{factor.weight != null && ` · API weight ${factor.weight}`}</p>
+        <p className="font-semibold text-white">{factor.name}: {factor.score ?? 'Not supplied'}/100</p>
         <p>{factor.description}</p>
         {Array.isArray(factor.evidence) && <ul className="list-disc pl-4 space-y-1">{factor.evidence.map((value, i) => <li key={i}><EvidenceValue value={value} /></li>)}</ul>}
       </div>) : <p>The API did not supply a factor breakdown. No calculation or evidence has been inferred.</p>}
