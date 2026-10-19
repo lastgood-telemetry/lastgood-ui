@@ -36,7 +36,7 @@ const SandboxIntegrations = () => {
     <section className="p-8 max-w-3xl mx-auto space-y-4">
       <button onClick={() => setSelectedChannel(null)} className="text-accent text-xs underline">Back to demo ingestion channels</button>
       <h2 className="text-xl font-bold">GitHub setup is available in your workspace</h2>
-      <p className="text-sm text-text-secondary">This sandbox uses simulated change events. Sign in or create an account to connect the GitHub App and choose repositories for your workspace.</p>
+      <p className="text-sm text-text-secondary">This sandbox replays real change data from our own production, anonymized. Sign in or create an account to connect the GitHub App and choose repositories for your workspace.</p>
       <Link onClick={rememberSetupDestination} to={localStorage.getItem('authToken') ? SETUP_PATH : '/login?setup=github'} className="inline-block px-4 py-2 rounded-lg bg-accent text-black text-sm font-semibold">Open real GitHub setup</Link>
     </section>
   );

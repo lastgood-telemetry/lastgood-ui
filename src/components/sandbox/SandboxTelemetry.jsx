@@ -31,7 +31,7 @@ const SandboxTelemetry = ({ events }) => {
             Telemetry Feed
           </h1>
           <p className="text-xs text-text-muted mt-1">
-            Simulated change events. These are not live integrations or data from your workspace.
+            Real change events from our own production, anonymized. Not live, and not from your workspace.
           </p>
         </div>
         <div className="bg-accent/10 border border-accent/20 px-3 py-1.5 rounded-lg text-accent text-xs font-bold flex items-center gap-2">
@@ -39,7 +39,7 @@ const SandboxTelemetry = ({ events }) => {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
             </span>
-           Simulated Sandbox Stream
+           Recorded Sandbox Stream
         </div>
       </div>
 
@@ -68,7 +68,7 @@ const SandboxTelemetry = ({ events }) => {
                    Author: <span className="text-white font-medium">{event.author}</span>
                  </div>
                  <div className={`px-2 py-1 rounded text-xs font-bold border ${event.riskScore > 80 ? 'bg-status-error/20 border-status-error/30 text-status-error' : 'bg-white/5 border-white/10 text-white'}`}>
-                   Demo risk: {event.riskScore}
+                   Engine risk: {event.riskScore}
                  </div>
                  <details className="text-xs w-full min-w-0" ><summary className="min-h-11 content-center text-accent cursor-pointer">Score rationale</summary><p className="mt-2 text-text-secondary">{event.riskRationale}</p></details>
                </div>
