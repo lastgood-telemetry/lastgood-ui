@@ -21,7 +21,7 @@ export default function TeamSettings({ organization }) {
     if (!isAdmin) return null;
     const invites = result?.data || [];
     const seats = result?.seats;
-    const full = seatBlocked || !!(seats && seats.occupied + seats.pending >= seats.seat_limit);
+    const full = seatBlocked || !!(seats && seats.seat_limit !== null && seats.occupied + seats.pending >= seats.seat_limit);
     const act = async (key, operation, success) => {
         setBusy(key); setError(''); setNotice('');
         try { await operation(); setNotice(success); if (key === 'create') { setEmail(''); setRole('member'); } if (key.startsWith('revoke')) { setSeatBlocked(false); setConfirmRevoke(null); } }
@@ -35,7 +35,7 @@ export default function TeamSettings({ organization }) {
     return (
         <section className="mt-6 bg-paper border border-white/10 rounded-xl p-5 sm:p-6" aria-labelledby="team-heading">
             <div className="flex items-start justify-between gap-3 mb-5"><div><h2 id="team-heading" className="flex items-center gap-2 text-lg font-semibold"><Users size={19} className="text-accent" /> Team</h2><p className="text-sm text-zinc-400 mt-1">Invite teammates to your workspace.</p></div><span className="shrink-0 px-2 py-1 bg-white/5 border border-white/10 rounded text-[10px] font-mono uppercase text-zinc-400">Admin only</span></div>
-            {seats && <p className="text-xs text-zinc-300 mb-2">{seats.occupied} {seats.occupied === 1 ? 'member' : 'members'} · {seats.pending} pending · {seats.seat_limit} seats total</p>}
+            {seats && <p className="text-xs text-zinc-300 mb-2">{seats.occupied} {seats.occupied === 1 ? 'member' : 'members'} · {seats.pending} pending · {seats.seat_limit === null ? 'unlimited seats' : `${seats.seat_limit} seats total`}</p>}
             {organization.plan === 'free' && <p className="text-xs text-zinc-400 mb-4">Free plan: 2 seats, including you. Pending invites reserve a seat.</p>}
             {full && <p role="status" className="mb-4 p-3 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-200 text-sm">No available seats. Revoke a pending invite to free its reserved seat. If both seats are already members, your workspace is full.</p>}
             {loadError ? <div role="alert" className="text-sm text-rose-300 mb-4">{inviteMessage(loadError)} <button onClick={() => refetch()} className="underline min-h-[44px] ml-2">Try again</button></div> : <form onSubmit={submit} className="grid sm:grid-cols-[minmax(0,1fr)_130px_auto] gap-3 items-end">
