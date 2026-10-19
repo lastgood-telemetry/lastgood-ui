@@ -10,42 +10,16 @@ import { PageHeader } from '../components/ui/PageHeader';
 import SandboxServices from '../components/sandbox/SandboxServices';
 import SandboxIntegrations from '../components/sandbox/SandboxIntegrations';
 import SandboxTelemetry from '../components/sandbox/SandboxTelemetry';
-import { mockIncident, mockTimelineEvents, mockAiDiagnosis, initialMockServices } from '../components/sandbox/MockData';
+import { mockIncident, mockTimelineEvents, initialMockServices, sandboxScoring } from '../components/sandbox/MockData';
 
-// Feed the public sample through the real console brief. No API calls or actions.
-const sampleChanges = mockTimelineEvents.filter(event => event.type !== 'alert')
-  .sort((a, b) => b.riskScore - a.riskScore);
-const sampleScoring = {
-  individual_scores: sampleChanges.map((event, index) => ({
-    role: index === 0 ? 'primary' : 'candidate',
-    event: {
-      // No real event id: the demo must not link into private event routes.
-      summary: event.title,
-      type: event.type,
-      occurred_at: event.timestamp,
-      service: mockIncident.service,
-      environment: mockIncident.environment,
-      meta: { author: event.author },
-    },
-    risk_assessment: { score: event.riskScore, level: event.riskScore >= 80 ? 'critical' : event.riskScore >= 60 ? 'high' : 'medium', explanation: event.riskRationale },
-  })),
-  overall_assessment: {
-    explanation: 'Simulated investigation. Scores are illustrative, not calculated live results. Timing and service overlap rank changes for investigation, not confirmed causes.',
-    recommendations: mockAiDiagnosis.recommendations.map(item => item.command),
-  },
-  ai_diagnosis: {
-    stage: 'triage',
-    status: 'completed',
-    primary_cause_headline: sampleChanges[0].title,
-    executive_summary: mockAiDiagnosis.summary,
-    recommended_action: 'Verify the flag change against checkout latency, error rate and logs before choosing a mitigation. The sample suggests reviewing new-checkout-flow first.',
-  },
-};
+// Real change data from our own production, anonymized (see MockData.js).
+// Scores and ranking are the real engine's offline output, not illustrative values.
+const sampleScoring = sandboxScoring;
 const sampleScope = {
   incidentTime: mockIncident.startedAt.replace(/Z$/, ''),
   windowMinutes: 120,
   service: mockIncident.service,
-  environment: mockIncident.environment,
+  environment: 'prod',
 };
 
 const Sandbox = () => {
@@ -136,7 +110,7 @@ const Sandbox = () => {
             <div className="w-6 h-6 rounded-md bg-mint/15 border border-mint/30 flex items-center justify-center font-mono font-bold text-mint text-[11px] shrink-0">D</div>
             <div className="flex flex-col overflow-hidden">
               <span className="text-xs font-medium text-slate-200 truncate leading-tight">Demo Workspace</span>
-              <span className="text-[10px] text-slate-500 font-mono leading-tight">Sample data</span>
+              <span className="text-[10px] text-slate-500 font-mono leading-tight">Real data · anonymized</span>
             </div>
           </div>
         </div>
@@ -156,7 +130,7 @@ const Sandbox = () => {
             <span className="text-slate-200 font-semibold truncate">{currentTab.label}</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="hidden md:inline-flex items-center px-2.5 py-1 rounded border border-slate-800 bg-surface text-xs text-slate-400" title="Everything here is sample data.">Sample incident data</span>
+            <span className="hidden md:inline-flex items-center px-2.5 py-1 rounded border border-slate-800 bg-surface text-xs text-slate-400" title="Real change data from our own production, anonymized.">Real change data</span>
             <Link to={ctaTo} onClick={rememberSetupDestination} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-mint text-paper text-xs font-semibold hover:bg-mint-soft transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-mint">
               <span className="hidden sm:inline">Start with your own data</span>
               <span className="sm:hidden">Use your data</span>
@@ -166,7 +140,7 @@ const Sandbox = () => {
         </header>
 
         <div className="border-b border-slate-800/60 bg-mint/[0.04] px-3 md:px-6 py-2.5 text-xs text-slate-400">
-          <span className="text-mint font-medium">Simulated incident.</span> Events, connectors and scores are sample data. Nothing here touches your systems.
+          <span className="text-mint font-medium">Real change data.</span> Pulled from our own production, anonymized, scored offline by the real engine. Nothing here touches your systems.
         </div>
 
         <div className={`flex-1 ${activeTab === 'rewind' ? '' : 'p-3 sm:p-4'}`}>
@@ -176,11 +150,11 @@ const Sandbox = () => {
 
           {activeTab === 'rewind' && (
             <PageContainer>
-              <PageHeader icon={History} title="Rewind" description="What changed before the incident? Explore the same analysis and AI summary as the console, with sample data." />
+              <PageHeader icon={History} title="Rewind" description="What changed before the incident? Explore the same analysis as the console, on real change data from our own production (anonymized)." />
               <div className="bg-paper border border-white/10 rounded-xl p-3 md:p-4 shadow-sm mb-6">
                 <div className="text-xs text-zinc-400 mb-4 pb-4 border-b border-white/10">
                   <p className="text-zinc-200">{mockIncident.title}</p>
-                  <p className="mt-1">Pre-loaded sample analysis. No live diagnosis or system changes.</p>
+                  <p className="mt-1">Pre-loaded analysis of real change data. No live diagnosis or system changes.</p>
                 </div>
                 <dl className="grid grid-cols-2 lg:grid-cols-[minmax(0,1fr),160px,160px,144px] gap-4 text-xs">
                   {[
@@ -198,7 +172,7 @@ const Sandbox = () => {
                 const link = event.target.closest('a[href="/events"]');
                 if (link) { event.preventDefault(); event.stopPropagation(); selectTab('telemetry'); }
               }}>
-                <RewindIncidentBrief scoringResult={sampleScoring} queryParams={sampleScope} diagnosisState="completed" diagnosisStage="triage" />
+                <RewindIncidentBrief scoringResult={sampleScoring} queryParams={sampleScope} diagnosisState="completed" diagnosisStage="rules" />
               </div>
             </PageContainer>
           )}
