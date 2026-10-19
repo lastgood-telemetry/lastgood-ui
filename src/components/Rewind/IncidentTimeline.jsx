@@ -21,9 +21,14 @@ export default function IncidentTimeline({ params, changes = [], linkedId = '' }
     queryFn: async () => (await api.get(`/incidents/${encodeURIComponent(linkedId)}`, { skipToast: true })).data.data,
   });
   const rows = incidentTimeline(changes, linked && !incidents.some(i => i.id === linked.id) ? [...incidents, linked] : incidents);
-  return <section className="border border-border rounded-[4px] bg-surface p-4 space-y-3" aria-label="Incident and change timeline">
-    <h2 className="text-base font-semibold text-text-primary">Incident and change timeline</h2>
-    <p className="text-xs text-text-muted">Newest first. Incident markers are declarations, not evidence of a cause.</p>
+  // The full change list gets long during a real window, so it stays collapsed behind an
+  // accordion; the brief above carries the verdict. A linked alert opens it automatically.
+  return <details className="border border-border rounded-[4px] bg-surface" open={!!linkedId || undefined}>
+    <summary className="cursor-pointer p-4 text-base font-semibold text-text-primary focus-visible:outline focus-visible:outline-2">
+      Incident and change timeline{rows.length > 0 ? ` (${rows.length})` : ''}
+      <span className="block text-xs font-normal text-text-muted">Newest first. Incident markers are declarations, not evidence of a cause.</span>
+    </summary>
+    <section className="px-4 pb-4 space-y-3" aria-label="Incident and change timeline">
     {isLoading && <p role="status" className="text-sm">Loading incident markers...</p>}
     {(error || linkedError) && <p role="alert" className="text-sm text-amber-300">Some incident markers could not be loaded. Changes are still shown.</p>}
     {incidents.length === 200 && <p className="text-xs text-amber-300">Showing the newest 200 incidents. Narrow the window for older markers.</p>}
@@ -37,5 +42,6 @@ export default function IncidentTimeline({ params, changes = [], linkedId = '' }
         <Link to={declarationUrl(row.data)} className="text-xs text-accent underline">Analyze preceding changes</Link>
       </> : <><p className="text-text-primary break-words">{row.data.summary || row.data.type}</p><p className="text-xs text-text-secondary">{row.data.service} · {row.data.type}</p></>}
     </li>)}</ol>
-  </section>;
+  </section>
+  </details>;
 }

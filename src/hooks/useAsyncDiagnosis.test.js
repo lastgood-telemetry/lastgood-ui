@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { readDiagnosis, diagnosisFailure, diagnosisPresentation } from './useAsyncDiagnosis';
+import { readDiagnosis, diagnosisFailure, diagnosisPresentation, pollRetry, POLL_RETRY_DELAY_MS } from './useAsyncDiagnosis';
 const rules = { executive_summary: 'Rules', primary_cause_headline: 'Deploy', recommended_action: 'Inspect logs', status: 'pending', stage: 'rules', job_id: 'job-1' };
 
 describe('async diagnosis contract', () => {
@@ -8,6 +8,15 @@ describe('async diagnosis contract', () => {
     expect(readDiagnosis({ ...rules, stage: 'triage', raw_tokens: 'secret' })).not.toHaveProperty('raw_tokens');
     expect(readDiagnosis({ ...rules, status: 'completed', stage: 'deep' })).toMatchObject({ status: 'completed', stage: 'deep' });
     for (const change of [{ stage: 'tokens' }, { status: 'streaming' }, { executive_summary: {} }, { job_id: '' }]) expect(readDiagnosis({ ...rules, ...change })).toBeNull();
+  });
+  it('retries transient poll failures but never a definitive expiry', () => {
+    for (const error of [new Error('Network error'), { response: { status: 503 } }, { response: { status: 500 } }]) {
+      expect(pollRetry(0, error)).toBe(true);
+      expect(pollRetry(2, error)).toBe(true);
+      expect(pollRetry(3, error)).toBe(false);
+    }
+    expect(pollRetry(0, { response: { status: 404 } })).toBe(false);
+    expect(POLL_RETRY_DELAY_MS).toBeGreaterThanOrEqual(1000);
   });
   it('maps expiry separately and degrades Redis/network errors quietly', () => {
     expect(diagnosisFailure({ response: { status: 404 } })).toBe('expired');
