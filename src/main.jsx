@@ -9,6 +9,20 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import * as Sentry from "@sentry/react";
+
+const dsn = import.meta.env.VITE_SENTRY_DSN;
+
+Sentry.init({
+  dsn,
+  integrations: [
+    Sentry.browserTracingIntegration()
+  ],
+  // Tracing
+  tracesSampleRate: 0.5, //  Capture 100% of the transactions
+  // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
+  tracePropagationTargets: ["localhost", /^https:\/\/\.io\/api/]
+});
 
 // Initialize once before rendering. No-op unless VITE_POSTHOG_KEY is set.
 initPostHog()
