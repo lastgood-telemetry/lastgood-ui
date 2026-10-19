@@ -286,7 +286,6 @@ const Rewind = () => {
 
       {/* Main Results Container */}
       <div className="space-y-6">
-        <IncidentTimeline params={displayedParams || session.selection} changes={displayedResult?.individual_scores || displayedResult?.individualScores || []} linkedId={new URLSearchParams(location.search).get('incident') || ''} />
         {selectionChanged && (
           <div role="status" className="border border-amber-300/30 bg-amber-300/5 rounded p-4 text-xs text-amber-200 space-y-1">
             <p className="font-semibold">Showing the previous analysis</p>
@@ -336,6 +335,8 @@ const Rewind = () => {
             </p>
           </div>
         )}
+
+        <IncidentTimeline params={displayedParams || session.selection} changes={displayedResult?.individual_scores || displayedResult?.individualScores || []} linkedId={new URLSearchParams(location.search).get('incident') || ''} />
       </div>
     </PageContainer>
   );

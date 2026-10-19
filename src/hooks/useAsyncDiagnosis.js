@@ -15,6 +15,12 @@ export const readDiagnosis = (value) => {
 
 export const diagnosisFailure = (error) => error?.response?.status === 404 ? 'expired' : 'unavailable';
 
+// Transient poll failures (network blip, 503 while Redis reconnects) get bounded retries so
+// one dropped response cannot strand the brief in "unavailable" until a manual second run.
+// A 404 is definitive: the job expired or never existed, so retrying would only delay honesty.
+export const pollRetry = (failureCount, error) => error?.response?.status !== 404 && failureCount < 3;
+export const POLL_RETRY_DELAY_MS = 2000;
+
 export const diagnosisPresentation = (initial, update, failure) => {
   const current = update || initial;
   if (current?.status === 'disabled') return { ai: {}, state: null };
@@ -42,7 +48,8 @@ export default function useAsyncDiagnosis(result) {
       if (!diagnosis || (diagnosis.job_id && diagnosis.job_id !== jobId)) throw new Error('Invalid diagnosis response');
       return diagnosis;
     },
-    retry: false,
+    retry: pollRetry,
+    retryDelay: POLL_RETRY_DELAY_MS,
     refetchInterval: query => !query.state.error && (query.state.data?.status || initial?.status) === 'pending' ? 2500 : false,
     refetchIntervalInBackground: false,
     refetchOnWindowFocus: false,
