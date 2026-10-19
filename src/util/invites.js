@@ -19,6 +19,10 @@ export function inviteMessage(error) {
         revoked: 'This invite was revoked. Ask your admin for a new invite.',
         accepted: 'This invite has already been accepted. Sign in if you already joined, or ask your admin for help.',
         invite_unavailable: 'This invite is no longer available. Refresh the pending list.',
+        cannot_remove_self: 'You cannot remove yourself. Ask another admin to do it.',
+        last_admin: 'This is the only admin. Promote another member to admin first.',
+        not_found: 'That member or invite no longer exists. Refresh the list.',
+        account_removed: 'This account no longer has access. Sign in again.',
     };
     return messages[code] || error?.response?.data?.message || 'Could not complete the request. Please try again.';
 }
