@@ -57,3 +57,18 @@ export const readRewindDeepLink = (search) => {
         autorun: params.get('run') === '1' && !!params.get('incidentTime'),
     };
 };
+
+const FAILED_CONCLUSIONS = ['failure', 'timed_out'];
+
+// Roadmap item 2: a new workspace has no declared incident, but a failed workflow run is a
+// natural place to start. This only suggests a Rewind anchor. It never creates an incident.
+// Events come newest first from the list endpoint; the first match is the latest failure.
+export const suggestedFailureEvent = (events) =>
+    (events || []).find(event => {
+        const meta = typeof event?.meta === 'string' ? safeParse(event.meta) : event?.meta;
+        return meta?.github_event === 'workflow_run'
+            && FAILED_CONCLUSIONS.includes(meta?.conclusion)
+            && !!eventRewindContext(event);
+    }) || null;
+
+const safeParse = (value) => { try { return JSON.parse(value); } catch { return null; } };
