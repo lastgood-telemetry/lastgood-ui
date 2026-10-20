@@ -52,6 +52,17 @@ const SlackPanel = ({ orgId, returnState }) => {
       queryClient.invalidateQueries({ queryKey: ["slack", "status"] });
     },
   });
+  const toggleDigest = useMutation({
+    mutationFn: (c) => saveSlackChannel({
+      channel_id: c.channel_id, channel_name: c.channel_name, min_severity: c.min_severity,
+      environments: c.environments, enabled: c.enabled, digest_enabled: !c.digest_enabled,
+    }),
+    onSuccess: (_data, c) => {
+      capture('slack_digest_toggled', { enabled: !c.digest_enabled });
+      toast.success(c.digest_enabled ? "Daily digest turned off." : "Daily digest turned on. First post at 09:00 UTC.");
+      queryClient.invalidateQueries({ queryKey: ["slack", "status"] });
+    },
+  });
   const remove = useMutation({
     mutationFn: removeSlackChannel,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["slack", "status"] }),
@@ -108,6 +119,10 @@ const SlackPanel = ({ orgId, returnState }) => {
                         <p className="text-sm text-white truncate">#{c.channel_name || c.channel_id}</p>
                         <p className="text-xs text-text-muted">{severityLabel(c.min_severity)} · {(c.environments || []).join(", ")}{c.enabled === false ? " · paused" : ""}</p>
                         {c.last_error && <p className="text-xs text-amber-300 mt-0.5">Last error: {c.last_error}</p>}
+                        <label className="mt-1.5 inline-flex items-center gap-2 text-xs text-text-secondary cursor-pointer">
+                          <input type="checkbox" checked={!!c.digest_enabled} disabled={toggleDigest.isPending} onChange={() => toggleDigest.mutate(c)} />
+                          Daily change digest (09:00 UTC, skipped on quiet days)
+                        </label>
                       </div>
                       <button onClick={() => remove.mutate(c.id)} disabled={remove.isPending} aria-label={`Stop posting to ${c.channel_name || c.channel_id}`} className="p-2 text-text-muted hover:text-red-300 shrink-0"><Trash2 size={16} /></button>
                     </li>
