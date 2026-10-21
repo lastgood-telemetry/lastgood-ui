@@ -2,7 +2,7 @@ import api from "../api";
 
 
 export const loginUser = async (email, password) => {
-    const response = await api.post('/users/login', { email, password });
+    const response = await api.post('/users/login', { email, password }, { withCredentials: true, skipToast: true, publicRequest: true });
     return response.data.data;
 }
 
@@ -81,7 +81,12 @@ export const verifyMagicLink = async (token) => {
     return response.data;
 }
 
-export const magicLinkSignup = async ({ signup_token, name, org_name, org_slug }) => {
-    const response = await api.post('/auth/magic-link/signup', { signup_token, name, org_name, org_slug }, { withCredentials: true, skipToast: true, publicRequest: true });
+export const magicLinkSignup = async ({ signup_token, name, org_name, org_slug, password }) => {
+    const response = await api.post('/auth/magic-link/signup', { signup_token, name, org_name, org_slug, password }, { withCredentials: true, skipToast: true, publicRequest: true });
     return response.data;
 }
+
+export const resetPasswordWithLink = async (reset_token, password) => {
+    const response = await api.post('/auth/magic-link/reset-password', { reset_token, password }, { withCredentials: true, skipToast: true, publicRequest: true });
+    return response.data;
+};

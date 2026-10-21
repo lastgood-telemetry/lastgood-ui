@@ -18,7 +18,7 @@ export default function CompleteProfile() {
     const navigate = useNavigate();
     const { count, maxOrgs, isLimitReached } = useOrganizationCount();
     const { email: oauthEmail = '', name: oauthName = '', provider = '', signupToken = '' } = location.state || {};
-    const [form, setForm] = useState({ email: oauthEmail, name: oauthName, org_name: '', org_slug: '', role: 'admin', provider });
+    const [form, setForm] = useState({ email: oauthEmail, name: oauthName, org_name: '', org_slug: '', role: 'admin', provider, password: '', confirmPassword: '' });
     const [userEditedSlug, setUserEditedSlug] = useState(false);
     const [errors, setErrors] = useState({});
     const [validationError, setValidationError] = useState('');
@@ -39,8 +39,8 @@ export default function CompleteProfile() {
 
     const { mutate: completeSignUp, isPending: loading } = useMutation({
         mutationFn: () => provider === 'magic'
-            ? magicLinkSignup({ signup_token: signupToken, name: form.name.trim(), org_name: form.org_name.trim(), org_slug: form.org_slug })
-            : oauthSignup({ ...form, name: form.name.trim(), org_name: form.org_name.trim() }),
+            ? magicLinkSignup({ signup_token: signupToken, name: form.name.trim(), org_name: form.org_name.trim(), org_slug: form.org_slug, password: form.password })
+            : oauthSignup({ email: form.email, provider, role: form.role, name: form.name.trim(), org_name: form.org_name.trim(), org_slug: form.org_slug }),
         onSuccess: (res) => {
             localStorage.setItem('authToken', res.data.token);
             trackAuthenticated('signup_completed', { method: provider || 'oauth' });
@@ -105,6 +105,15 @@ export default function CompleteProfile() {
                     <input id="email" type="email" value={form.email} readOnly className={`${inputClass} border-border text-muted-foreground`} aria-describedby="email-hint" />
                     <p id="email-hint" className="text-[13px] text-muted-foreground">{provider === 'magic' ? 'Confirmed by your sign-in link.' : `From your ${provider === 'google' ? 'Google' : 'GitHub'} account.`} Not editable here.</p>
                 </div>
+                {provider === 'magic' && <div className="space-y-4">
+                    {[['password', 'Password'], ['confirmPassword', 'Confirm password']].map(([key, label]) => <div key={key} className="space-y-2">
+                        <label htmlFor={key} className="block text-[14px] font-medium">{label}</label>
+                        <input id={key} type="password" autoComplete="new-password" required value={form[key]} onChange={e => update(key, e.target.value)} disabled={loading || isLimitReached}
+                            aria-invalid={!!errors[key]} aria-describedby={errors[key] ? `${key}-error` : 'password-hint'} className={`${inputClass} ${errors[key] ? 'border-red-400' : 'border-border'}`} />
+                        {errors[key] && <p id={`${key}-error`} role="alert" className="text-[13px] text-red-300">{errors[key]}</p>}
+                    </div>)}
+                    <p id="password-hint" className="text-[13px] text-muted-foreground">Use at least 12 characters, up to 72 UTF-8 bytes. Next time, sign in with your email and password.</p>
+                </div>}
                 {field('name', 'Your name', 'Jane Doe', 'How your team will recognize you.')}
                 {field('org_name', 'Workspace name', 'Acme', 'Use your team or organization name.')}
                 {field('org_slug', 'Workspace slug', 'acme', 'Lowercase letters, numbers and single hyphens. Availability is checked when you create the workspace.')}
