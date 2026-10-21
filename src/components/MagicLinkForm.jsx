@@ -5,7 +5,7 @@ import { capture } from '../util/posthog';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default function MagicLinkForm() {
+export default function MagicLinkForm({ purpose = 'signup' }) {
     const [email, setEmail] = useState('');
     const [status, setStatus] = useState('idle'); // idle | sending | sent
     const [error, setError] = useState('');
@@ -35,7 +35,7 @@ export default function MagicLinkForm() {
                 <CheckCircle2 size={18} className="text-accent shrink-0 mt-0.5" />
                 <div>
                     <p className="font-medium text-foreground">Check your email</p>
-                    <p className="text-muted-foreground">If {email.trim()} can sign in, a link is on its way. It works once and expires in 15 minutes.</p>
+                    <p className="text-muted-foreground">If {email.trim()} can continue, an account access link is on its way. It works once and expires in 15 minutes.</p>
                     <button type="button" onClick={() => setStatus('idle')} className="mt-2 text-accent underline min-h-[44px]">Use a different email</button>
                 </div>
             </div>
@@ -59,9 +59,9 @@ export default function MagicLinkForm() {
             )}
             <button type="submit" disabled={status === 'sending'}
                 className="w-full min-h-[48px] px-4 py-3 bg-accent hover:bg-accent-hover text-bg-primary rounded-[4px] text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-60 cursor-pointer">
-                {status === 'sending' ? <><Loader2 size={16} className="animate-spin" />Sending link...</> : 'Email me a sign-in link'}
+                {status === 'sending' ? <><Loader2 size={16} className="animate-spin" />Sending link...</> : purpose === 'recovery' ? 'Email me a recovery link' : 'Confirm my email'}
             </button>
-            <p className="text-[13px] text-muted-foreground">Works with any email provider. No password needed.</p>
+            <p className="text-[13px] text-muted-foreground">{purpose === 'recovery' ? 'Use the link to set a password. Daily sign-in uses your email and password.' : 'Works with any email provider. You will set a password during workspace setup.'}</p>
         </form>
     );
 }

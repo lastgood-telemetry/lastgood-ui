@@ -17,4 +17,4 @@ export const previewInvite = async token => {
         throw error;
     }
 };
-export const acceptInvite = async (token, name, password) => (await api.post(`/invites/${encodeURIComponent(token)}/accept`, { name, password }, publicConfig)).data.data;
+export const acceptInvite = async (token, name, password) => (await api.post(`/invites/${encodeURIComponent(token)}/accept`, { name, password }, { ...publicConfig, withCredentials: true })).data.data;
