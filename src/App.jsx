@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import VerifyEmail from "./pages/VerifyEmail";
 import OAuthCallback from "./pages/OAuthCallback";
 import CompleteProfile from "./pages/CompleteProfile";
+import Onboarding from "./pages/Onboarding";
 import Services from "./pages/Services";
 import Sandbox from "./pages/Sandbox";
 import Postmortems from "./pages/Postmortems";
@@ -67,6 +68,7 @@ function App() {
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/auth/callback/:provider" element={<OAuthCallback />} />
           <Route path="/signup/complete-profile" element={<CompleteProfile />} />
+          <Route path="/onboarding" element={<Onboarding />} />
 
           {/* Unauthenticated Sandbox Route */}
           <Route path="/sandbox" element={<Sandbox />} />
