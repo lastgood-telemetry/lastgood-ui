@@ -10,7 +10,7 @@ import useAsyncDiagnosis from "../hooks/useAsyncDiagnosis";
 import useOrgStore from '../stores/useOrgStore';
 import useRewindSession, { sameRewindScope } from "../hooks/useRewindSession";
 import { Link, useLocation } from 'react-router-dom';
-import { eventRewindContext, readRewindContext, readRewindDeepLink, rewindRequestParams, rewindOptions } from '../util/rewind';
+import { eventRewindContext, suggestedFailureEvent, readRewindContext, readRewindDeepLink, rewindRequestParams, rewindOptions } from '../util/rewind';
 import { RewindIncidentBrief } from "../components/Rewind/RewindIncidentBrief";
 import { LoadingState } from "../components/LoadingState/LoadingState";
 import dayjs from "dayjs";
@@ -75,6 +75,7 @@ const Rewind = () => {
   });
   const events = discovery?.data || [];
   const latestEvent = events.find(event => eventRewindContext(event));
+  const failedRun = useMemo(() => suggestedFailureEvent(events), [events]);
   const services = rewindOptions(events, 'service', service);
   const environments = rewindOptions(events, 'environment', environment);
 
@@ -166,6 +167,15 @@ const Rewind = () => {
     setEnvironment(context.environment);
     setQueryParams({ ...context, windowMinutes });
   };
+  const analyzeFailedRun = () => {
+    const context = eventRewindContext(failedRun);
+    if (!context) return;
+    capture('rewind_suggested_failure_clicked', { service: context.service });
+    setIncidentTime(context.incidentTime);
+    setService(context.service);
+    setEnvironment(context.environment);
+    setQueryParams({ ...context, windowMinutes });
+  };
   const displayedResult = displayed?.result;
   const displayedParams = displayed?.params;
   const hasNoResults = displayedResult && !(displayedResult.individual_scores || displayedResult.individualScores || []).length;
@@ -178,6 +188,21 @@ const Rewind = () => {
         title="Rewind"
         description="What changed before the incident? Choose a time to rank changes for investigation."
       />
+
+      {failedRun && !displayedResult && !isFetching && (
+        <div role="status" className="border border-amber-300/30 bg-amber-300/5 rounded-xl p-3 md:p-4 mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="text-xs text-amber-200 space-y-1 min-w-0">
+            <p className="font-semibold">Suggested starting point: a failed workflow run</p>
+            <p className="break-words text-zinc-300">
+              {eventTitle(failedRun)} on {failedRun.service} / {eventEnvironmentLabel(failedRun)} at <span className="font-mono">{dayjs(failedRun.occurred_at).utc().format('MMM D, HH:mm [UTC]')}</span>.
+              This is a suggestion, not a declared incident.
+            </p>
+          </div>
+          <button type="button" onClick={analyzeFailedRun} disabled={isFetching} className="w-full md:w-auto justify-center border border-amber-300/40 hover:bg-amber-300/10 disabled:opacity-50 text-amber-200 font-semibold px-4 py-2 rounded-lg text-xs cursor-pointer">
+            Analyze this failure
+          </button>
+        </div>
+      )}
 
       {/* Search Controls Form */}
       <div className="bg-paper border border-white/10 rounded-xl p-3 md:p-4 shadow-sm mb-6">

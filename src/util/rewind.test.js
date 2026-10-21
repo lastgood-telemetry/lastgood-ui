@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { eventRewindContext, eventRewindUrl, readRewindContext, rewindRequestParams, rewindOptions, readRewindDeepLink } from './rewind';
+import { eventRewindContext, eventRewindUrl, readRewindContext, rewindRequestParams, rewindOptions, readRewindDeepLink, suggestedFailureEvent } from './rewind';
 
 const event = { occurred_at: '2026-08-29T14:22:32.123Z', service: 'user fe/&', environment: 'Production' };
 describe('Rewind event context', () => {
@@ -42,4 +42,19 @@ describe('readRewindDeepLink', () => {
     expect(readRewindDeepLink('?run=1').autorun).toBe(false);
     expect(readRewindDeepLink('?incidentTime=2026-10-12T18:02:17.000&service=api')).toEqual({ windowMinutes: null, highlight: '', autorun: false });
   });
+});
+
+describe('suggestedFailureEvent', () => {
+    const run = (conclusion, extra = {}) => ({ occurred_at: '2026-10-20T10:00:00Z', service: 'api', environment: 'prod', meta: { github_event: 'workflow_run', conclusion }, ...extra });
+    it('picks the newest failed or timed out workflow run', () => {
+        const events = [run('success'), run('timed_out', { id: 'b' }), run('failure', { id: 'c' })];
+        expect(suggestedFailureEvent(events).id).toBe('b');
+    });
+    it('ignores successes, cancelled runs, other event types and bad dates', () => {
+        expect(suggestedFailureEvent([run('success'), run('cancelled'), { ...run('failure'), meta: { github_event: 'push', conclusion: 'failure' } }, run('failure', { occurred_at: 'bad' })])).toBeNull();
+        expect(suggestedFailureEvent(undefined)).toBeNull();
+    });
+    it('reads meta stored as a JSON string', () => {
+        expect(suggestedFailureEvent([{ ...run('x'), meta: JSON.stringify({ github_event: 'workflow_run', conclusion: 'failure' }) }])).not.toBeNull();
+    });
 });
