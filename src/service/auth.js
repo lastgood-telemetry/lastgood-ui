@@ -70,3 +70,18 @@ export const updateServiceCriticality = async (serviceId, tier) => {
     const response = await api.put(`/organizations/services/${serviceId}/criticality`, { tier });
     return response.data;
 }
+
+export const requestMagicLink = async (email) => {
+    const response = await api.post('/auth/magic-link/request', { email }, { skipToast: true, publicRequest: true });
+    return response.data;
+}
+
+export const verifyMagicLink = async (token) => {
+    const response = await api.post('/auth/magic-link/verify', { token }, { withCredentials: true, skipToast: true, publicRequest: true });
+    return response.data;
+}
+
+export const magicLinkSignup = async ({ signup_token, name, org_name, org_slug }) => {
+    const response = await api.post('/auth/magic-link/signup', { signup_token, name, org_name, org_slug }, { withCredentials: true, skipToast: true, publicRequest: true });
+    return response.data;
+}

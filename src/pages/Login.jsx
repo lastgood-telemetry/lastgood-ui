@@ -22,6 +22,7 @@ import { loginUser, resetPassword, signupUser } from '../service/auth';
 import { useOrganizationCount } from '../hooks/useOrganizationCount';
 import { trackEvent } from '../util/analytics';
 import AuthShell from '../components/AuthShell';
+import MagicLinkForm from '../components/MagicLinkForm';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -383,6 +384,15 @@ const Login = () => {
                                     <span>{isTestMode ? "Google" : "Continue with Google"}</span>
                                 </button>
                             </div>
+
+                            {!isTestMode && (
+                                <>
+                                    <div className="flex items-center gap-3 text-[12px] uppercase tracking-[0.12em] text-muted-foreground" aria-hidden="true">
+                                        <span className="h-px flex-1 bg-white/10" />or<span className="h-px flex-1 bg-white/10" />
+                                    </div>
+                                    <MagicLinkForm />
+                                </>
+                            )}
                         </div>
                     )}
 

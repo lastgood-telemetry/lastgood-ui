@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Loader2, ArrowRight, AlertCircle } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
-import { oauthSignup } from '../service/auth';
+import { oauthSignup, magicLinkSignup } from '../service/auth';
 import { toast } from '../components/ui/Toast';
 import { useOrganizationCount } from '../hooks/useOrganizationCount';
 import { trackEvent } from '../util/analytics';
@@ -17,7 +17,7 @@ export default function CompleteProfile() {
     const location = useLocation();
     const navigate = useNavigate();
     const { count, maxOrgs, isLimitReached } = useOrganizationCount();
-    const { email: oauthEmail = '', name: oauthName = '', provider = '' } = location.state || {};
+    const { email: oauthEmail = '', name: oauthName = '', provider = '', signupToken = '' } = location.state || {};
     const [form, setForm] = useState({ email: oauthEmail, name: oauthName, org_name: '', org_slug: '', role: 'admin', provider });
     const [userEditedSlug, setUserEditedSlug] = useState(false);
     const [errors, setErrors] = useState({});
@@ -25,7 +25,7 @@ export default function CompleteProfile() {
     const formRef = useRef(null);
 
     useEffect(() => {
-        if (!oauthEmail || !provider) {
+        if (!oauthEmail || !provider || (provider === 'magic' && !signupToken)) {
             toast.error('Onboarding session invalid or expired. Please sign in again.');
             navigate('/login', { replace: true });
         }
@@ -38,7 +38,9 @@ export default function CompleteProfile() {
     };
 
     const { mutate: completeSignUp, isPending: loading } = useMutation({
-        mutationFn: () => oauthSignup({ ...form, name: form.name.trim(), org_name: form.org_name.trim() }),
+        mutationFn: () => provider === 'magic'
+            ? magicLinkSignup({ signup_token: signupToken, name: form.name.trim(), org_name: form.org_name.trim(), org_slug: form.org_slug })
+            : oauthSignup({ ...form, name: form.name.trim(), org_name: form.org_name.trim() }),
         onSuccess: (res) => {
             localStorage.setItem('authToken', res.data.token);
             trackAuthenticated('signup_completed', { method: provider || 'oauth' });
@@ -94,14 +96,14 @@ export default function CompleteProfile() {
         <AuthShell stage="profile">
             <div className="mb-7">
                 <h1 className="text-[30px] leading-tight tracking-[-0.035em] font-semibold">Make it your workspace.</h1>
-                <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">Signed in with {provider === 'google' ? 'Google' : 'GitHub'}. Add your details to finish setup.</p>
+                <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">{provider === 'magic' ? 'Email confirmed.' : `Signed in with ${provider === 'google' ? 'Google' : 'GitHub'}.`} Add your details to finish setup.</p>
             </div>
             {isLimitReached && <div role="alert" className="mb-6 border border-amber-500/30 bg-amber-500/10 rounded-[4px] p-4 text-[14px] text-amber-200">Beta signup is full. Workspace creation is temporarily paused at {maxOrgs} organizations.</div>}
             <form ref={formRef} onSubmit={handleSubmit} noValidate className="space-y-5" aria-busy={loading}>
                 <div className="space-y-2">
                     <label htmlFor="email" className="block text-[14px] font-medium">Account email</label>
                     <input id="email" type="email" value={form.email} readOnly className={`${inputClass} border-border text-muted-foreground`} aria-describedby="email-hint" />
-                    <p id="email-hint" className="text-[13px] text-muted-foreground">From your {provider === 'google' ? 'Google' : 'GitHub'} account. Not editable here.</p>
+                    <p id="email-hint" className="text-[13px] text-muted-foreground">{provider === 'magic' ? 'Confirmed by your sign-in link.' : `From your ${provider === 'google' ? 'Google' : 'GitHub'} account.`} Not editable here.</p>
                 </div>
                 {field('name', 'Your name', 'Jane Doe', 'How your team will recognize you.')}
                 {field('org_name', 'Workspace name', 'Acme', 'Use your team or organization name.')}
