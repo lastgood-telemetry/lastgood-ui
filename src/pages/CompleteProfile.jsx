@@ -1,5 +1,4 @@
 import { trackAuthenticated } from '../util/posthog';
-import { consumeLoginDestination } from '../util/console';
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Loader2, ArrowRight, AlertCircle } from 'lucide-react';
@@ -45,7 +44,7 @@ export default function CompleteProfile() {
             localStorage.setItem('authToken', res.data.token);
             trackAuthenticated('signup_completed', { method: provider || 'oauth' });
             toast.success('Registration completed successfully!');
-            navigate(consumeLoginDestination(), { replace: true });
+            navigate('/onboarding', { replace: true });
         },
         onError: (err) => {
             const message = err.response?.data?.message || err.response?.data?.error || err.message || 'Failed to complete registration. Please try again.';
