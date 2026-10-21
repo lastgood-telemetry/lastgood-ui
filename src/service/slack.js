@@ -16,8 +16,9 @@ export const getSlackChannels = async () => {
     return response.data.data;
 };
 
-export const saveSlackChannel = async ({ channel_id, channel_name, min_severity, environments }) => {
-    const response = await api.put('/integrations/slack/channel', { channel_id, channel_name, min_severity, environments });
+export const saveSlackChannel = async ({ channel_id, channel_name, min_severity, environments, enabled, digest_enabled }) => {
+    // enabled and digest_enabled are omitted from the request when undefined (the server keeps digest as is).
+    const response = await api.put('/integrations/slack/channel', { channel_id, channel_name, min_severity, environments, enabled, digest_enabled });
     return response.data.data;
 };
 
