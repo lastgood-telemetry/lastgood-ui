@@ -1,3 +1,4 @@
+import MagicLinkVerify from './pages/MagicLinkVerify';
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
@@ -62,6 +63,7 @@ function App() {
         <Routes>
           <Route path="/invite/:token" element={<Invite />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/login/magic" element={<MagicLinkVerify />} />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/auth/callback/:provider" element={<OAuthCallback />} />
           <Route path="/signup/complete-profile" element={<CompleteProfile />} />
