@@ -12,6 +12,7 @@ import useRewindSession, { sameRewindScope } from "../hooks/useRewindSession";
 import { Link, useLocation } from 'react-router-dom';
 import { eventRewindContext, suggestedFailureEvent, readRewindContext, readRewindDeepLink, rewindRequestParams, rewindOptions } from '../util/rewind';
 import { RewindIncidentBrief } from "../components/Rewind/RewindIncidentBrief";
+import RewindResolutionFeedback from "../components/Rewind/RewindResolutionFeedback";
 import { LoadingState } from "../components/LoadingState/LoadingState";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -178,6 +179,7 @@ const Rewind = () => {
   };
   const displayedResult = displayed?.result;
   const displayedParams = displayed?.params;
+  const linkedIncidentId = new URLSearchParams(location.search).get('incident') || '';
   const hasNoResults = displayedResult && !(displayedResult.individual_scores || displayedResult.individualScores || []).length;
 
 
@@ -347,6 +349,12 @@ const Rewind = () => {
         {displayedResult && !hasNoResults && (
           <div className="space-y-6 animate-in fade-in duration-300">
             <RewindIncidentBrief scoringResult={displayedResult} queryParams={displayedParams} diagnosisState={displayed.state} diagnosisStage={displayed.stage} onRerunDiagnosis={rerunDiagnosis} rerunning={isFetching} highlightId={highlightId} />
+            <RewindResolutionFeedback
+              key={`${displayedParams.incidentTime}-${displayedParams.windowMinutes}-${displayedParams.service}-${displayedParams.environment}`}
+              scoringResult={displayedResult}
+              queryParams={displayedParams}
+              incidentId={linkedIncidentId}
+            />
 
           </div>
         )}
@@ -361,7 +369,7 @@ const Rewind = () => {
           </div>
         )}
 
-        <IncidentTimeline params={displayedParams || session.selection} changes={displayedResult?.individual_scores || displayedResult?.individualScores || []} linkedId={new URLSearchParams(location.search).get('incident') || ''} />
+        <IncidentTimeline params={displayedParams || session.selection} changes={displayedResult?.individual_scores || displayedResult?.individualScores || []} linkedId={linkedIncidentId} />
       </div>
     </PageContainer>
   );
