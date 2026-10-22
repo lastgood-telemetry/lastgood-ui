@@ -1,4 +1,5 @@
 import React from 'react';
+import { changeTitle } from '../../util/changeTitle';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
@@ -40,7 +41,7 @@ export default function IncidentTimeline({ params, changes = [], linkedId = '' }
         <p className="break-words whitespace-pre-wrap text-text-primary">{row.data.message || row.data.title}</p>
         <p className="text-xs text-text-secondary">{row.data.declared_by_name ? `Declared by ${row.data.declared_by_name} · ` : ''}{row.data.status} · {row.data.service === '*' ? 'Organization-wide' : row.data.service}</p>
         <Link to={declarationUrl(row.data)} className="text-xs text-accent underline">Analyze preceding changes</Link>
-      </> : <><p className="text-text-primary break-words">{row.data.summary || row.data.type}</p><p className="text-xs text-text-secondary">{row.data.service} · {row.data.type}</p></>}
+      </> : <><p className="text-text-primary break-words" title={changeTitle(row.data).full}>{changeTitle(row.data).title}</p><p className="text-xs text-text-secondary">{row.data.service} · {row.data.type}</p></>}
     </li>)}</ol>
   </section>
   </details>;

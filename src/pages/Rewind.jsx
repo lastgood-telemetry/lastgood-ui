@@ -13,6 +13,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { eventRewindContext, suggestedFailureEvent, readRewindContext, readRewindDeepLink, rewindRequestParams, rewindOptions } from '../util/rewind';
 import { RewindIncidentBrief } from "../components/Rewind/RewindIncidentBrief";
 import RewindResolutionFeedback from "../components/Rewind/RewindResolutionFeedback";
+import RewindSuggestionsSheet from "../components/Rewind/RewindSuggestionsSheet";
 import { LoadingState } from "../components/LoadingState/LoadingState";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -349,6 +350,12 @@ const Rewind = () => {
         {displayedResult && !hasNoResults && (
           <div className="space-y-6 animate-in fade-in duration-300">
             <RewindIncidentBrief scoringResult={displayedResult} queryParams={displayedParams} diagnosisState={displayed.state} diagnosisStage={displayed.stage} onRerunDiagnosis={rerunDiagnosis} rerunning={isFetching} highlightId={highlightId} />
+            <RewindSuggestionsSheet
+              key={`suggestions-${displayedParams.incidentTime}-${displayedParams.windowMinutes}-${displayedParams.service}-${displayedParams.environment}-${linkedIncidentId}`}
+              scoringResult={displayedResult}
+              queryParams={displayedParams}
+              incidentId={linkedIncidentId}
+            />
             <RewindResolutionFeedback
               key={`${displayedParams.incidentTime}-${displayedParams.windowMinutes}-${displayedParams.service}-${displayedParams.environment}`}
               scoringResult={displayedResult}
