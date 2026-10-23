@@ -1,13 +1,13 @@
 import { suspectedWording, utcTimestamp, evidenceEventId, isSuggestedOwner, postmortemDraft, resolveReportEvidence } from '../util/console';
 import { Link } from 'react-router-dom';
 import { toast } from '../components/ui/Toast';
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { STALE, queryKeys } from "../lib/queryConfig";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 import { getServices } from "../service/auth";
-import { FileText, Plus, Sparkles, Copy, Check, Trash2, ShieldAlert, Server, ArrowRight, Layers } from "lucide-react";
+import { FileText, Plus, Sparkles, Copy, Check, Trash2, Server, ArrowRight, ChevronDown, ExternalLink } from "lucide-react";
 import { DateTimePicker } from "../components/EventFilters/DateTimePicker";
 import { PageHeader } from "../components/ui/PageHeader";
 import { PageContainer } from "../components/ui/PageContainer";
@@ -38,30 +38,64 @@ export default function Postmortems() {
   const [evidenceStatus, setEvidenceStatus] = useState("idle");
   const [ownerDrafts, setOwnerDrafts] = useState({});
   const [ownersReviewed, setOwnersReviewed] = useState(false);
-  useEffect(() => { setOwnerDrafts({}); setOwnersReviewed(false); }, [selectedPostmortem?.id]);
+  useEffect(() => {
+    setOwnerDrafts({});
+    const items = selectedPostmortem?.action_items_json || [];
+    setOwnersReviewed(items.length > 0 && items.every(i => i.owner_reviewed === true && !isSuggestedOwner(i.owner)));
+  }, [selectedPostmortem?.id]);
+  const [savingOwners, setSavingOwners] = useState(false);
+  const ownerDirty = Object.keys(ownerDrafts).length > 0 || ownersReviewed !== ((selectedPostmortem?.action_items_json || []).length > 0 && (selectedPostmortem?.action_items_json || []).every(i => i.owner_reviewed === true && !isSuggestedOwner(i.owner)));
+  const selectReport = (p) => {
+    if (p.id !== selectedPostmortem?.id && ownerDirty && !window.confirm("You have unsaved owner changes on this report. Discard them?")) return;
+    setSelectedPostmortem(p);
+  };
+  const saveOwners = async () => {
+    if (!selectedPostmortem) return;
+    const items = selectedPostmortem.action_items_json || [];
+    const owners = items.map((item, idx) => (ownerDrafts[idx] ?? (isSuggestedOwner(item.owner) ? '' : item.owner)).trim());
+    try {
+      setSavingOwners(true);
+      const res = await api.patch(`/v1/postmortem/${selectedPostmortem.id}/owners`, { owners, reviewed: ownersReviewed });
+      if (res.data?.success) {
+        const saved = res.data.data;
+        setOwnerDrafts({});
+        setSelectedPostmortem(saved);
+        queryClient.setQueryData(queryKeys.postmortems, (old) => (old || []).map((p) => (p.id === saved.id ? saved : p)));
+        toast.success("Action owners saved to the report");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Could not save owners. Your edits are still here.");
+    } finally {
+      setSavingOwners(false);
+    }
+  };
   useEffect(() => {
     let active = true;
     setEvidenceEvents([]);
     const timeline = selectedPostmortem?.timeline_json || [];
-    const times = timeline.map(row => new Date(row.timestamp).getTime()).filter(Number.isFinite);
+    // New reports store event ids on the timeline; only older reports need the lookup.
+    const unlinked = timeline.filter(row => !evidenceEventId(row));
+    const times = unlinked.map(row => new Date(row.timestamp).getTime()).filter(Number.isFinite);
     if (!times.length) { setEvidenceStatus('idle'); return; }
     setEvidenceStatus('loading');
-    api.get('/change-events', { params: { limit: 1000, offset: 0, from_date: new Date(Math.min(...times)).toISOString(), to_date: new Date(Math.max(...times)).toISOString() } }).then(res => {
+    api.get('/change-events', { params: { limit: 500, offset: 0, from_date: new Date(Math.min(...times)).toISOString(), to_date: new Date(Math.max(...times)).toISOString() } }).then(res => {
       if (!active) return;
       if (!res.data.success) throw new Error('Evidence unavailable');
       setEvidenceEvents(res.data.data || []);
-      setEvidenceStatus(res.data.pagination?.total > 1000 ? 'partial' : 'ready');
+      setEvidenceStatus(res.data.pagination?.total > 500 ? 'partial' : 'ready');
     }).catch(() => { if (active) setEvidenceStatus('error'); });
     return () => { active = false; };
   }, [selectedPostmortem?.id]);
-  const resolvedTimeline = resolveReportEvidence(selectedPostmortem?.timeline_json || [], evidenceEvents);
-  const reviewedMarkdown = postmortemDraft(selectedPostmortem ? { ...selectedPostmortem, timeline_json: resolvedTimeline } : null, ownerDrafts, ownersReviewed);
+  const resolvedTimeline = useMemo(() => resolveReportEvidence(selectedPostmortem?.timeline_json || [], evidenceEvents), [selectedPostmortem, evidenceEvents]);
+  const reviewedMarkdown = useMemo(() => postmortemDraft(selectedPostmortem ? { ...selectedPostmortem, timeline_json: resolvedTimeline } : null, ownerDrafts, ownersReviewed), [selectedPostmortem, resolvedTimeline, ownerDrafts, ownersReviewed]);
   const actionItems = selectedPostmortem?.action_items_json || [];
   const allOwnersAssigned = actionItems.every((item, idx) => (ownerDrafts[idx] ?? (isSuggestedOwner(item.owner) ? '' : item.owner)).trim());
 
   // Form State for generating new postmortem
   const [service, setService] = useState("");
   const [incidentTitle, setIncidentTitle] = useState("");
+  // Once the user types their own title, changing the service must not overwrite it.
+  const [titleEdited, setTitleEdited] = useState(false);
   const [severity, setSeverity] = useState("CRITICAL");
   const [timeWindow, setTimeWindow] = useState("30m");
   const [incidentTimestamp, setIncidentTimestamp] = useState(
@@ -86,7 +120,7 @@ export default function Postmortems() {
   const handleServiceChange = (e) => {
     const selectedSvc = e.target.value;
     setService(selectedSvc);
-    setIncidentTitle(`Production Outage: ${selectedSvc}`);
+    if (!titleEdited) setIncidentTitle(`Production Outage: ${selectedSvc}`);
   };
 
   const handleGenerate = async (e) => {
@@ -147,6 +181,18 @@ export default function Postmortems() {
     }).catch(() => toast.error("Could not copy. Select the draft text below to copy it manually."));
   };
 
+  const SEVERITIES = ["CRITICAL", "HIGH", "MEDIUM"];
+  const WINDOWS = [["15m", "15m"], ["30m", "30m"], ["1h", "1h"], ["2h", "2h"], ["6h", "6h"], ["1d", "24h"]];
+  const sevColor = (s) => `var(--tg-crit-${String(s || "medium").toLowerCase()}, var(--tg-crit-medium))`;
+  const SeverityTag = ({ value }) => (
+    <span className="inline-flex items-center gap-1.5 text-[10px] font-mono font-semibold tracking-wide" style={{ color: sevColor(value) }}>
+      <span className="w-1.5 h-1.5 rounded-full" style={{ background: sevColor(value) }} />{value}
+    </span>
+  );
+  const [formOpen, setFormOpen] = useState(() => typeof window === "undefined" || window.innerWidth >= 1024);
+  const savedOwnerValue = (item) => (isSuggestedOwner(item.owner) ? "" : item.owner);
+  const evidenceNote = evidenceStatus === "loading" ? "Resolving source evidence..." : evidenceStatus === "error" ? "Source lookup failed. Unlinked rows remain unverified." : evidenceStatus === "partial" ? "Source lookup was capped. Some rows may be unlinked." : "";
+
   return (
     <PageContainer>
       <PageHeader
@@ -155,282 +201,195 @@ export default function Postmortems() {
         description="Draft incident summaries. Review suspected contributors, evidence and action owners before sharing."
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: Generator Form & History */}
-        <div className="space-y-6 lg:col-span-1">
-          {/* Generator Form */}
-          <div className="bg-paper border border-white/10 rounded-xl p-5 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 text-white font-mono font-semibold text-xs uppercase tracking-wider">
-              <Sparkles size={15} className="text-zinc-300" />
-              <span>Generate New SRE Postmortem</span>
-            </div>
-
-            {servicesLoading ? <div role="status" className="p-6 text-xs text-text-muted">Loading services...</div> : servicesError ? <div role="alert" className="p-6 text-xs text-text-muted">Services could not be loaded. <button className="text-accent underline" onClick={fetchUserServices}>Retry services</button></div> : userServices.length === 0 ? (
-              /* Empty State for Generator */
-              <div className="p-5 rounded-xl bg-white/5 border border-white/10 text-center space-y-3">
-                <Server size={28} className="mx-auto text-text-muted opacity-60" />
-                <div className="space-y-1">
-                  <h4 className="text-xs font-bold text-white">No services ingested yet</h4>
-                  <p className="text-[11px] text-text-muted leading-relaxed">
-                    Ingest your change events via GitHub or the custom REST API to select a target service and generate 1-click postmortems.
-                  </p>
-                </div>
-                <button
-                  onClick={() => navigate("/integrations")}
-                  className="py-2 px-3 rounded-lg bg-accent/10 hover:bg-accent/20 text-accent border border-accent/30 text-xs font-semibold flex items-center justify-center gap-1.5 w-full transition-all"
-                >
-                  <span>Set up first integration</span>
-                  <ArrowRight size={13} />
-                </button>
+      <div className="grid grid-cols-1 lg:grid-cols-[340px_minmax(0,1fr)] gap-6 items-start">
+        {/* Left: generator + history */}
+        <div className="space-y-4 lg:sticky lg:top-4">
+          <section className="bg-paper border border-white/10 rounded-xl">
+            <button type="button" onClick={() => setFormOpen(o => !o)} aria-expanded={formOpen} className="w-full flex items-center justify-between px-4 py-3 text-left">
+              <span className="flex items-center gap-2 text-sm font-semibold text-white"><Sparkles size={14} className="text-accent" />New postmortem</span>
+              <ChevronDown size={16} className={`text-text-muted transition-transform ${formOpen ? "rotate-180" : ""}`} />
+            </button>
+            {formOpen && (
+              <div className="px-4 pb-4 border-t border-white/10 pt-4">
+                {servicesLoading ? <div role="status" className="py-4 text-xs text-text-muted">Loading services...</div> : servicesError ? <div role="alert" className="py-4 text-xs text-text-muted">Services could not be loaded. <button className="text-accent underline" onClick={() => fetchUserServices()}>Retry</button></div> : userServices.length === 0 ? (
+                  <div className="py-2 text-center space-y-3">
+                    <Server size={26} className="mx-auto text-text-muted opacity-60" />
+                    <p className="text-xs text-text-muted leading-relaxed">No services ingested yet. Ingest change events via GitHub or the REST API to generate postmortems.</p>
+                    <button onClick={() => navigate("/integrations")} className="py-2 px-3 rounded-lg bg-accent/10 hover:bg-accent/20 text-accent border border-accent/30 text-xs font-semibold flex items-center justify-center gap-1.5 w-full">
+                      <span>Set up first integration</span><ArrowRight size={13} />
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleGenerate} className="space-y-4">
+                    <label className="block text-[11px] font-medium text-text-secondary">Service
+                      <div className="relative mt-1.5">
+                        <select value={service} onChange={handleServiceChange} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-accent appearance-none cursor-pointer">
+                          {userServices.map((svc, idx) => {
+                            const name = svc.service_name || svc.name || svc.service || `service-${idx}`;
+                            return <option key={svc.id || name} value={name} className="bg-zinc-900 text-white">{name} {svc.criticality_tier ? `(${svc.criticality_tier})` : ""}</option>;
+                          })}
+                        </select>
+                        <ChevronDown size={14} className="absolute right-3 top-2.5 text-text-muted pointer-events-none" />
+                      </div>
+                    </label>
+                    <label className="block text-[11px] font-medium text-text-secondary">Incident title
+                      <input type="text" value={incidentTitle} onChange={(e) => { setIncidentTitle(e.target.value); setTitleEdited(true); }} required placeholder="What broke, in one line" className="mt-1.5 w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-accent" />
+                      <span className="block mt-1 text-[10px] text-text-muted">{titleEdited ? "Custom title. Changing the service will not overwrite it." : "Follows the selected service until you edit it."}</span>
+                    </label>
+                    <fieldset>
+                      <legend className="text-[11px] font-medium text-text-secondary mb-1.5">Severity</legend>
+                      <div className="grid grid-cols-3 gap-1.5" role="radiogroup" aria-label="Severity">
+                        {SEVERITIES.map(s => (
+                          <button key={s} type="button" role="radio" aria-checked={severity === s} onClick={() => setSeverity(s)}
+                            className={`py-1.5 rounded-lg border text-[10px] font-mono font-semibold transition-colors ${severity === s ? "bg-white/10 border-white/30 text-white" : "border-white/10 text-text-muted hover:text-white"}`}>
+                            <span className="inline-block w-1.5 h-1.5 rounded-full mr-1.5 align-middle" style={{ background: sevColor(s) }} />{s}
+                          </button>
+                        ))}
+                      </div>
+                    </fieldset>
+                    <div>
+                      <div className="text-[11px] font-medium text-text-secondary mb-1.5">Incident time (UTC)</div>
+                      <DateTimePicker value={incidentTimestamp} onChange={setIncidentTimestamp} label="Select Incident Time" />
+                    </div>
+                    <fieldset>
+                      <legend className="text-[11px] font-medium text-text-secondary mb-1.5">Look back</legend>
+                      <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label="Look-back window">
+                        {WINDOWS.map(([v, label]) => (
+                          <button key={v} type="button" role="radio" aria-checked={timeWindow === v} onClick={() => setTimeWindow(v)}
+                            className={`px-2.5 py-1 rounded-full border text-[11px] transition-colors ${timeWindow === v ? "bg-accent/15 border-accent/50 text-accent" : "border-white/10 text-text-muted hover:text-white"}`}>{label}</button>
+                        ))}
+                      </div>
+                    </fieldset>
+                    <button type="submit" disabled={generating} className="w-full py-2.5 rounded-lg bg-accent text-paper font-semibold text-xs flex items-center justify-center gap-2 hover:brightness-110 transition disabled:opacity-60">
+                      {generating ? <><Sparkles size={14} className="animate-spin" /><span>Analyzing changes...</span></> : <><Plus size={14} /><span>Generate postmortem</span></>}
+                    </button>
+                  </form>
+                )}
               </div>
-            ) : (
-              <form onSubmit={handleGenerate} className="space-y-4">
-                <div>
-                  <label className="text-xs font-medium text-text-secondary flex items-center justify-between mb-1.5">
-                    <span>Target Ingested Service</span>
-                    <span className="text-[10px] text-accent font-mono">
-                      {userServices.length} Active
-                    </span>
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={service}
-                      onChange={handleServiceChange}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-accent appearance-none cursor-pointer"
-                    >
-                      {userServices.map((svc, idx) => {
-                        const name = svc.service_name || svc.name || svc.service || `service-${idx}`;
-                        return (
-                          <option key={svc.id || name} value={name} className="bg-zinc-900 text-white">
-                            {name} {svc.criticality_tier ? `(${svc.criticality_tier})` : ''}
-                          </option>
-                        );
-                      })}
-                    </select>
-                    <Server size={14} className="absolute right-3 top-2.5 text-text-muted pointer-events-none" />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-xs font-medium text-text-secondary block mb-1.5">Incident Title</label>
-                  <input
-                    type="text"
-                    value={incidentTitle}
-                    onChange={(e) => setIncidentTitle(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-accent"
-                    placeholder="e.g. Production Outage: Service Migration Failure"
-                    required
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs font-medium text-text-secondary block mb-1.5">Severity</label>
-                    <select
-                      value={severity}
-                      onChange={(e) => setSeverity(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-accent"
-                    >
-                      <option value="CRITICAL" className="bg-zinc-900">CRITICAL</option>
-                      <option value="HIGH" className="bg-zinc-900">HIGH</option>
-                      <option value="MEDIUM" className="bg-zinc-900">MEDIUM</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-medium text-text-secondary block mb-1.5">Incident Time</label>
-                    <DateTimePicker
-                      value={incidentTimestamp}
-                      onChange={setIncidentTimestamp}
-                      label="Select Incident Time"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-xs font-medium text-text-secondary block mb-1.5">Incident Window</label>
-                  <select
-                    value={timeWindow}
-                    onChange={(e) => setTimeWindow(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-accent"
-                  >
-                    <option value="15m" className="bg-zinc-900">15 Minutes</option>
-                    <option value="30m" className="bg-zinc-900">30 Minutes</option>
-                    <option value="1h" className="bg-zinc-900">1 Hour</option>
-                    <option value="2h" className="bg-zinc-900">2 Hours</option>
-                    <option value="6h" className="bg-zinc-900">6 Hours</option>
-                    <option value="1d" className="bg-zinc-900">24 Hours</option>
-                  </select>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={generating}
-                  className="w-full py-2.5 px-4 rounded-xl bg-accent text-paper font-semibold text-xs flex items-center justify-center gap-2 hover:brightness-110 transition-all disabled:opacity-50"
-                >
-                  {generating ? (
-                    <>
-                      <Sparkles size={14} className="animate-spin" />
-                      <span>Analyzing Telemetry...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Plus size={14} />
-                      <span>Generate Postmortem Report</span>
-                    </>
-                  )}
-                </button>
-              </form>
             )}
-          </div>
+          </section>
 
-          {/* History List */}
-          <div className="bg-deep/40 border border-white/10 rounded-2xl p-6 backdrop-blur-xl shadow-xl space-y-4">
-            <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider">Past Postmortems</h3>
-
+          <section className="bg-paper border border-white/10 rounded-xl p-2">
+            <h3 className="px-2 pt-2 pb-1 text-[11px] font-semibold text-text-muted uppercase tracking-wider">Past postmortems</h3>
             {loading ? (
               <div className="py-6 text-center text-xs text-text-muted">Loading postmortems...</div>
             ) : postmortems.length === 0 ? (
-              <div className="py-6 text-center text-xs text-text-muted">No postmortems generated yet.</div>
+              <div className="py-6 text-center text-xs text-text-muted">No postmortems yet.</div>
             ) : (
-              <div className="space-y-2 max-h-80 overflow-y-auto pr-1 custom-scrollbar">
+              <ul className="max-h-80 overflow-y-auto custom-scrollbar">
                 {postmortems.map((p) => {
                   const isSelected = selectedPostmortem?.id === p.id;
                   return (
-                    <div
-                      key={p.id}
-                      onClick={() => setSelectedPostmortem(p)}
-                      className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${isSelected
-                          ? "bg-accent/10 border-accent/40 text-white"
-                          : "bg-white/5 border-white/5 text-text-secondary hover:border-white/20 hover:text-white"
-                        }`}
-                    >
-                      <div className="space-y-1 min-w-0 pr-2">
-                        <div className="text-xs font-semibold truncate">{p.title}</div>
-                        <div className="flex items-center gap-2 text-[10px] text-text-muted">
-                          <span className="px-1.5 py-0.5 rounded bg-red-500/10 text-red-400 font-mono">{p.severity}</span>
+                    <li key={p.id} className={`group flex items-center gap-1 rounded-lg border-l-2 ${isSelected ? "bg-white/5" : "hover:bg-white/5"}`} style={{ borderColor: isSelected ? sevColor(p.severity) : "transparent" }}>
+                      <button type="button" onClick={() => selectReport(p)} aria-current={isSelected ? "true" : undefined} className="flex-1 min-w-0 text-left px-3 py-2">
+                        <div className={`text-xs font-medium truncate ${isSelected ? "text-white" : "text-text-secondary"}`}>{p.title}</div>
+                        <div className="mt-1 flex items-center gap-2 text-[10px] text-text-muted">
+                          <SeverityTag value={p.severity} />
+                          {p.service && <span className="font-mono truncate">{p.service}</span>}
                           <span>{new Date(p.incident_at).toLocaleDateString()}</span>
                         </div>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(p.id);
-                        }}
-                        className="text-text-muted hover:text-red-400 transition-colors p-1"
-                        title="Delete Postmortem"
-                      >
-                        <Trash2 size={13} />
                       </button>
-                    </div>
+                      <button type="button" onClick={() => handleDelete(p.id)} className="p-2 mr-1 text-text-muted hover:text-red-400 opacity-60 group-hover:opacity-100 focus:opacity-100" title="Delete postmortem" aria-label={`Delete ${p.title}`}><Trash2 size={13} /></button>
+                    </li>
                   );
                 })}
-              </div>
+              </ul>
             )}
-          </div>
+          </section>
         </div>
 
-        {/* Right Column: Detailed Postmortem Viewer */}
-        <div className="lg:col-span-2 space-y-6">
+        {/* Right: report */}
+        <div className="min-w-0">
           {selectedPostmortem ? (
-            <div className="bg-deep/40 border border-white/10 rounded-2xl p-6 backdrop-blur-xl shadow-xl space-y-6">
-              {/* Report Header */}
-              <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                <div>
-                  <h2 className="text-lg font-bold text-white">{suspectedWording(selectedPostmortem.title)}</h2>
-                  <p className="text-xs text-text-muted">
-                    Incident Date: {new Date(selectedPostmortem.incident_at).toUTCString()}
-                  </p>
+            <article className="bg-paper border border-white/10 rounded-xl overflow-hidden">
+              <header className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 p-5 border-b border-white/10">
+                <div className="min-w-0">
+                  <h2 className="text-lg font-semibold text-white leading-snug break-words">{suspectedWording(selectedPostmortem.title)}</h2>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-muted">
+                    {selectedPostmortem.service && <span>Service <span className="font-mono text-white">{selectedPostmortem.service}</span></span>}
+                    {selectedPostmortem.severity && <SeverityTag value={selectedPostmortem.severity} />}
+                    <span>{utcTimestamp(selectedPostmortem.incident_at)}</span>
+                  </div>
                 </div>
-                <button
-                  onClick={handleCopyMarkdown}
-                  className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-xs font-medium text-white flex items-center gap-2 transition-all"
-                >
+                <button onClick={handleCopyMarkdown} className="shrink-0 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 text-xs font-medium text-white flex items-center gap-2">
                   {copied ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} />}
-                  <span>{copied ? "Copied Markdown" : "Copy Markdown"}</span>
+                  <span>{copied ? "Copied" : "Copy Markdown"}</span>
                 </button>
-              </div>
+              </header>
 
-              {/* Executive Summary Card */}
-              <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-200 text-xs space-y-2">
-                <div className="flex items-center gap-2 font-semibold text-red-400">
-                  <ShieldAlert size={16} />
-                  <span>Executive Summary</span>
-                </div>
-                <p>{suspectedWording(selectedPostmortem.executive_summary)}</p>
-                <div className="pt-1 text-[11px] font-mono text-red-300">
-                  Suspected contributor: "{suspectedWording(selectedPostmortem.primary_cause_headline)}"
-                </div>
-              </div>
+              <div className="p-5 space-y-7">
+                <section>
+                  <div className="rounded-lg bg-white/[0.03] border border-white/10 border-l-2 p-4 space-y-2" style={{ borderLeftColor: sevColor(selectedPostmortem.severity) }}>
+                    <h3 className="text-[11px] font-semibold text-text-muted uppercase tracking-wider">Summary</h3>
+                    <p className="text-sm text-white leading-relaxed">{suspectedWording(selectedPostmortem.executive_summary)}</p>
+                    <p className="text-xs text-text-secondary">Suspected contributor: <span className="font-mono text-white">{suspectedWording(selectedPostmortem.primary_cause_headline)}</span></p>
+                  </div>
+                  <p className="mt-2 text-[11px] text-text-muted">
+                    AI-generated draft. Correlation is not proof of causation; verify against source events before sharing. {evidenceNote && <span>{evidenceNote} </span>}
+                    <Link to="/events" className="text-accent hover:underline inline-flex items-center gap-1">Browse change events <ExternalLink size={10} /></Link>
+                  </p>
+                </section>
 
-              <div className="p-4 border border-amber-500/25 rounded-xl text-xs text-text-secondary space-y-2">
-                <p>AI-generated draft. Correlation is not proof of causation. Inspect source events and verify the suspected contributor before sharing.</p>
-                <p>{evidenceStatus === 'loading' ? 'Resolving source evidence...' : evidenceStatus === 'error' ? 'Source lookup failed. Unlinked rows remain unverified.' : evidenceStatus === 'partial' ? 'Only the first 1,000 events in this report window were checked.' : 'Links use explicit IDs or a unique exact timestamp, service, event type and summary match.'}</p>
-                <Link to="/events" className="text-accent underline">Browse supporting change events</Link>
-              </div>
-              {/* Action Items List */}
-              <div className="space-y-3">
-                <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider">Preventative SRE Action Items</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  {(selectedPostmortem.action_items_json || []).map((item, idx) => (
-                    <div key={idx} className="p-3 rounded-xl bg-white/5 border border-white/10 space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-accent/20 text-accent font-mono">
-                          {item.priority}
-                        </span>
-                        <span className="text-[10px] text-text-muted">{ownersReviewed ? "Owner reviewed" : "Review required"}</span>
-                      </div>
-                      <p className="text-xs text-white font-medium">{item.title}</p>
-                      <label className="block text-[11px] text-text-muted pt-2">Action owner
-                        <input aria-label={`Action owner ${idx + 1}`} className="mt-1 w-full rounded-lg bg-deep/40 border border-white/15 p-2 text-white text-xs" placeholder="Assign a real person" value={ownerDrafts[idx] ?? (isSuggestedOwner(item.owner) ? '' : item.owner)} onChange={e => { setOwnerDrafts(prev => ({ ...prev, [idx]: e.target.value })); setOwnersReviewed(false); }} />
-                      </label>
+                <section>
+                  <h3 className="text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-3">Preventive action items</h3>
+                  <ul className="divide-y divide-white/10 border border-white/10 rounded-lg">
+                    {actionItems.map((item, idx) => {
+                      const value = ownerDrafts[idx] ?? savedOwnerValue(item);
+                      const changed = ownerDrafts[idx] !== undefined && ownerDrafts[idx] !== savedOwnerValue(item);
+                      return (
+                        <li key={idx} className="p-3 grid gap-2 md:grid-cols-[auto_minmax(0,1fr)_220px] md:items-center">
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-accent/15 text-accent font-mono justify-self-start">{item.priority}</span>
+                          <p className="text-xs text-white leading-relaxed">{item.title}</p>
+                          <label className="block text-[10px] text-text-muted">
+                            <span className="flex items-center justify-between mb-1">Owner{changed ? <span className="text-amber-400">unsaved</span> : value ? <span className="text-emerald-400">saved</span> : <span>unassigned</span>}</span>
+                            <input aria-label={`Action owner ${idx + 1}`} className="w-full rounded-md bg-deep/40 border border-white/15 px-2 py-1.5 text-white text-xs focus:outline-none focus:border-accent" placeholder="Assign a person" value={value} onChange={e => { setOwnerDrafts(prev => ({ ...prev, [idx]: e.target.value })); setOwnersReviewed(false); }} />
+                          </label>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+                    <label className="flex items-center gap-2 text-xs text-text-secondary">
+                      <input type="checkbox" checked={ownersReviewed} disabled={!allOwnersAssigned} onChange={e => setOwnersReviewed(e.target.checked)} />
+                      I have reviewed these owners{!allOwnersAssigned && " (assign every owner first)"}
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <span className="text-[11px] text-text-muted">{ownerDirty ? "Unsaved changes" : "All changes saved"}</span>
+                      <button type="button" onClick={saveOwners} disabled={!ownerDirty || savingOwners} className="px-3 py-1.5 rounded-lg bg-accent text-paper text-xs font-semibold disabled:opacity-40">{savingOwners ? "Saving..." : "Save owners"}</button>
                     </div>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                </section>
 
-              <div className="text-xs text-text-secondary space-y-2">
-                <p>Owner edits apply to this local draft and its Markdown export only. They are not saved to the stored report and reset when you switch reports or reload.</p>
-                <label className="flex items-center gap-2"><input type="checkbox" checked={ownersReviewed} disabled={!allOwnersAssigned} onChange={e => setOwnersReviewed(e.target.checked)} /> I have reviewed these action owners{!allOwnersAssigned && ' (assign every owner first)'}</label>
-              </div>
-              {/* Timeline List */}
-              <div className="space-y-3">
-                <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider">Chronological Incident Timeline</h3>
-                <div className="border border-white/10 rounded-xl overflow-hidden divide-y divide-white/5">
-                  {resolvedTimeline.map((t, idx) => (
-                    <div key={idx} className="p-3 bg-deep/20 flex items-center justify-between text-xs">
-                      <div className="flex items-center gap-3">
-                        <span className="font-mono text-[10px] text-text-muted">
-                          {utcTimestamp(t.timestamp)}
-                        </span>
-                        <div className="space-y-1"><span className="font-semibold text-white">{suspectedWording(t.summary)}</span>
-                        {evidenceEventId(t) ? <Link className="text-accent underline block" to={`/events/${encodeURIComponent(evidenceEventId(t))}`}>Inspect source event</Link> : <span className="text-text-muted block text-[10px]">Source event not linked by the report</span>}</div>
-                      </div>
-                      <span
-                        className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded ${t.impact_level === "PRIMARY_CULPRIT"
-                            ? "bg-red-500/20 text-red-400 border border-red-500/30"
-                            : "bg-white/10 text-text-secondary"
-                          }`}
-                      >
-                        {suspectedWording(t.impact_level)}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+                <section>
+                  <h3 className="text-[11px] font-semibold text-text-muted uppercase tracking-wider mb-3">Timeline</h3>
+                  <ol className="relative border-l border-white/15 ml-1.5 space-y-4">
+                    {resolvedTimeline.map((t, idx) => {
+                      const suspect = t.impact_level === "PRIMARY_CULPRIT";
+                      return (
+                        <li key={idx} className="pl-4 relative">
+                          <span className="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full" style={{ background: suspect ? sevColor("CRITICAL") : "var(--tg-crit-medium)" }} />
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                            <span className="font-mono text-[10px] text-text-muted">{utcTimestamp(t.timestamp)}</span>
+                            {suspect && <span className="text-[10px] font-semibold" style={{ color: sevColor("CRITICAL") }}>Suspected contributor</span>}
+                          </div>
+                          <p className="text-xs text-white mt-0.5 break-words">{suspectedWording(t.summary)}</p>
+                          {evidenceEventId(t) ? <Link className="text-[11px] text-accent hover:underline" to={`/events/${encodeURIComponent(evidenceEventId(t))}`}>Inspect source event</Link> : <span className="text-[10px] text-text-muted">Source event not linked by the report</span>}
+                        </li>
+                      );
+                    })}
+                  </ol>
+                </section>
 
-              {/* Markdown Raw Preview Box */}
-              <div className="space-y-2">
-                <h3 className="text-xs font-bold text-text-muted uppercase tracking-wider">Reviewed Markdown Draft</h3>
-                <pre className="p-4 rounded-xl bg-deep/60 border border-white/10 text-text-secondary text-[11px] font-mono whitespace-pre-wrap max-h-64 overflow-y-auto custom-scrollbar">
-                  {reviewedMarkdown}
-                </pre>
+                <details className="group">
+                  <summary className="cursor-pointer text-[11px] font-semibold text-text-muted uppercase tracking-wider select-none">Markdown draft (with your owners)</summary>
+                  <pre className="mt-2 p-4 rounded-lg bg-deep/60 border border-white/10 text-text-secondary text-[11px] font-mono whitespace-pre-wrap max-h-64 overflow-y-auto custom-scrollbar">{reviewedMarkdown}</pre>
+                </details>
               </div>
-            </div>
+            </article>
           ) : (
-            <div className="bg-deep/40 border border-white/10 rounded-2xl p-12 text-center text-text-muted space-y-3">
-              <FileText size={32} className="mx-auto text-text-muted" />
-              <p className="text-sm">Select a postmortem from the left or generate a new report.</p>
+            <div className="bg-paper border border-white/10 rounded-xl p-12 text-center text-text-muted space-y-3">
+              <FileText size={32} className="mx-auto" />
+              <p className="text-sm">Select a postmortem or generate a new one.</p>
             </div>
           )}
         </div>
