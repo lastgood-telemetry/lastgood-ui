@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { changeTitle } from '../../util/changeTitle';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, Check, Clock, Copy } from 'lucide-react';
 import { diagnosisTerminalState } from '../../util/diagnosisTerminal';
@@ -25,7 +26,7 @@ const SignalRow = ({ item, index, incidentTime, highlighted = false, compact = f
   return <li data-highlighted={highlighted || undefined} className={`grid grid-cols-[auto,1fr,auto] gap-x-3 items-start p-3 md:p-4 ${ruledOut ? 'opacity-60' : ''} ${highlighted ? 'ring-1 ring-inset ring-accent bg-accent/10' : ''}`}>
     <span className="text-sm font-mono text-text-muted pt-0.5">#{index + 1}</span>
     <div className="min-w-0 space-y-1">
-      <p className="text-base text-white font-medium break-words">{change.summary || change.type || 'Change'}</p>
+      <p className="text-base text-white font-medium break-words" title={changeTitle(change).full}>{changeTitle(change).title}</p>
       <p className="text-sm text-text-secondary break-words">{highlighted && <span className="mr-2 text-xs font-mono uppercase text-accent border border-accent/40 rounded-[4px] px-1.5 py-0.5">Linked from alert</span>}{ruledOut && <span className="mr-2 text-xs font-mono uppercase text-text-muted border border-white/20 rounded-[4px] px-1.5 py-0.5">Ruled out</span>}{change.service || 'Unspecified'} / {eventEnvironmentLabel(change)}{lead && <> · <span className="text-white">{lead}</span></>}</p>
       {!compact && <p className="text-sm text-text-muted break-words">{utcTimestamp(change.occurred_at)} · {meta || 'Author unavailable'}</p>}
     </div>
@@ -149,7 +150,7 @@ export const RewindIncidentBrief = ({ scoringResult, queryParams, diagnosisState
               <ol className="space-y-3">{items.map((item, index) => {
                 const change = item.event || item;
                 return <li key={change.id || index} className="border border-white/10 rounded-[4px] p-3 space-y-2 text-sm text-text-secondary">
-                  <p className="text-white font-medium break-words">#{index + 1} {change.summary || change.type || 'Change'}</p>
+                  <p className="text-white font-medium break-words" title={changeTitle(change).full}>#{index + 1} {changeTitle(change).title}</p>
                   {change.id && <Link to={`/events/${encodeURIComponent(change.id)}`} className="inline-flex items-center gap-1 text-accent underline">Inspect source event <ArrowUpRight size={14} /></Link>}
                   {item.risk_assessment && <ScoreEvidence assessment={item.risk_assessment} label="Change factors" />}
                 </li>;

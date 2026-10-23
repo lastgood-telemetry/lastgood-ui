@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { Check, MessageSquarePlus } from 'lucide-react';
@@ -17,6 +18,7 @@ const RewindResolutionFeedback = ({ scoringResult, queryParams, incidentId = '' 
   const [tag, setTag] = useState('');
   const [state, setState] = useState('idle'); // idle | saving | saved | failed
   const [savedBy, setSavedBy] = useState('');
+  const queryClient = useQueryClient();
   if (!queryParams) return null;
   const options = culpritOptions(items);
   const canSave = text.trim().length > 0 && state !== 'saving';
@@ -41,6 +43,8 @@ const RewindResolutionFeedback = ({ scoringResult, queryParams, incidentId = '' 
       if (!response.data?.success) throw new Error(response.data?.message || 'Could not save feedback');
       setSavedBy(response.data.data?.created_by_name || '');
       setState('saved');
+      // The next rerun of this scope should surface the note that was just saved.
+      queryClient.invalidateQueries({ queryKey: ['rewind-suggestions'] });
       capture('rewind_resolution_saved', {
         service: queryParams.service || 'all',
         environment: queryParams.environment || 'all',
